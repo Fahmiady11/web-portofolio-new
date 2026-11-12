@@ -59,30 +59,30 @@
   <section class="concept featured" style="--accent:#b3261e">
     <div class="head">
       <div><span class="tag">Chosen · A2 · 3D</span><h2>The Detective Office</h2>
-        <p class="pitch">A rainy-night private-eye office in real-time 3D. The visitor investigates the case "Muhammad Fahmi Ady Susilo — Software Developer": every piece of evidence opens part of the portfolio.</p></div>
+        <p class="pitch">A rainy-night private-eye office in real-time 3D, built around the projects: a lit <b>"CASE FILES" evidence wall</b> under red neon is the first thing you see, with every project pinned up as a large case photo (real screenshot, case number, tags, CLOSED / FILE PENDING stamp). The rest of the career sits around it as evidence.</p></div>
       <a class="open" href="a-detective-room.html" target="_blank" rel="noopener">Open the office ↗</a>
     </div>
     <div class="previews four">
-      <figure><img src="shots/d-desktop.jpg" alt="Detective office on a 1280px desktop: desk with green banker's lamp, evidence board with red string, framed certificates, rain behind venetian blinds"><figcaption>Desktop · first screen</figcaption></figure>
-      <figure><img src="shots/d-state.jpg" alt="Evidence board close-up with the career timeline panel open"><figcaption>Evidence board → career timeline</figcaption></figure>
-      <figure><img src="shots/d-cases.jpg" alt="Case-file folders close-up with the projects panel open"><figcaption>Case files → projects</figcaption></figure>
+      <figure><img src="shots/d-desktop.jpg" alt="Detective office on a 1280px desktop: the lit CASE FILES wall with eight project photos dominates the back wall, desk in front"><figcaption>Desktop · first screen — the case wall</figcaption></figure>
+      <figure><img src="shots/d-state.jpg" alt="Evidence board on the left wall with the career timeline panel open"><figcaption>Evidence board → career timeline</figcaption></figure>
+      <figure><img src="shots/d-cases.jpg" alt="Clicked case photo: camera zooms onto the Lanjalan case and the wide projects panel scrolls to it"><figcaption>Click a case photo → zoom + that case</figcaption></figure>
       <figure class="phone"><img src="shots/d-phone.jpg" alt="Detective office on a 390px phone with the section dock"><figcaption>Phone · 390px</figcaption></figure>
     </div>
     <table class="map">
       <thead><tr><th>Evidence in the room</th><th>Opens</th></tr></thead>
       <tbody>
-        <tr><td>① Manila case folders on the desk ("CASE #001 …")</td><td>Projects: 5 closed cases + 3 sealed "file pending" folders (Webtix, Lapetshop, Restaurant) waiting for descriptions</td></tr>
-        <tr><td>② Corkboard with red string, mugshot polaroid and a newspaper clipping</td><td>Experience timeline: UTM lab assistant → Ruangguru → Lanjalan (UTM) → Sentra Vidya</td></tr>
-        <tr><td>③ Evidence box with bagged exhibits on the filing cabinet</td><td>Skills as Exhibit A–F</td></tr>
+        <tr><td>① The "CASE FILES" wall under red neon (and the folders on the desk)</td><td>Projects, the star: 5 closed cases + 3 "FILE PENDING" (Webtix, Lapetshop, Restaurant — screenshots only until descriptions arrive). Clicking a photo zooms to it and opens that case. Also reachable from the yellow <b>View cases</b> header button, the first (highlighted) phone-dock slot, and first in the full dossier.</td></tr>
+        <tr><td>② Corkboard with red string on the left wall</td><td>Experience timeline: UTM lab assistant → Ruangguru → Lanjalan (UTM) → Sentra Vidya</td></tr>
+        <tr><td>③ Evidence box on the filing cabinet (back-right)</td><td>Skills as Exhibit A–F</td></tr>
         <tr><td>④ Typewriter with a typed statement</td><td>About / subject profile + key numbers</td></tr>
-        <tr><td>⑤ Framed commendations on the wall (real certificate images)</td><td>All 23 certificates</td></tr>
-        <tr><td>⑥ Framed diploma + medal</td><td>Education, awards, organizations</td></tr>
+        <tr><td>⑤ Framed commendations right of the case wall</td><td>All 23 certificates</td></tr>
+        <tr><td>⑥ Framed diploma + medal (back-left)</td><td>Education, awards, organizations</td></tr>
         <tr><td>⑦ Rotary telephone</td><td>Contact: email, phone, socials</td></tr>
         <tr><td>⑧ Black "TOP SECRET" dossier</td><td>CV download + summary</td></tr>
       </tbody>
     </table>
     <div class="facts">
-      <div><h3>How it works</h3><p>Drag to look around; click an object or its yellow evidence marker → the camera moves in and a manila "case file" panel slides in (bottom sheet on phones). "Read the full dossier" shows everything on one page; it opens automatically when WebGL is missing.</p></div>
+      <div><h3>How it works</h3><p>Drag to look around; click an object or its yellow evidence marker → the camera moves in and a manila "case file" panel slides in (bottom sheet on phones). The projects panel is wide, with large screenshots, tags and Live / GitHub buttons per case. "Full dossier" shows everything on one page, projects first; it opens automatically when WebGL is missing.</p></div>
       <div><h3>Real-build stack</h3><p>Vite + React + TS + Tailwind; React Three Fiber + drei (CameraControls, Html markers, useGLTF); room modelled in Blender with baked lighting → .glb (Draco + KTX2); content from content.json.</p></div>
       <div><h3>Effort</h3><p>High · ~4 weeks: ~1.5 w modelling/baking the office, ~1 w scene + camera + markers, ~1 w panels, dossier, a11y and fallback, ~0.5 w perf on phones.</p></div>
       <div><h3>Risks</h3><ul><li>3D payload (three.js ~600 KB + model) — show a still poster first, lazy-load the scene</li><li>Low-end Android: cap DPR, use baked light instead of live shadows/rain</li><li>Dark noir look must keep text contrast (panels are light paper)</li></ul></div>

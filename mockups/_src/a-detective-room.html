@@ -55,6 +55,11 @@
   .hs b { display: grid; place-items: center; width: 20px; height: 20px; background: #111; color: var(--tape); font: 600 12px var(--mono); }
   .hs:hover, .hs.on { transform: translate(-50%, calc(-100% - 3px)); background: #ffe066; }
   .hs.dim { opacity: .2; }
+  .hs.star { font-size: 16px; padding: 7px 14px 7px 7px; background: #ffd23f; box-shadow: 0 0 0 0 rgba(255,210,63,.6), 0 8px 18px rgba(0,0,0,.6); animation: ping 2s infinite; }
+  .hs.star b { width: 26px; height: 26px; font-size: 14px; background: var(--red); color: #fff; }
+  @keyframes ping { 70% { box-shadow: 0 0 0 14px rgba(255,210,63,0), 0 8px 18px rgba(0,0,0,.6); } 100% { box-shadow: 0 0 0 0 rgba(255,210,63,0), 0 8px 18px rgba(0,0,0,.6); } }
+  .btn.cases { background: #ffd23f; color: #111; border-color: #ffd23f; font-size: 15px; padding: 10px 18px; box-shadow: 0 0 22px rgba(255,210,63,.35); }
+  .btn.cases:hover { background: #ffe066; color: #111; }
 
   .hint { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); color: #b9ad94; font: 13px var(--type); z-index: 2; background: rgba(7,8,12,.65); padding: 6px 14px; white-space: nowrap; }
 
@@ -67,6 +72,7 @@
     transform: translateX(105%); visibility: hidden; transition: transform .5s cubic-bezier(.2,.8,.2,1), visibility 0s .5s; }
   .panel.open { transform: none; visibility: visible; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
   .panel.instant { transition: none; }
+  .panel.wide { width: min(640px, 100%); }
   .panel header { position: relative; padding: 22px 24px 14px; border-bottom: 2px dashed rgba(30,26,20,.25); }
   .panel header small { font: 12px var(--type); color: var(--red); letter-spacing: .16em; text-transform: uppercase; }
   .panel header h2 { margin: 4px 0 0; font: 400 26px/1.15 var(--type); }
@@ -79,12 +85,15 @@
   .stamp.grey { color: #6b6b6b; border-color: #6b6b6b; }
   .case { position: relative; background: var(--manila); border: 1px solid #b89a5a; padding: 12px 14px 14px; margin: 18px 0 0; box-shadow: 0 3px 0 #b89a5a; }
   .case::before { content: attr(data-no); position: absolute; top: -14px; left: 12px; background: var(--manila); border: 1px solid #b89a5a; border-bottom: 0; padding: 1px 10px 0; font: 12px var(--type); }
-  .case .stamp { position: absolute; top: 10px; right: 12px; }
-  .case h3 { margin: 4px 0 6px; font: 400 18px var(--type); padding-right: 90px; }
-  .case img { width: 100%; height: 150px; object-fit: cover; object-position: top; border: 6px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25); transform: rotate(-.6deg); display: block; margin: 4px 0 10px; }
+  .case .stamp { position: absolute; top: 26px; right: 22px; z-index: 1; background: rgba(255,255,255,.8); }
+  .case h3 { margin: 4px 0 4px; font: 400 21px var(--type); }
+  .case .shot { width: 100%; aspect-ratio: 16 / 10; height: auto; object-fit: cover; object-position: top; border: 8px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,.3); transform: rotate(-.5deg); display: block; margin: 8px 0 12px; background: #222; }
+  .case.focus { outline: 3px solid #ffd23f; outline-offset: 3px; }
+  .case .row { margin: 6px 0 0; }
+  .private { font: 14px var(--type); color: var(--muted); border: 1px dashed rgba(30,26,20,.4); padding: 7px 10px; }
   .case p { margin: 0 0 8px; font-size: 14px; }
   .case.pending { background: #cdbf9f; }
-  .case.pending img { filter: grayscale(1) contrast(.9); }
+  .case.pending .shot { filter: grayscale(1) contrast(.9); }
   .tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0; }
   .tag { font: 600 11px var(--mono); padding: 2px 7px; background: rgba(30,26,20,.1); border: 1px solid rgba(30,26,20,.3); }
   .links { display: flex; gap: 14px; font: 15px var(--type); }
@@ -137,7 +146,7 @@
   .quick .qhead { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 0; background: var(--paper); border-bottom: 2px dashed rgba(30,26,20,.3); }
   .quick .qhead h2 { margin: 0; font: 400 18px var(--type); }
   .quick .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
-  .quick .cases { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .quick .cases { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
   .qhero { margin-top: 24px; grid-template-columns: 120px 1fr; }
   .qhero img { width: 120px; height: 140px; }
   .qhero h1 { margin: 0; font: 400 30px/1.15 var(--type); }
@@ -148,7 +157,7 @@
     .top { padding: 12px 14px 26px; flex-direction: column; }
     .brand h1 { font-size: 19px; }
     .actions { justify-content: flex-start; }
-    .actions .btn { padding: 7px 11px; font-size: 13px; }
+    .actions .btn { padding: 7px 9px; font-size: 12.5px; }
     .hint { display: none; }
     .hs { font-size: 11.5px; }
     .hs b { width: 17px; height: 17px; font-size: 11px; }
@@ -156,6 +165,9 @@
     .dock button { border: 0; background: transparent; padding: 6px 2px; font: 12px var(--type); color: #e9dfc6; cursor: pointer; }
     .dock button span { display: block; font-size: 17px; line-height: 1.15; }
     .dock button.on { background: var(--tape); color: #111; }
+    .dock button.star { background: #ffd23f; color: #111; font-weight: 600; }
+    .btn.cases { font-size: 13.5px; padding: 7px 12px; }
+    .actions { gap: 6px; flex-wrap: nowrap; }
     .panel { top: auto; height: 74vh; width: 100%; transform: translateY(105%); box-shadow: 0 -18px 40px rgba(0,0,0,.6); }
     .panel header h2 { font-size: 22px; }
     .quick .cols, .quick .cases { grid-template-columns: 1fr; }
@@ -165,7 +177,7 @@
     .mug { grid-template-columns: 88px 1fr; }
     .mug img { width: 88px; height: 104px; }
   }
-  @media (prefers-reduced-motion: reduce) { .panel, .hs { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .panel, .hs { transition: none; } .hs.star { animation: none; } }
 </style>
 </head>
 <body>
@@ -179,7 +191,8 @@
     <p>Software Developer · currently at Sentra Vidya Utama</p>
   </div>
   <nav class="actions" aria-label="Quick links">
-    <button class="btn primary" id="quickBtn" type="button">Read the full dossier</button>
+    <button class="btn cases" id="casesBtn" type="button">🗂 View cases</button>
+    <button class="btn" id="quickBtn" type="button">Full dossier</button>
     <a class="btn" id="cvBtn" target="_blank" rel="noopener">CV ↓</a>
     <a class="btn" id="mailBtn">Email</a>
   </nav>
@@ -230,20 +243,23 @@ $('#cvBtn').href = D.cv;
 $('#mailBtn').href = 'mailto:' + D.email;
 
 /* ---------- section renderers (panel + full dossier) ---------- */
+const caseLinks = (p) => (p.website || p.github)
+  ? `${p.website ? `<a class="pbtn" href="${p.website}" target="_blank" rel="noopener">Live site ↗</a>` : ''}${p.github ? `<a class="pbtn ghost" href="${p.github}" target="_blank" rel="noopener">GitHub ↗</a>` : ''}`
+  : '<span class="private">Private project — no public link</span>';
 const caseCard = (p, i) => `
-  <article class="case" data-no="CASE ${caseNo(i)}">
+  <article class="case" id="case-${i}" data-no="CASE ${caseNo(i)}">
     <span class="stamp">CLOSED</span>
+    <img class="shot" src="${p.thumb}" alt="Screenshot of ${esc(p.title)}">
     <h3>${esc(p.title)}</h3>
-    <img src="${p.thumb}" alt="Screenshot of ${esc(p.title)}">
-    <p>${esc(p.description)}</p>
     <div class="tags">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-    <div class="links">${p.website ? `<a href="${p.website}" target="_blank" rel="noopener">Visit the scene ↗</a>` : ''}${p.github ? `<a href="${p.github}" target="_blank" rel="noopener">Read the code ↗</a>` : ''}${!p.website && !p.github ? '<span style="color:var(--muted)">Classified — private project</span>' : ''}</div>
+    <p>${esc(p.description)}</p>
+    <div class="row">${caseLinks(p)}</div>
   </article>`;
 const pendingCard = (p, i) => `
-  <article class="case pending" data-no="CASE ${caseNo(D.projects.length + i)}">
+  <article class="case pending" id="case-${D.projects.length + i}" data-no="CASE ${caseNo(D.projects.length + i)}">
     <span class="stamp grey">FILE PENDING</span>
+    <img class="shot" src="${p.thumb}" alt="Screenshot of ${esc(p.title)}">
     <h3>${esc(p.title)}</h3>
-    <img src="${p.thumb}" alt="Screenshot of ${esc(p.title)}">
     <p style="color:var(--muted)">Case notes not filed yet.</p>
   </article>`;
 
@@ -254,7 +270,7 @@ const R = {
     <div class="sec">Statement</div>
     <p class="lead">${esc(D.about)}</p>
     <div class="nums"><div><b>400+</b><span>universities served</span></div><div><b>2</b><span>ministries' systems</span></div><div><b>~80%</b><span>on-time delivery</span></div></div>`,
-  cases: () => `${D.projects.map(caseCard).join('')}${(D.pending || []).map(pendingCard).join('')}`,
+  cases: () => `<p class="lead" style="margin:0 0 4px">${D.projects.length} closed cases with screenshots and links, ${(D.pending || []).length} files still pending.</p>${D.projects.map(caseCard).join('')}${(D.pending || []).map(pendingCard).join('')}`,
   board: () => `<div class="tl">${D.experience.map((e) => `
     <div class="ev"><h3>${esc(e.role)}${e.latest ? ' <span class="stamp" style="font-size:11px;margin-left:6px">ACTIVE</span>' : ''}</h3>
       <div class="meta">${esc(e.company)} · ${fmt(e.start)} – ${fmt(e.end)}</div>
@@ -287,7 +303,7 @@ const R = {
 };
 
 const SECTIONS = [
-  { id: 'cases', no: 1, label: 'Case files', icon: '🗂', kicker: 'Manila folders · projects', title: 'Case files' },
+  { id: 'cases', no: 1, label: 'Case files · projects', short: 'Cases', icon: '🗂', kicker: 'The case wall · projects', title: 'Case files' },
   { id: 'board', no: 2, label: 'Timeline', icon: '📌', kicker: 'Evidence board · experience', title: 'The career timeline' },
   { id: 'evidence', no: 3, label: 'Evidence', icon: '🔎', kicker: 'Evidence bags · skills', title: 'Evidence log' },
   { id: 'about', no: 4, label: 'Subject', icon: '⌨', kicker: 'Typewriter · statement', title: 'Subject profile' },
@@ -300,18 +316,20 @@ const SECTIONS = [
 /* ---------- panel ---------- */
 const panel = $('#panel');
 let current = null;
-function openSection(id) {
+function openSection(id, focusCase = -1) {
   const s = SECTIONS.find((x) => x.id === id);
   if (!s) return;
   current = id;
+  panel.classList.toggle('wide', id === 'cases');
   $('#pKicker').textContent = s.kicker;
   $('#pTitle').textContent = s.title;
   $('#pBody').innerHTML = R[id]();
   $('#pBody').scrollTop = 0;
+  if (focusCase >= 0) requestAnimationFrame(() => { const el = document.getElementById('case-' + focusCase); if (el) { $('#pBody').scrollTop = el.offsetTop - 70; el.classList.add('focus'); } });
   panel.classList.add('open');
   panel.setAttribute('aria-hidden', 'false');
   document.querySelectorAll('[data-sec]').forEach((b) => b.classList.toggle('on', b.dataset.sec === id));
-  focusObject(id);
+  focusObject(id, focusCase);
 }
 function closePanel() {
   current = null;
@@ -329,19 +347,20 @@ $('#quickBody').innerHTML = `
   <div class="mug qhero"><img src="${D.photo}" alt="">
     <div><h1>${esc(D.name)}</h1><p style="margin:4px 0 8px">Software Developer · ${esc(D.location)}</p>
     <div class="row"><a class="pbtn" href="mailto:${D.email}">✉ ${D.email}</a><a class="pbtn ghost" href="${D.cv}" target="_blank" rel="noopener">CV (PDF)</a><a class="pbtn ghost" href="${D.socials[0].url}" target="_blank" rel="noopener">GitHub</a><a class="pbtn ghost" href="${D.socials[1].url}" target="_blank" rel="noopener">LinkedIn</a></div></div></div>
-  <p class="lead">${esc(D.about)}</p>
+  <div class="sec">Case files (projects)</div><div class="cases">${D.projects.map(caseCard).join('')}${(D.pending || []).map(pendingCard).join('')}</div>
+  <div class="sec">About</div><p class="lead">${esc(D.about)}</p>
   <div class="sec">Experience</div>${R.board()}
-  <div class="sec">Case files (projects)</div><div class="cases">${R.cases()}</div>
   <div class="cols"><div><div class="sec">Skills</div>${R.evidence()}</div><div><div class="sec">Education</div>${R.record()}</div></div>
   <div class="sec">Certificates</div>${R.wall()}`;
 function openQuick() { quick.classList.add('open'); quick.scrollTop = 0; $('#quickClose').focus(); }
 function closeQuick() { quick.classList.remove('open'); }
 $('#quickBtn').onclick = openQuick;
+$('#casesBtn').onclick = () => { closeQuick(); openSection('cases'); };
 $('#quickClose').onclick = closeQuick;
 document.addEventListener('click', (e) => { if (e.target.closest('[data-quick]')) openQuick(); });
 
 /* ---------- mobile dock ---------- */
-$('#dock').innerHTML = SECTIONS.map((s) => `<button type="button" data-sec="${s.id}"><span aria-hidden="true">${s.icon}</span>${s.label === 'Commendations' ? 'Certs' : s.label}</button>`).join('');
+$('#dock').innerHTML = SECTIONS.map((s) => `<button type="button" data-sec="${s.id}"${s.id === 'cases' ? ' class="star"' : ''}><span aria-hidden="true">${s.icon}</span>${s.short || (s.label === 'Commendations' ? 'Certs' : s.label)}</button>`).join('');
 $('#dock').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) openSection(b.dataset.sec); });
 
 /* ---------- renderer (falls back to the dossier without WebGL) ---------- */
@@ -542,7 +561,7 @@ const sheetTex = canvasTex(400, 520, (g, W, H) => {
 });
 const sheet = plane(0.34, 0.44, mat('#fff', { map: sheetTex, roughness: 0.9, side: THREE.DoubleSide }));
 sheet.rotation.x = -0.25; at(sheet, 0.05, TOP + 0.42, -1.95, typewriter);
-register('about', typewriter, new THREE.Vector3(0.0, TOP + 0.82, -1.95), { pos: new THREE.Vector3(0.35, 1.75, -0.25), target: new THREE.Vector3(0.05, TOP + 0.25, -1.8) });
+register('about', typewriter, new THREE.Vector3(0.0, TOP + 0.6, -1.95), { pos: new THREE.Vector3(0.35, 1.75, -0.25), target: new THREE.Vector3(0.05, TOP + 0.25, -1.8) });
 
 // rotary telephone (contact)
 const phone = new THREE.Group(); scene.add(phone);
@@ -556,8 +575,8 @@ handset.rotation.z = Math.PI / 2; at(handset, 1.15, TOP + 0.15, -2.0, phone);
 for (const s of [-1, 1]) at(new THREE.Mesh(new THREE.SphereGeometry(0.055, 14, 10), bake), 1.15 + s * 0.15, TOP + 0.15, -2.0, phone);
 register('phone', phone, new THREE.Vector3(1.25, TOP + 0.5, -2.0), { pos: new THREE.Vector3(1.7, 1.7, -0.75), target: new THREE.Vector3(1.15, TOP + 0.08, -1.95) });
 
-// case files (projects) — stack of manila folders
-const cases = new THREE.Group(); scene.add(cases);
+// case folders on the desk — a second way into the projects
+const deskCases = new THREE.Group(); scene.add(deskCases);
 const folderTex = (title, no, pending) => canvasTex(512, 380, (g, W, H) => {
   g.fillStyle = pending ? '#c9bb98' : '#d6b878'; g.fillRect(0, 0, W, H);
   g.fillStyle = 'rgba(0,0,0,.06)'; for (let i = 0; i < 300; i++) g.fillRect(Math.random() * W, Math.random() * H, 3, 3);
@@ -566,14 +585,16 @@ const folderTex = (title, no, pending) => canvasTex(512, 380, (g, W, H) => {
   g.font = '34px ' + TYPE; g.fillStyle = '#1e1a14'; const t = title.length > 22 ? title.slice(0, 21) + '…' : title; g.fillText(t.toUpperCase(), 30, 160);
   g.save(); g.translate(W - 150, H - 90); g.rotate(-0.18); g.strokeStyle = pending ? '#666' : '#b3261e'; g.fillStyle = g.strokeStyle; g.lineWidth = 5; g.strokeRect(-110, -36, 220, 64); g.font = '34px ' + TYPE; g.textAlign = 'center'; g.fillText(pending ? 'PENDING' : 'CLOSED', 0, 10); g.restore();
 });
-const allCases = [...D.projects.map((p, i) => ({ t: p.title, no: caseNo(i), pending: false })), ...(D.pending || []).map((p, i) => ({ t: p.title, no: caseNo(D.projects.length + i), pending: true }))];
-allCases.slice().reverse().forEach((c, k, arr) => {
+const ALL_CASES = [
+  ...D.projects.map((p, i) => ({ ...p, no: caseNo(i), pending: false })),
+  ...(D.pending || []).map((p, i) => ({ ...p, tags: [], no: caseNo(D.projects.length + i), pending: true })),
+];
+ALL_CASES.slice().reverse().forEach((c, k, arr) => {
   const top = k === arr.length - 1;
-  const f = box(0.46, 0.012, 0.34, top ? mat('#fff', { map: folderTex(c.t, c.no, c.pending), roughness: 0.85 }) : mat(c.pending ? '#c9bb98' : '#d6b878', { roughness: 0.85 }));
+  const f = box(0.46, 0.012, 0.34, top ? mat('#fff', { map: folderTex(c.title, c.no, c.pending), roughness: 0.85 }) : mat(c.pending ? '#c9bb98' : '#d6b878', { roughness: 0.85 }));
   f.rotation.y = 0.35 + Math.sin(k * 1.7) * 0.12;
-  at(f, 0.62 + Math.sin(k) * 0.02, TOP + 0.008 + k * 0.014, -1.25 + Math.cos(k * 2) * 0.015, cases);
+  at(f, 0.62 + Math.sin(k) * 0.02, TOP + 0.008 + k * 0.014, -1.25 + Math.cos(k * 2) * 0.015, deskCases);
 });
-register('cases', cases, new THREE.Vector3(0.62, TOP + 0.2, -1.2), { pos: new THREE.Vector3(1.35, 2.05, 0.25), target: new THREE.Vector3(0.55, TOP, -1.4) });
 
 // dossier (cv) — black folder with a red TOP SECRET band
 const dossier = new THREE.Group(); scene.add(dossier);
@@ -596,15 +617,92 @@ at(new THREE.Mesh(new THREE.CircleGeometry(0.068, 28), new THREE.MeshStandardMat
 at(cyl(0.012, 0.014, 0.14, mat('#2a1a0e'), 8), 0.13, 0, 0.04, magnifier).rotation.set(Math.PI / 2, 0, 1.2);
 magnifier.position.set(0.15, TOP + 0.015, -1.15); magnifier.rotation.y = 0.4;
 
-// chair behind the desk
+// chair behind the desk — low back so it never hides the case wall
 const leather = mat('#3a1712', { roughness: 0.55 });
 const chair = new THREE.Group(); scene.add(chair);
 at(box(0.62, 0.1, 0.56, leather, 0.04), 0.1, 0.55, -2.65, chair);
-at(box(0.66, 0.95, 0.12, leather, 0.05), 0.1, 1.05, -2.95, chair);
+at(box(0.66, 0.55, 0.12, leather, 0.05), 0.1, 0.86, -2.95, chair);
 at(cyl(0.035, 0.035, 0.5, mat('#111'), 10), 0.1, 0.27, -2.65, chair);
 
-/* ---------- evidence board (experience) ---------- */
-const BOARD = { x: -1.25, y: 2.3, z: -3.56, w: 2.6, h: 1.55 };
+/* ---------- THE CASE WALL (projects) — the first thing the eye lands on ---------- */
+const CW = { x: -0.3, y: 2.38, z: -3.56, w: 4.4, h: 2.1 };
+const CPX = 500; // canvas px per world unit
+const caseCanvas = document.createElement('canvas'); caseCanvas.width = CW.w * CPX; caseCanvas.height = CW.h * CPX;
+const caseTex = new THREE.CanvasTexture(caseCanvas); caseTex.colorSpace = THREE.SRGBColorSpace; caseTex.anisotropy = 8;
+const CARD = { w: 470, h: 440, cols: 4 };
+const gapX = (caseCanvas.width - CARD.cols * CARD.w) / (CARD.cols + 1);
+const gapY = (caseCanvas.height - 2 * CARD.h) / 3;
+const cardRect = (i) => ({ x: gapX + (i % CARD.cols) * (CARD.w + gapX), y: gapY + Math.floor(i / CARD.cols) * (CARD.h + gapY), w: CARD.w, h: CARD.h });
+const caseImgs = [];
+function drawCaseWall() {
+  const g = caseCanvas.getContext('2d'); const W = caseCanvas.width, H = caseCanvas.height;
+  g.fillStyle = '#2a2420'; g.fillRect(0, 0, W, H);
+  for (let i = 0; i < 7000; i++) { g.fillStyle = `rgba(${90 + Math.random() * 60},${70 + Math.random() * 40},50,${Math.random() * 0.18})`; g.fillRect(Math.random() * W, Math.random() * H, 3, 3); }
+  ALL_CASES.forEach((c, i) => {
+    const r = cardRect(i); const rot = [-0.022, 0.016, -0.01, 0.024, 0.014, -0.02, 0.01, -0.016][i % 8];
+    g.save(); g.translate(r.x + r.w / 2, r.y + r.h / 2); g.rotate(rot);
+    g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 22; g.shadowOffsetY = 10;
+    g.fillStyle = c.pending ? '#c9c3b5' : '#e6dfcf'; g.fillRect(-r.w / 2, -r.h / 2, r.w, r.h);
+    g.shadowColor = 'transparent';
+    // screenshot, cropped from the top like a photo print
+    const im = caseImgs[i]; const ix = -r.w / 2 + 18, iy = -r.h / 2 + 18, iw = r.w - 36, ih = 270;
+    g.fillStyle = '#111'; g.fillRect(ix, iy, iw, ih);
+    if (im) {
+      const sh = Math.min(im.naturalHeight, im.naturalWidth * ih / iw);
+      g.filter = c.pending ? 'grayscale(1) brightness(.8) contrast(.9)' : 'none';
+      g.drawImage(im, 0, 0, im.naturalWidth, sh, ix, iy, iw, ih);
+      g.filter = 'none';
+    }
+    g.textAlign = 'left';
+    g.fillStyle = '#b3261e'; g.font = '26px ' + TYPE; g.fillText('CASE ' + c.no, ix, iy + ih + 42);
+    g.fillStyle = '#1b1b1b'; g.font = '34px ' + TYPE; g.fillText(c.title.length > 23 ? c.title.slice(0, 22) + '…' : c.title, ix, iy + ih + 84);
+    g.fillStyle = '#5a5244'; g.font = '600 21px "IBM Plex Mono", monospace';
+    const tags = c.pending ? 'case notes not filed yet' : c.tags.join(' · '); g.fillText(tags.length > 34 ? tags.slice(0, 33) + '…' : tags, ix, iy + ih + 120);
+    // stamp across the photo corner
+    g.save(); g.translate(ix + iw - 110, iy + 56); g.rotate(-0.22);
+    g.strokeStyle = g.fillStyle = c.pending ? '#5f5f5f' : '#c4161c'; g.lineWidth = 6; g.globalAlpha = 0.92;
+    const label = c.pending ? 'FILE PENDING' : 'CLOSED'; g.font = '34px ' + TYPE; const tw = g.measureText(label).width + 30;
+    g.fillStyle = 'rgba(255,255,255,.75)'; g.fillRect(-tw / 2, -30, tw, 52); g.strokeRect(-tw / 2, -30, tw, 52);
+    g.fillStyle = g.strokeStyle; g.textAlign = 'center'; g.fillText(label, 0, 9); g.restore();
+    // tape
+    g.fillStyle = 'rgba(232,220,180,.75)'; g.save(); g.translate(0, -r.h / 2 + 2); g.rotate(-0.04); g.fillRect(-60, -16, 120, 30); g.restore();
+    g.restore();
+  });
+  caseTex.needsUpdate = true;
+}
+drawCaseWall();
+Promise.all(ALL_CASES.map((c) => loadImg(c.thumb))).then((ims) => { ims.forEach((im, i) => { caseImgs[i] = im; }); drawCaseWall(); });
+const caseWall = new THREE.Group(); scene.add(caseWall);
+at(box(CW.w + 0.16, CW.h + 0.16, 0.06, mat('#1a120a', { roughness: 0.5 })), CW.x, CW.y, CW.z - 0.02, caseWall).castShadow = false;
+// a little self-light so the photos read even in the dark room
+const caseFace = at(plane(CW.w, CW.h, mat('#fff', { map: caseTex, emissiveMap: caseTex, emissive: '#ffffff', emissiveIntensity: 0.07, roughness: 0.85 })), CW.x, CW.y, CW.z + 0.015, caseWall);
+const cwWorld = (px, py) => new THREE.Vector3(CW.x - CW.w / 2 + px / CPX, CW.y + CW.h / 2 - py / CPX, CW.z + 0.04);
+ALL_CASES.forEach((_, i) => { const r = cardRect(i); const pin = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 8), mat('#c1121f', { roughness: 0.3 })); pin.position.copy(cwWorld(r.x + r.w / 2, r.y + 4)); pin.castShadow = true; caseWall.add(pin); });
+// red neon over the wall
+const neonTex = canvasTex(1024, 220, (g, W, H) => {
+  g.font = '128px ' + TYPE; g.textAlign = 'center'; g.textBaseline = 'middle';
+  for (const [blur, a] of [[40, 0.9], [20, 1], [8, 1]]) { g.shadowColor = `rgba(255,40,40,${a})`; g.shadowBlur = blur; g.fillStyle = '#ff5a52'; g.fillText('CASE FILES', W / 2, H / 2 + 6); }
+  g.shadowBlur = 0; g.fillStyle = '#ffe1dc'; g.fillText('CASE FILES', W / 2, H / 2 + 6);
+});
+at(plane(2.3, 0.5, new THREE.MeshBasicMaterial({ map: neonTex, transparent: true, toneMapped: false, depthWrite: false })), CW.x, CW.y + CW.h / 2 + 0.33, CW.z + 0.05, caseWall);
+const neonGlow = new THREE.PointLight('#ff3030', 5, 4.5, 1.6); at(neonGlow, CW.x, CW.y + CW.h / 2 + 0.3, CW.z + 0.5);
+// two picture lights wash the photos
+for (const dx of [-1.2, 1.2]) {
+  const pl = new THREE.SpotLight('#ffe3b8', 11, 6, 0.75, 0.6, 1.2);
+  pl.position.set(CW.x + dx, 3.95, CW.z + 1.3); pl.target.position.set(CW.x + dx * 0.9, CW.y - 0.2, CW.z);
+  scene.add(pl, pl.target);
+}
+register('cases', caseWall, cwWorld(CPX * 0.55, -4), { pos: new THREE.Vector3(CW.x + 0.5, CW.y + 0.15, CW.z + 4.9), target: new THREE.Vector3(CW.x, CW.y, CW.z) });
+// the desk folders open the same file
+deskCases.traverse((m) => { if (m.isMesh) m.userData.section = 'cases'; });
+// which case photo is under a wall hit (uv on the wall plane) → case index
+function caseAtUv(uv) {
+  const px = uv.x * caseCanvas.width, py = (1 - uv.y) * caseCanvas.height;
+  return ALL_CASES.findIndex((_, i) => { const r = cardRect(i); return px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h; });
+}
+
+/* ---------- evidence board (experience) — left wall ---------- */
+const BOARD = { x: 0, y: 0, z: 0, w: 2.6, h: 1.55 }; // built flat, then hung on the wall
 const PX = 600; // canvas px per world unit
 const boardCanvas = document.createElement('canvas'); boardCanvas.width = BOARD.w * PX; boardCanvas.height = BOARD.h * PX;
 const boardTex = new THREE.CanvasTexture(boardCanvas); boardTex.colorSpace = THREE.SRGBColorSpace; boardTex.anisotropy = 8;
@@ -662,7 +760,7 @@ drawBoard(null);
 loadImg(D.photo).then((im) => document.fonts.ready.then(() => drawBoard(im)));
 const board = new THREE.Group(); scene.add(board);
 at(box(BOARD.w + 0.14, BOARD.h + 0.14, 0.05, mat('#24160b')), BOARD.x, BOARD.y, BOARD.z - 0.02, board).castShadow = false;
-const boardFace = at(plane(BOARD.w, BOARD.h, mat('#fff', { map: boardTex, roughness: 0.95 })), BOARD.x, BOARD.y, BOARD.z + 0.01, board);
+at(plane(BOARD.w, BOARD.h, mat('#fff', { map: boardTex, roughness: 0.95 })), BOARD.x, BOARD.y, BOARD.z + 0.01, board);
 // pins + red string in 3D
 const toWorld = (px, py) => new THREE.Vector3(BOARD.x - BOARD.w / 2 + px / PX, BOARD.y + BOARD.h / 2 - py / PX, BOARD.z + 0.035);
 const pinM = mat('#c1121f', { roughness: 0.3 });
@@ -676,34 +774,35 @@ function string(a, b) {
 }
 for (let i = 0; i < 3; i++) string(pins[i], pins[i + 1]);
 string(pins[4], pins[3]); string(pins[4], pins[0]); string(pins[3], pins[5]);
-register('board', board, new THREE.Vector3(BOARD.x, BOARD.y + BOARD.h / 2 + 0.12, BOARD.z), { pos: new THREE.Vector3(-1.1, 2.25, -0.6), target: new THREE.Vector3(BOARD.x, BOARD.y, BOARD.z) });
+const BW = { x: -3.56, y: 2.3, z: -2.3, s: 0.8 };
+board.position.set(BW.x, BW.y, BW.z); board.rotation.y = Math.PI / 2; board.scale.setScalar(BW.s);
+register('board', board, new THREE.Vector3(BW.x + 0.05, BW.y + 0.72, BW.z), { pos: new THREE.Vector3(0.4, 2.3, -2.1), target: new THREE.Vector3(BW.x, BW.y, BW.z) });
 
-/* ---------- commendations wall (certificates) ---------- */
+/* ---------- commendations (certificates) — right of the case wall ---------- */
 const wallG = new THREE.Group(); scene.add(wallG);
 const frameWood = mat('#2c1b0e', { roughness: 0.5 });
-const certs = D.certificates.slice(0, 8);
-certs.forEach((c, i) => {
-  const col = i % 4, row = Math.floor(i / 4);
-  const x = 1.05 + col * 0.52, y = 2.65 - row * 0.5, z = -3.58;
-  at(box(0.44, 0.36, 0.035, frameWood), x, y, z, wallG).castShadow = false;
-  const art = plane(0.36, 0.28, mat('#fff', { map: imgTex(c.thumb), roughness: 0.4 }));
-  at(art, x, y, z + 0.02, wallG);
+D.certificates.slice(0, 6).forEach((c, i) => {
+  const x = 2.4 + (i % 2) * 0.62, y = 2.95 - Math.floor(i / 2) * 0.48, z = -3.58;
+  at(box(0.52, 0.4, 0.035, frameWood), x, y, z, wallG).castShadow = false;
+  at(plane(0.44, 0.32, mat('#fff', { map: imgTex(c.thumb), roughness: 0.4 })), x, y, z + 0.02, wallG);
 });
+at(plane(1.42, 1.62, mat('#1d2620', { roughness: 0.95 })), 2.71, 2.5, -3.597, wallG); // felt backing: the whole area is clickable
 const plaqueTex = canvasTex(512, 96, (g, W, H) => { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#e8c46a'); gr.addColorStop(1, '#9c7428'); g.fillStyle = gr; g.fillRect(0, 0, W, H); g.fillStyle = '#2b1a08'; g.font = '40px ' + TYPE; g.textAlign = 'center'; g.fillText(`COMMENDATIONS · ${D.certificates.length}`, W / 2, 62); });
-at(plane(0.9, 0.17, mat('#fff', { map: plaqueTex, metalness: 0.6, roughness: 0.35 })), 1.83, 3.1, -3.57, wallG);
-register('wall', wallG, new THREE.Vector3(1.83, 3.3, -3.55), { pos: new THREE.Vector3(1.75, 2.35, -0.9), target: new THREE.Vector3(1.83, 2.4, -3.58) });
+at(plane(0.9, 0.17, mat('#fff', { map: plaqueTex, metalness: 0.6, roughness: 0.35 })), 2.71, 3.38, -3.57, wallG);
+register('wall', wallG, new THREE.Vector3(2.71, 3.55, -3.55), { pos: new THREE.Vector3(2.2, 2.45, -0.9), target: new THREE.Vector3(2.71, 2.5, -3.58) });
 
-/* ---------- filing cabinet + evidence box (skills) ---------- */
+/* ---------- filing cabinet + evidence box (skills) — back-right corner ---------- */
 const cabinet = new THREE.Group(); scene.add(cabinet);
 const steel = mat('#4c5550', { roughness: 0.45, metalness: 0.4 });
-at(box(0.62, 1.32, 0.66, steel, 0.02), -3.15, 0.66, -2.9, cabinet);
+const CB = { x: 3.1, z: -3.05 };
+at(box(0.62, 1.32, 0.66, steel, 0.02), CB.x, 0.66, CB.z, cabinet);
 for (let k = 0; k < 3; k++) {
-  at(box(0.56, 0.38, 0.02, mat('#56605a', { roughness: 0.4, metalness: 0.4 })), -3.15, 1.1 - k * 0.42, -2.56, cabinet);
-  at(box(0.16, 0.03, 0.04, brass), -3.15, 1.12 - k * 0.42, -2.54, cabinet);
+  at(box(0.56, 0.38, 0.02, mat('#56605a', { roughness: 0.4, metalness: 0.4 })), CB.x, 1.1 - k * 0.42, CB.z + 0.34, cabinet);
+  at(box(0.16, 0.03, 0.04, brass), CB.x, 1.12 - k * 0.42, CB.z + 0.36, cabinet);
 }
 const evidence = new THREE.Group(); scene.add(evidence);
 const cardboard = mat('#a07a4a', { roughness: 0.95 });
-const EB = { x: -3.15, y: 1.32, z: -2.9 };
+const EB = { x: CB.x, y: 1.32, z: CB.z };
 at(box(0.56, 0.02, 0.5, cardboard), EB.x, EB.y + 0.01, EB.z, evidence);
 at(box(0.56, 0.22, 0.02, cardboard), EB.x, EB.y + 0.12, EB.z - 0.24, evidence);
 const boxFront = canvasTex(512, 200, (g, W, H) => { g.fillStyle = '#a07a4a'; g.fillRect(0, 0, W, H); g.fillStyle = '#1b1b1b'; g.font = '64px ' + TYPE; g.textAlign = 'center'; g.fillText('EVIDENCE', W / 2, 100); g.font = '30px ' + TYPE; g.fillText('SKILLS · DO NOT REMOVE', W / 2, 160); });
@@ -716,31 +815,31 @@ groups.forEach((g0, i) => {
   bag.rotation.x = -0.25 - i * 0.05;
   at(bag, EB.x - 0.17 + (i % 3) * 0.17, EB.y + 0.2 + Math.floor(i / 3) * 0.02, EB.z - 0.12 + Math.floor(i / 3) * 0.16, evidence);
 });
-register('evidence', evidence, new THREE.Vector3(EB.x + 0.05, EB.y + 0.55, EB.z + 0.1), { pos: new THREE.Vector3(-1.6, 2.3, -0.9), target: new THREE.Vector3(EB.x, EB.y + 0.15, EB.z) });
+register('evidence', evidence, new THREE.Vector3(EB.x - 0.05, EB.y + 0.5, EB.z + 0.1), { pos: new THREE.Vector3(1.7, 2.2, -0.9), target: new THREE.Vector3(EB.x, EB.y + 0.15, EB.z) });
 
-/* ---------- diploma + medal (education & awards) on the left wall ---------- */
+/* ---------- diploma + medal (education & awards) — back wall, left corner ---------- */
 const record = new THREE.Group(); scene.add(record);
+const DW = { x: -3.1, y: 2.45, z: -3.57 }; // back wall, left of the case wall
 const diplomaTex = canvasTex(512, 380, (g, W, H) => {
   g.fillStyle = '#f1e7cf'; g.fillRect(0, 0, W, H); g.strokeStyle = '#8a6c33'; g.lineWidth = 6; g.strokeRect(16, 16, W - 32, H - 32);
   g.fillStyle = '#2b1a08'; g.textAlign = 'center'; g.font = '30px ' + TYPE; g.fillText('UNIVERSITAS TRUNOJOYO MADURA', W / 2, 80);
   g.font = '24px ' + TYPE; g.fillText('S1 TEKNIK INFORMATIKA', W / 2, 140); g.font = 'italic 34px Georgia, serif'; g.fillText('M. Fahmi Ady Susilo', W / 2, 210);
   g.fillStyle = '#b3261e'; g.beginPath(); g.arc(W - 90, H - 80, 36, 0, 7); g.fill();
 });
-at(box(0.05, 0.62, 0.8, frameWood), -3.57, 2.3, -2.25, record).castShadow = false;
-const dip = plane(0.72, 0.53, mat('#fff', { map: diplomaTex, roughness: 0.8 })); dip.rotation.y = Math.PI / 2; at(dip, -3.54, 2.3, -2.25, record);
-at(box(0.02, 0.22, 0.04, mat('#1d4ed8')), -3.54, 1.82, -2.25, record);
-const medal = at(cyl(0.06, 0.06, 0.015, mat('#d4a640', { metalness: 0.9, roughness: 0.25 }), 24), -3.53, 1.68, -2.25, record); medal.rotation.z = Math.PI / 2;
-register('record', record, new THREE.Vector3(-3.5, 2.75, -2.25), { pos: new THREE.Vector3(-1.2, 2.2, -1.4), target: new THREE.Vector3(-3.55, 2.15, -2.25) });
+at(box(0.8, 0.62, 0.05, frameWood), DW.x, DW.y, DW.z, record).castShadow = false;
+at(plane(0.72, 0.53, mat('#fff', { map: diplomaTex, roughness: 0.8 })), DW.x, DW.y, DW.z + 0.03, record);
+at(box(0.04, 0.22, 0.02, mat('#1d4ed8')), DW.x, DW.y - 0.48, DW.z + 0.03, record);
+const medal = at(cyl(0.06, 0.06, 0.015, mat('#d4a640', { metalness: 0.9, roughness: 0.25 }), 24), DW.x, DW.y - 0.62, DW.z + 0.04, record); medal.rotation.x = Math.PI / 2;
+register('record', record, new THREE.Vector3(DW.x, DW.y + 0.42, DW.z), { pos: new THREE.Vector3(-2.4, 2.3, -0.9), target: new THREE.Vector3(DW.x, DW.y - 0.1, DW.z) });
 
-/* ---------- coat rack with trench coat + fedora ---------- */
+/* ---------- coat rack with trench coat + fedora — front-left corner ---------- */
 const rack = new THREE.Group(); scene.add(rack);
-const RK = { x: 2.85, z: -2.6 };
+const RK = { x: -3.05, z: 2.75 };
 at(cyl(0.025, 0.03, 1.9, mat('#2a1a0e'), 10), RK.x, 0.95, RK.z, rack);
 at(cyl(0.2, 0.24, 0.04, mat('#2a1a0e'), 16), RK.x, 0.02, RK.z, rack);
 const coatM = mat('#5e4a30', { roughness: 0.95 });
-at(box(0.42, 0.95, 0.2, coatM, 0.08), RK.x, 1.2, RK.z + 0.12, rack);
-at(box(0.5, 0.18, 0.24, coatM, 0.08), RK.x, 1.66, RK.z + 0.1, rack);
-at(box(0.06, 0.8, 0.05, mat('#3f311f')), RK.x, 1.22, RK.z + 0.23, rack);
+at(box(0.2, 0.95, 0.42, coatM, 0.08), RK.x + 0.12, 1.2, RK.z, rack);
+at(box(0.24, 0.18, 0.5, coatM, 0.08), RK.x + 0.1, 1.66, RK.z, rack);
 const felt = mat('#2d2a26', { roughness: 0.85 });
 at(cyl(0.2, 0.2, 0.015, felt, 32), RK.x, 1.92, RK.z, rack);
 at(cyl(0.11, 0.13, 0.13, felt, 24), RK.x, 1.99, RK.z, rack);
@@ -772,7 +871,7 @@ scene.add(dust);
 const hsWrap = $('#hotspots');
 const hsList = SECTIONS.filter((s) => objects[s.id]).map((s) => {
   const b = document.createElement('button');
-  b.type = 'button'; b.className = 'hs'; b.dataset.sec = s.id;
+  b.type = 'button'; b.className = s.id === 'cases' ? 'hs star' : 'hs'; b.dataset.sec = s.id;
   b.innerHTML = `<b>${s.no}</b>${esc(s.label)}`;
   b.setAttribute('aria-label', `Open ${s.title}`);
   b.onclick = () => openSection(s.id);
@@ -795,13 +894,15 @@ function placeHotspots() {
 /* ---------- picking ---------- */
 const ray = new THREE.Raycaster(); const ptr = new THREE.Vector2();
 let hovered = null, downAt = null;
-const pickables = Object.values(objects).map((o) => o.group);
+const pickables = [...Object.values(objects).map((o) => o.group), deskCases];
 function pick(e) {
   const r = renderer.domElement.getBoundingClientRect();
   ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(ptr, camera);
   const hit = ray.intersectObjects(pickables, true)[0];
-  return hit ? hit.object.userData.section : null;
+  if (!hit) return null;
+  pick.caseIndex = hit.object === caseFace && hit.uv ? caseAtUv(hit.uv) : -1;
+  return hit.object.userData.section;
 }
 function setHover(id) {
   if (hovered === id) return;
@@ -809,7 +910,7 @@ function setHover(id) {
   hovered = id;
   renderer.domElement.style.cursor = id ? 'pointer' : 'grab';
   if (id) objects[id].group.traverse((m) => {
-    if (!m.isMesh || Array.isArray(m.material) || !m.material.emissive) return;
+    if (!m.isMesh || m === caseFace || Array.isArray(m.material) || !m.material.emissive) return;
     m.userData.baseMat = m.material; m.material = m.material.clone(); m.material.emissive = new THREE.Color('#5a3a10'); m.material.emissiveIntensity = 0.6;
   });
 }
@@ -817,12 +918,12 @@ renderer.domElement.addEventListener('pointermove', (e) => { if (e.pointerType =
 renderer.domElement.addEventListener('pointerdown', (e) => { downAt = [e.clientX, e.clientY]; });
 renderer.domElement.addEventListener('pointerup', (e) => {
   if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return;
-  const id = pick(e); if (id) openSection(id);
+  const id = pick(e); if (id) openSection(id, id === 'cases' ? pick.caseIndex : -1);
 });
 
 /* ---------- camera ---------- */
-const HOME = { pos: new THREE.Vector3(6.6, 4.9, 6.4), target: new THREE.Vector3(-0.6, 1.25, -1.2) };
-const HOME_PORTRAIT = { pos: new THREE.Vector3(3.5, 3.5, 5.4), target: new THREE.Vector3(-0.15, 1.45, -1.8) };
+const HOME = { pos: new THREE.Vector3(3.0, 3.7, 5.9), target: new THREE.Vector3(-0.2, 1.95, -2.0) };
+const HOME_PORTRAIT = { pos: new THREE.Vector3(0.6, 3.1, 5.6), target: new THREE.Vector3(-0.25, 1.6, -2.4) };
 const portrait = () => innerWidth / innerHeight < 0.8;
 const homeTarget = () => (portrait() ? HOME_PORTRAIT.target : HOME.target);
 function homePos() {
@@ -835,9 +936,12 @@ function flyTo(pos, target) {
   if (reduceMotion) { camera.position.copy(pos); controls.target.copy(target); return; }
   tween = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), s: performance.now(), d: 1200 };
 }
-function focusObject(id) {
+function focusObject(id, focusCase = -1) {
   const o = id && objects[id];
-  if (o && o.view) {
+  if (id === 'cases' && focusCase >= 0) { // zoom onto the clicked case photo
+    const r = cardRect(focusCase); const t = cwWorld(r.x + r.w / 2, r.y + r.h / 2);
+    flyTo(t.clone().add(new THREE.Vector3(0.25, 0.1, innerWidth < 760 ? 2.6 : 1.7)), t);
+  } else if (o && o.view) {
     const pos = o.view.pos.clone();
     if (innerWidth < 760) pos.add(pos.clone().sub(o.view.target).multiplyScalar(0.35));
     flyTo(pos, o.view.target);
@@ -847,7 +951,7 @@ const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 let shift = 0; // px the projection centre moves away from the open panel
 function applyShift() {
   const w = innerWidth, h = innerHeight, mobile = w < 760;
-  const want = current ? (mobile ? h * 0.74 : Math.min(470, w)) : 0;
+  const want = current ? (mobile ? h * 0.74 : Math.min(current === 'cases' ? 640 : 470, w)) : 0;
   shift += (want - shift) * (reduceMotion ? 1 : 0.12);
   if (Math.abs(want - shift) < 0.5) shift = want;
   if (shift < 0.5) { camera.clearViewOffset(); return; }
@@ -893,12 +997,16 @@ window.__room = {
   screen: (id) => screenOf(new THREE.Box3().setFromObject(objects[id].group).getCenter(new THREE.Vector3())), // centre of the object itself
   cam: () => camera.position.toArray().map((n) => +n.toFixed(3)),
   current: () => current,
+  caseCard: (i) => { const r = cardRect(i); return screenOf(cwWorld(r.x + r.w / 2, r.y + r.h / 2)); },
   busy: () => !!tween,
 };
 
 const qs = new URLSearchParams(location.search).get('open');
 if (qs === 'quick') openQuick();
+else if (qs && qs.startsWith('case-')) { panel.classList.add('instant'); openSection('cases', +qs.slice(5)); requestAnimationFrame(() => panel.classList.remove('instant')); }
 else if (qs) { panel.classList.add('instant'); openSection(qs); requestAnimationFrame(() => panel.classList.remove('instant')); }
+// deep links land directly instead of flying in
+if (tween) { camera.position.copy(tween.p1); controls.target.copy(tween.t1); tween = null; }
 </script>
 </body>
 </html>

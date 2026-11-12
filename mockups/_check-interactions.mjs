@@ -140,9 +140,13 @@ async function load(c, label, w, h, mobile = false) {
   await sleep(1200);
 }
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-async function settle(c) { // camera tween finished (bounded: 3s)
-  for (let i = 0; i < 30 && (await c.evaluate('window.__room.busy()')); i++) await sleep(100);
-  await sleep(300);
+// camera tween and panel slide both finished (bounded: ~4s), so clicks land where the eye sees
+const STILL = `(() => { if (window.__room.busy()) return false;
+  const p = document.getElementById('panel'); const m = new DOMMatrix(getComputedStyle(p).transform);
+  return p.classList.contains('open') ? m.m41 === 0 && m.m42 === 0 : getComputedStyle(p).visibility === 'hidden'; })()`;
+async function settle(c) {
+  for (let i = 0; i < 40 && !(await c.evaluate(STILL)); i++) await sleep(100);
+  await sleep(250);
 }
 const rectOf = (c, sel) => c.evaluate(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, visible: r.width > 0 }; })()`);
 
@@ -195,6 +199,39 @@ await block('desktop', [], async (c) => {
   const back = dist(home, await c.evaluate('window.__room.cam()'));
   check('Escape closes the panel and the camera returns home', !(await c.evaluate('document.getElementById("panel").classList.contains("open")')) && back < 0.3, `distance from home ${back.toFixed(2)}`);
 
+  step('desktop: projects — header button, panel contents');
+  const cb = await rectOf(c, '#casesBtn');
+  check('"View cases" button is in the header', !!cb?.visible);
+  await click(c, cb.x, cb.y); await settle(c);
+  const pc2 = await c.evaluate(`(() => {
+    const b = document.getElementById('pBody'); const D = window.DATA;
+    const shots = [...b.querySelectorAll('.case img.shot')];
+    return {
+      current: window.__room.current(),
+      wide: document.getElementById('panel').getBoundingClientRect().width,
+      cases: b.querySelectorAll('.case').length,
+      expected: D.projects.length + (D.pending || []).length,
+      shotsLoaded: shots.filter((i) => i.complete && i.naturalWidth > 0).length,
+      live: b.querySelectorAll('.case a[href^="http"]').length,
+      expectedLinks: D.projects.reduce((n, p) => n + !!p.website + !!p.github, 0),
+      pending: [...b.querySelectorAll('.case.pending')].map((e) => e.querySelector('.stamp').textContent + '|' + e.querySelector('p').textContent),
+    };
+  })()`);
+  check('"View cases" opens the projects panel', pc2.current === 'cases' && pc2.wide >= 600, `current=${pc2.current} width=${pc2.wide}`);
+  check('every case has a loaded screenshot', pc2.cases === pc2.expected && pc2.shotsLoaded === pc2.expected, `${pc2.shotsLoaded}/${pc2.expected} screenshots`);
+  check('Live / GitHub buttons for every public link', pc2.live === pc2.expectedLinks, `${pc2.live}/${pc2.expectedLinks} links`);
+  check('pending files show only the FILE PENDING placeholder', pc2.pending.length === 3 && pc2.pending.every((t) => t === 'FILE PENDING|Case notes not filed yet.'), JSON.stringify(pc2.pending));
+  await key(c, 'Escape'); await settle(c);
+
+  step('desktop: click one case photo on the wall');
+  const card = await c.evaluate('window.__room.caseCard(1)');
+  await click(c, card.x, card.y); await settle(c);
+  const f1 = await c.evaluate('({ current: window.__room.current(), focused: document.getElementById("case-1")?.classList.contains("focus"), moved: 0 })');
+  const camAt = await c.evaluate('window.__room.cam()');
+  check('clicking a case photo opens that exact case', f1.current === 'cases' && f1.focused, `current=${f1.current} case-1 focused=${f1.focused} camera moved ${dist(home, camAt).toFixed(2)}`);
+  await shot(c, 'desktop-case-photo');
+  await key(c, 'Escape'); await settle(c);
+
   step('desktop: marker button + close button');
   const hb = await rectOf(c, '#hotspots .hs[data-sec="wall"]');
   await click(c, hb.x, hb.y); await settle(c);
@@ -208,6 +245,8 @@ await block('desktop', [], async (c) => {
   await click(c, qb.x, qb.y); await sleep(400);
   const q = await c.evaluate('({ open: document.getElementById("quick").classList.contains("open"), projects: document.querySelectorAll("#quickBody .case").length, jobs: document.querySelectorAll("#quickBody .tl .ev").length })');
   check('quick view (full dossier) opens with all content', q.open && q.projects >= 5 && q.jobs === 4, JSON.stringify(q));
+  const firstSec = await c.evaluate('document.querySelector("#quickBody .sec")?.textContent');
+  check('projects come first in the full dossier', /case files/i.test(firstSec ?? ''), `first section: ${firstSec}`);
   await shot(c, 'desktop-quick');
   await key(c, 'Escape'); await sleep(300);
   check('Escape closes the quick view', !(await c.evaluate('document.getElementById("quick").classList.contains("open")')));
@@ -217,6 +256,14 @@ await block('desktop', [], async (c) => {
 await block('phone', [], async (c) => {
   await load(c, 'phone', 390, 844, true);
   await shot(c, 'phone-home');
+  step('phone: dock → cases (first slot)');
+  const first = await c.evaluate('(() => { const b = document.querySelector("#dock button"); return { sec: b.dataset.sec, star: b.classList.contains("star") }; })()');
+  check('phone dock: cases is the first, highlighted slot', first.sec === 'cases' && first.star, JSON.stringify(first));
+  const cs = await rectOf(c, '#dock [data-sec="cases"]');
+  await click(c, cs.x, cs.y); await settle(c);
+  check('phone dock opens the projects panel', (await c.evaluate('window.__room.current()')) === 'cases');
+  await shot(c, 'phone-cases');
+  await key(c, 'Escape'); await settle(c);
   step('phone: dock → contact');
   const db = await rectOf(c, '#dock [data-sec="phone"]');
   check('phone dock is visible', !!db?.visible);
