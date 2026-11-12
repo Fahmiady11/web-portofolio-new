@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Portfolio revamp — 3 concepts</title>
+<title>Portfolio revamp — detective office (chosen) + earlier concepts</title>
 <style>
   :root { --ink: #16151a; --muted: #6a6670; --line: #e3e0d8; --bg: #f7f5f0; --card: #fff; color-scheme: light; }
   * { box-sizing: border-box; }
@@ -18,6 +18,13 @@
   .pitch { margin: 0; font-size: 16px; color: #3a3740; max-width: 720px; }
   .open { display: inline-flex; gap: 6px; align-items: center; padding: 9px 14px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; font-weight: 600; white-space: nowrap; }
   .previews { display: grid; grid-template-columns: 1fr 1fr 170px; gap: 16px; margin: 18px 0; align-items: start; }
+  .previews.four { grid-template-columns: 1fr 1fr 1fr 150px; }
+  .featured { border: 2px solid var(--accent); }
+  .earlier { margin: 44px 0 0; font-size: 18px; color: var(--muted); }
+  .map { width: 100%; border-collapse: collapse; margin: 6px 0 18px; font-size: 14px; }
+  .map th { text-align: left; font: 600 11px ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--accent); }
+  .map td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .map td:first-child { width: 44%; font-weight: 600; }
   .previews figure { margin: 0; }
   .previews img { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
   .previews .phone img { border-radius: 18px; border: 5px solid var(--ink); }
@@ -30,12 +37,13 @@
   .note { margin-top: 28px; padding: 16px 18px; border-radius: 12px; background: #fff7e0; border: 1px solid #f2dc9b; font-size: 14px; }
   .note h3 { margin: 0 0 6px; font-size: 15px; }
   .note ul { margin: 0; padding-left: 18px; }
-  @media (max-width: 900px) { .facts { grid-template-columns: 1fr 1fr; } .previews { grid-template-columns: 1fr 1fr; } .previews .phone { grid-column: 1 / -1; width: 220px; } }
+  @media (max-width: 900px) { .facts { grid-template-columns: 1fr 1fr; } .previews, .previews.four { grid-template-columns: 1fr 1fr; } .previews .phone { grid-column: 1 / -1; width: 220px; } }
   @media (max-width: 640px) {
     .wrap { padding: 20px 14px 48px; }
     header h1 { font-size: 22px; }
     .concept { padding: 16px; }
-    .previews { grid-template-columns: 1fr; }
+    .previews, .previews.four { grid-template-columns: 1fr; }
+    .map td:first-child { width: auto; }
     .previews .phone { width: 62%; margin: 0 auto; }
     .facts { grid-template-columns: 1fr; }
   }
@@ -44,13 +52,48 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Portfolio revamp — three unconventional concepts</h1>
-    <p>Each concept is a working prototype with Fahmi's real content (from the current site + 2022 CV). Every one keeps a fast lane for recruiters — CV, projects and contact are one tap away — and has a phone layout. Screenshots below; open each prototype to play with it.</p>
+    <h1>Portfolio revamp — chosen direction: the detective office</h1>
+    <p>Concept A (3D room) was picked and reworked as a noir detective office. It is a working prototype with Fahmi's real content; the three earlier concepts stay below for reference. Every version keeps a fast lane for recruiters (full dossier, CV, email) and a phone layout.</p>
   </header>
+
+  <section class="concept featured" style="--accent:#b3261e">
+    <div class="head">
+      <div><span class="tag">Chosen · A2 · 3D</span><h2>The Detective Office</h2>
+        <p class="pitch">A rainy-night private-eye office in real-time 3D. The visitor investigates the case "Muhammad Fahmi Ady Susilo — Software Developer": every piece of evidence opens part of the portfolio.</p></div>
+      <a class="open" href="a-detective-room.html" target="_blank" rel="noopener">Open the office ↗</a>
+    </div>
+    <div class="previews four">
+      <figure><img src="shots/d-desktop.jpg" alt="Detective office on a 1280px desktop: desk with green banker's lamp, evidence board with red string, framed certificates, rain behind venetian blinds"><figcaption>Desktop · first screen</figcaption></figure>
+      <figure><img src="shots/d-state.jpg" alt="Evidence board close-up with the career timeline panel open"><figcaption>Evidence board → career timeline</figcaption></figure>
+      <figure><img src="shots/d-cases.jpg" alt="Case-file folders close-up with the projects panel open"><figcaption>Case files → projects</figcaption></figure>
+      <figure class="phone"><img src="shots/d-phone.jpg" alt="Detective office on a 390px phone with the section dock"><figcaption>Phone · 390px</figcaption></figure>
+    </div>
+    <table class="map">
+      <thead><tr><th>Evidence in the room</th><th>Opens</th></tr></thead>
+      <tbody>
+        <tr><td>① Manila case folders on the desk ("CASE #001 …")</td><td>Projects: 5 closed cases + 3 sealed "file pending" folders (Webtix, Lapetshop, Restaurant) waiting for descriptions</td></tr>
+        <tr><td>② Corkboard with red string, mugshot polaroid and a newspaper clipping</td><td>Experience timeline: UTM lab assistant → Ruangguru → Lanjalan (UTM) → Sentra Vidya</td></tr>
+        <tr><td>③ Evidence box with bagged exhibits on the filing cabinet</td><td>Skills as Exhibit A–F</td></tr>
+        <tr><td>④ Typewriter with a typed statement</td><td>About / subject profile + key numbers</td></tr>
+        <tr><td>⑤ Framed commendations on the wall (real certificate images)</td><td>All 23 certificates</td></tr>
+        <tr><td>⑥ Framed diploma + medal</td><td>Education, awards, organizations</td></tr>
+        <tr><td>⑦ Rotary telephone</td><td>Contact: email, phone, socials</td></tr>
+        <tr><td>⑧ Black "TOP SECRET" dossier</td><td>CV download + summary</td></tr>
+      </tbody>
+    </table>
+    <div class="facts">
+      <div><h3>How it works</h3><p>Drag to look around; click an object or its yellow evidence marker → the camera moves in and a manila "case file" panel slides in (bottom sheet on phones). "Read the full dossier" shows everything on one page; it opens automatically when WebGL is missing.</p></div>
+      <div><h3>Real-build stack</h3><p>Vite + React + TS + Tailwind; React Three Fiber + drei (CameraControls, Html markers, useGLTF); room modelled in Blender with baked lighting → .glb (Draco + KTX2); content from content.json.</p></div>
+      <div><h3>Effort</h3><p>High · ~4 weeks: ~1.5 w modelling/baking the office, ~1 w scene + camera + markers, ~1 w panels, dossier, a11y and fallback, ~0.5 w perf on phones.</p></div>
+      <div><h3>Risks</h3><ul><li>3D payload (three.js ~600 KB + model) — show a still poster first, lazy-load the scene</li><li>Low-end Android: cap DPR, use baked light instead of live shadows/rain</li><li>Dark noir look must keep text contrast (panels are light paper)</li></ul></div>
+    </div>
+  </section>
+
+  <h2 class="earlier">Earlier concepts (reference)</h2>
 
   <section class="concept" style="--accent:#0d9488">
     <div class="head">
-      <div><span class="tag">A · 3D</span><h2>The Night Desk</h2>
+      <div><span class="tag">A · 3D (first draft)</span><h2>The Night Desk</h2>
         <p class="pitch">A late-night developer room in real-time 3D. Every object is a section: monitor = projects, corkboard = experience, keyboard keycaps = skills, bookshelf = 23 certificates, phone = contact.</p></div>
       <a class="open" href="a-3d-workshop.html" target="_blank" rel="noopener">Open full ↗</a>
     </div>
@@ -106,11 +149,12 @@
   </section>
 
   <div class="note">
-    <h3>Content gaps that affect all three</h3>
+    <h3>Content still needed</h3>
     <ul>
-      <li>The CV link points to the 2022 PDF (student, no current job). A new CV is needed before launch.</li>
-      <li>Education end date / final GPA and an up-to-date photo are missing.</li>
-      <li>Snake Game demo is dead (404) and the Streamlit batik app is asleep; mockups drop the dead link.</li>
+      <li>A new CV — the dossier/CV links still point to the 2022 PDF (student, no current job).</li>
+      <li>Descriptions, tags and links for Webtix, Lapetshop and Restaurant (shown as "file pending" case folders).</li>
+      <li>Education end date / final GPA and an up-to-date photo.</li>
+      <li>Decided: title is Software Developer; Calculator, TodoList, Tictactoe and Snake are dropped from every mockup.</li>
       <li>Full list: <code>content/AUDIT.md</code>; structured data: <code>content/content.json</code>.</li>
     </ul>
   </div>

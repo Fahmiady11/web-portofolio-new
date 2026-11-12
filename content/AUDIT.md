@@ -1,5 +1,10 @@
 # Content & UX audit — fahmiadyportofolio.netlify.app
 
+> **Decisions since the audit (2026-11-12):** title is **Software Developer**; Calculator, TodoList,
+> Tictactou and Snake Game are dropped; Webtix, Lapetshop and Restaurant become projects once the user
+> sends descriptions (`pendingProjects` in content.json). Concept A was picked and reworked as a
+> detective office (`mockups/a-detective-room.html`).
+
 Audited 2026-11-12 against `../WebPortofolio` (HEAD `1b5b007`, plus uncommitted edits) and the live site.
 Structured content lives in [`content.json`](content.json).
 
@@ -83,8 +88,8 @@ Structured content lives in [`content.json`](content.json).
 
 1. Up-to-date CV (PDF) — English or Indonesian?
 2. Final degree info: graduation year and final GPA (UTM Teknik Informatika).
-3. Which title: Software Developer / Fullstack Developer?
+3. ~~Which title~~ — decided: Software Developer.
 4. Any shareable work from Sentra Vidya (screens, case-study numbers) — or NDA-safe descriptions.
-5. Keep or drop old course projects (Calculator, TodoList, Tictactou, Snake) and orphan Webtix / Lapetshop / Profile UI.
+5. ~~Course projects~~ — dropped. Descriptions, tags and links for Webtix, Lapetshop and Restaurant (pending). Profile UI screens: keep or drop?
 6. New photo (current one is a cropped event photo).
-7. Fix or remove the Snake Game demo link and wake/replace the Streamlit app.
+7. Wake or replace the Streamlit batik app (Snake Game is dropped, so its dead link no longer matters).

@@ -67,11 +67,16 @@ def compact(d):
                 "description": pr["description"].replace("Wwebsite", "website"),
                 "tags": pr["tags"],
                 "github": pr["github"],
-                # Known-dead demo links are dropped from the mockups (see AUDIT.md).
-                "website": None if pr["slug"] == "snake" else pr["website"],
+                "website": pr["website"],
                 "thumb": asset(pr["thumb"]),
             }
             for pr in d["projects"]
+        ],
+        # Confirmed future projects; copy comes from the user later, so only the
+        # screenshot name and image are passed through.
+        "pending": [
+            {"slug": pp["slug"], "title": pp["workingTitle"], "thumb": asset(pp["thumb"])}
+            for pp in d.get("pendingProjects", {}).get("items", [])
         ],
         "certificates": [
             {"title": ce["title"], "issuer": ce["issuer"], "date": ce["date"], "thumb": asset(ce["thumb"])}
@@ -105,7 +110,7 @@ def data_uri(url, width):
 
 def inline(data):
     data["photo"] = data_uri(data["photo"], 320)
-    for p in data["projects"]:
+    for p in data["projects"] + data["pending"]:
         p["thumb"] = data_uri(p["thumb"], 560)
     for c in data["certificates"]:
         c["thumb"] = data_uri(c["thumb"], 360)

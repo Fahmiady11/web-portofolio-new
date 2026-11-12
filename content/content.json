@@ -6,14 +6,21 @@
     "liveSite": "https://fahmiadyportofolio.netlify.app/",
     "liveBundle": "static/js/main.a5baafe3.js (identical hash to ../WebPortofolio/build)",
     "language": "en (site copy). The 2022 CV PDF is in Indonesian.",
-    "assetRoot": "Paths in 'src' fields are relative to ../WebPortofolio/src/assets/. 'thumb' fields are optimized copies in ./assets/ made for the mockups."
+    "assetRoot": "Paths in 'src' fields are relative to ../WebPortofolio/src/assets/. 'thumb' fields are optimized copies in ./assets/ made for the mockups.",
+    "decisions": {
+      "2026-11-12": [
+        "Job title everywhere: 'Software Developer' (replaces 'Fullstack Developer').",
+        "Course projects Calculator, TodoList, Tictactou and Snake Game are dropped from the portfolio.",
+        "Webtix, Lapetshop and Restaurant will become projects; the user will send their descriptions (see pendingProjects)."
+      ]
+    }
   },
   "profile": {
     "name": "Muhammad Fahmi Ady Susilo",
     "shortName": "Fahmi Ady",
     "brand": "FahmiAdy🚀",
     "greeting": "Hello I'am",
-    "headline": "Fullstack Developer",
+    "headline": "Software Developer",
     "currentRole": "Software Developer at Sentra Vidya Utama (July 2023 – present)",
     "location": "Lamongan, Indonesia",
     "about": "A Software Developer with hands-on experience in frontend development using ReactJS and Tailwind CSS, as well as a solid understanding of backend development with PHP, PostgreSQL, and frameworks such as CodeIgniter and Laravel.",
@@ -30,7 +37,8 @@
       "light": "image/plane.png",
       "dark": "image/rocket.png"
     },
-    "copyrightLine": "Muhammad Fahmi ady susilo © 2022"
+    "copyrightLine": "Muhammad Fahmi ady susilo © 2022",
+    "headlineOld": "Fullstack Developer (live site, replaced by user decision)"
   },
   "contact": {
     "email": "asfahmi5@gmail.com",
@@ -393,23 +401,6 @@
       "note": "Undergraduate thesis (skripsi). Streamlit app redirects to a Streamlit login/wake page (303) — likely asleep or private."
     },
     {
-      "slug": "snake",
-      "title": "Snake Game",
-      "description": "The snake game that I have made is a browser game, there are already levels, Level and Life Challenges, so it is fun to play.",
-      "tags": [
-        "HTML",
-        "CSS",
-        "JS"
-      ],
-      "github": "https://github.com/Fahmiady11/se-fe6-kelompok8",
-      "website": "https://rg-km.github.io/se-fe6-kelompok8/",
-      "images": [
-        "image/project/snakegame/gameSnake.png"
-      ],
-      "thumb": "assets/projects/snake.jpg",
-      "note": "Website link is BROKEN (404). Team project (kelompok 8, Ruangguru)."
-    },
-    {
       "slug": "pokemon",
       "title": "Pokemon",
       "description": "Simple website with pokemon API consumption",
@@ -424,86 +415,11 @@
         "image/project/pokemon/pokemon1.png"
       ],
       "thumb": "assets/projects/pokemon.jpg"
-    },
-    {
-      "slug": "todolist",
-      "title": "TodoList",
-      "description": "TodoList is a Wwebsite for us to be able to manage time well, we can manage the day we want to do any activity, or as a reminder, this website uses React and can CRUD related unfinished and completed work.",
-      "tags": [
-        "React",
-        "ChakraUI",
-        "Zustand"
-      ],
-      "github": "https://github.com/Fahmiady11/TodoList_progate",
-      "website": "https://reactprogatefahmi.netlify.app/",
-      "images": [
-        "image/project/todolist/todolist.png"
-      ],
-      "thumb": "assets/projects/todolist.jpg",
-      "note": "Typo 'Wwebsite' in source copy."
-    },
-    {
-      "slug": "calculator",
-      "title": "Calculator",
-      "description": "This Website Calculator is a website using HTML, CSS and native javascript, this Calculator is a simple calculator which can be added, subtracted, multiplied and divided.",
-      "tags": [
-        "HTML",
-        "CSS",
-        "JS"
-      ],
-      "github": "https://github.com/Fahmiady11/calculator_Progate_FGA",
-      "website": "https://fahmiady11.github.io/calculator_Progate_FGA/",
-      "images": [
-        "image/project/calculator/calculator.png"
-      ],
-      "thumb": "assets/projects/calculator.jpg"
-    },
-    {
-      "slug": "tictactou",
-      "title": "Tictactou",
-      "description": "This Tictactou game is a browser game, made using React and Tailwind Style, in this game there are features of the number of wins and draws",
-      "tags": [
-        "React",
-        "Tailwind"
-      ],
-      "github": "https://github.com/Fahmiady11/Tictactou-React",
-      "website": "https://tictactou.netlify.app/",
-      "images": [
-        "image/project/tictactou/tictac.png"
-      ],
-      "thumb": "assets/projects/tictactou.jpg",
-      "note": "Spelled 'Tictactou' (Tic-Tac-Toe)."
     }
   ],
   "orphanProjectAssets": {
-    "_note": "Screenshots present in the repo but not referenced in code; no title/description/links exist for them.",
+    "_note": "Screenshots present in the repo but not referenced in code and not planned as projects (Webtix, Lapetshop, Restaurant moved to pendingProjects).",
     "items": [
-      {
-        "folder": "image/project/restourant/",
-        "files": [
-          "resto.png",
-          "resto2.png"
-        ],
-        "guess": "'Restourant Indonesia' — restaurant listing site with filter (Open Now / Price); hero still has Lorem Ipsum. Was in an older build (files still in build/static/media) but removed from ProjectMe.js."
-      },
-      {
-        "folder": "image/project/webtix/",
-        "files": [
-          "webtix1.png",
-          "webtix2.png",
-          "webtix3.png"
-        ],
-        "guess": "WEBTIX — cinema ticket booking site (Bootstrap), 2021, 'Made in Madura'."
-      },
-      {
-        "folder": "image/project/lapetshop/",
-        "files": [
-          "pet1.png",
-          "pet2.png",
-          "pet3.png"
-        ],
-        "guess": "LAPETSHOP — pet shop e-commerce catalog (Bootstrap)."
-      },
       {
         "folder": "image/project/profileImage/",
         "files": [
@@ -765,10 +681,59 @@
       "image/fotoutamadark.png",
       "image/logoSkill/next.png",
       "image/logoSkill/zustand.png",
-      "image/project/webtix/*",
-      "image/project/lapetshop/*",
-      "image/project/profileImage/*",
-      "image/project/restourant/*"
+      "image/project/profileImage/*"
+    ],
+    "droppedProjectImages": [
+      "image/project/snakegame/gameSnake.png",
+      "image/project/todolist/todolist.png",
+      "image/project/calculator/calculator.png",
+      "image/project/tictactou/tictac.png"
+    ]
+  },
+  "pendingProjects": {
+    "_note": "Confirmed as future projects by the user; title/description/tags/links will come from the user. Do not invent copy. 'workingTitle' is only the name visible in the screenshots.",
+    "items": [
+      {
+        "slug": "webtix",
+        "workingTitle": "Webtix",
+        "description": null,
+        "tags": [],
+        "github": null,
+        "website": null,
+        "images": [
+          "image/project/webtix/webtix1.png",
+          "image/project/webtix/webtix2.png",
+          "image/project/webtix/webtix3.png"
+        ],
+        "thumb": "assets/projects/webtix.jpg"
+      },
+      {
+        "slug": "lapetshop",
+        "workingTitle": "Lapetshop",
+        "description": null,
+        "tags": [],
+        "github": null,
+        "website": null,
+        "images": [
+          "image/project/lapetshop/pet1.png",
+          "image/project/lapetshop/pet2.png",
+          "image/project/lapetshop/pet3.png"
+        ],
+        "thumb": "assets/projects/lapetshop.jpg"
+      },
+      {
+        "slug": "restaurant",
+        "workingTitle": "Restourant Indonesia",
+        "description": null,
+        "tags": [],
+        "github": null,
+        "website": null,
+        "images": [
+          "image/project/restourant/resto.png",
+          "image/project/restourant/resto2.png"
+        ],
+        "thumb": "assets/projects/restaurant.jpg"
+      }
     ]
   }
 }
