@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio revamp — 3 concepts</title>
+<style>
+  :root { --ink: #16151a; --muted: #6a6670; --line: #e3e0d8; --bg: #f7f5f0; --card: #fff; color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 32px 24px 64px; }
+  header h1 { margin: 0; font-size: 28px; letter-spacing: -.02em; }
+  header p { margin: 6px 0 0; color: var(--muted); max-width: 760px; }
+  .concept { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px; margin-top: 28px; }
+  .concept > .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .tag { display: inline-block; font: 600 11px ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; background: var(--accent); color: #fff; }
+  .concept h2 { margin: 8px 0 2px; font-size: 22px; }
+  .pitch { margin: 0; font-size: 16px; color: #3a3740; max-width: 720px; }
+  .open { display: inline-flex; gap: 6px; align-items: center; padding: 9px 14px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; font-weight: 600; white-space: nowrap; }
+  .previews { display: grid; grid-template-columns: 1fr 1fr 170px; gap: 16px; margin: 18px 0; align-items: start; }
+  .previews figure { margin: 0; }
+  .previews img { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
+  .previews .phone img { border-radius: 18px; border: 5px solid var(--ink); }
+  .previews figcaption { font: 600 11px ui-monospace, monospace; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 6px; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .facts div { border-top: 2px solid var(--accent); padding-top: 8px; }
+  .facts h3 { margin: 0 0 4px; font: 600 11px ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .facts p, .facts ul { margin: 0; font-size: 14px; }
+  .facts ul { padding-left: 18px; }
+  .note { margin-top: 28px; padding: 16px 18px; border-radius: 12px; background: #fff7e0; border: 1px solid #f2dc9b; font-size: 14px; }
+  .note h3 { margin: 0 0 6px; font-size: 15px; }
+  .note ul { margin: 0; padding-left: 18px; }
+  @media (max-width: 900px) { .facts { grid-template-columns: 1fr 1fr; } .previews { grid-template-columns: 1fr 1fr; } .previews .phone { grid-column: 1 / -1; width: 220px; } }
+  @media (max-width: 640px) {
+    .wrap { padding: 20px 14px 48px; }
+    header h1 { font-size: 22px; }
+    .concept { padding: 16px; }
+    .previews { grid-template-columns: 1fr; }
+    .previews .phone { width: 62%; margin: 0 auto; }
+    .facts { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Portfolio revamp — three unconventional concepts</h1>
+    <p>Each concept is a working prototype with Fahmi's real content (from the current site + 2022 CV). Every one keeps a fast lane for recruiters — CV, projects and contact are one tap away — and has a phone layout. Screenshots below; open each prototype to play with it.</p>
+  </header>
+
+  <section class="concept" style="--accent:#0d9488">
+    <div class="head">
+      <div><span class="tag">A · 3D</span><h2>The Night Desk</h2>
+        <p class="pitch">A late-night developer room in real-time 3D. Every object is a section: monitor = projects, corkboard = experience, keyboard keycaps = skills, bookshelf = 23 certificates, phone = contact.</p></div>
+      <a class="open" href="a-3d-workshop.html" target="_blank" rel="noopener">Open full ↗</a>
+    </div>
+    <div class="previews">
+      <figure><img src="shots/a-desktop.jpg" alt="Concept A on a 1280px desktop, first screen"><figcaption>Desktop · first screen</figcaption></figure>
+      <figure><img src="shots/a-state.jpg" alt="Concept A: Projects panel open (camera flies to the monitor)"><figcaption>Projects panel open (camera flies to the monitor)</figcaption></figure>
+      <figure class="phone"><img src="shots/a-phone.jpg" alt="Concept A on a 390px phone"><figcaption>Phone · 390px</figcaption></figure>
+    </div>
+    <div class="facts">
+      <div><h3>How it works</h3><p>Drag to orbit, click an object → camera flies to it and a side panel (bottom sheet on phones) opens. "Quick view" shows everything as one plain page.</p></div>
+      <div><h3>Real-build stack</h3><p>Vite + React + TS, React Three Fiber + drei (CameraControls, Html hotspots), a Blender-made .glb room (Draco/KTX2), Tailwind for panels.</p></div>
+      <div><h3>Effort</h3><p>High · ~3–4 weeks. Most time goes to modelling/lighting the room and baking textures.</p></div>
+      <div><h3>Risks</h3><ul><li>WebGL bundle ~600 KB + model; LCP needs a static poster first</li><li>Low-end Android: cap DPR, no realtime shadows</li><li>Must ship a no-WebGL fallback (Quick view)</li></ul></div>
+    </div>
+  </section>
+
+  <section class="concept" style="--accent:#ea580c">
+    <div class="head">
+      <div><span class="tag">B · OS</span><h2>FahmiOS 11</h2>
+        <p class="pitch">The portfolio is a retro-modern desktop OS on a kawung-batik wallpaper: draggable windows, a working terminal (<code>help</code>, <code>projects</code>, <code>sudo hire-fahmi</code>), experience as a git log, skills as a package manager. Phones get a home screen with apps.</p></div>
+      <a class="open" href="b-fahmi-os.html" target="_blank" rel="noopener">Open full ↗</a>
+    </div>
+    <div class="previews">
+      <figure><img src="shots/b-desktop.jpg" alt="Concept B on a 1280px desktop, first screen"><figcaption>Desktop · first screen</figcaption></figure>
+      <figure><img src="shots/b-state.jpg" alt="Concept B: experience.log opened from the sticky note"><figcaption>experience.log opened from the sticky note</figcaption></figure>
+      <figure class="phone"><img src="shots/b-phone.jpg" alt="Concept B on a 390px phone"><figcaption>Phone · 390px</figcaption></figure>
+    </div>
+    <div class="facts">
+      <div><h3>How it works</h3><p>Opens with About + Terminal already on screen. A yellow "Hiring?" sticky note links Projects / Experience / CV / Email. Every window has a deep link (<code>?open=projects</code>).</p></div>
+      <div><h3>Real-build stack</h3><p>Vite + React + TS + Tailwind, Zustand for the window manager, react-rnd (drag/resize), a small command parser for the terminal. No 3D.</p></div>
+      <div><h3>Effort</h3><p>Medium · ~2 weeks. Logic-heavy but asset-light; easiest to keep content in one JSON.</p></div>
+      <div><h3>Risks</h3><ul><li>Gimmick fatigue — must stay fast, no boot screen</li><li>Window UIs need real a11y work (focus traps, keyboard)</li><li>"OS portfolio" exists as a genre; differentiation comes from the batik/Madura flavour + terminal</li></ul></div>
+    </div>
+  </section>
+
+  <section class="concept" style="--accent:#7c3aed">
+    <div class="head">
+      <div><span class="tag">C · Game</span><h2>Fahmi's Quest</h2>
+        <p class="pitch">A pixel side-scroller of his career: walk from Lamongan → MAN 1 → UTM campus → skill "?" blocks → Ruangguru camp → Lanjalan gate → Sentra Vidya tower → a project arcade → badge hall → finish flag & mailbox.</p></div>
+      <a class="open" href="c-pixel-quest.html" target="_blank" rel="noopener">Open full ↗</a>
+    </div>
+    <div class="previews">
+      <figure><img src="shots/c-desktop.jpg" alt="Concept C on a 1280px desktop, first screen"><figcaption>Desktop · first screen</figcaption></figure>
+      <figure><img src="shots/c-state.jpg" alt="Concept C: Project arcade — cabinets open project cards"><figcaption>Project arcade — cabinets open project cards</figcaption></figure>
+      <figure class="phone"><img src="shots/c-phone.jpg" alt="Concept C on a 390px phone"><figcaption>Phone · 390px</figcaption></figure>
+    </div>
+    <div class="facts">
+      <div><h3>How it works</h3><p>Scroll, swipe, arrow keys or the ◀ ▶ buttons walk the hero; each stop shows a dialog box. The bottom track fast-travels; "List" is a plain one-page CV view.</p></div>
+      <div><h3>Real-build stack</h3><p>Vite + React + TS + Tailwind, GSAP (or plain rAF) for movement/parallax, hand-made pixel sprites (Aseprite → spritesheet). Optional: Phaser if it grows into a real game.</p></div>
+      <div><h3>Effort</h3><p>Medium–high · ~2–3 weeks; pixel art for buildings and walk cycles is the long pole.</p></div>
+      <div><h3>Risks</h3><ul><li>Hijacks scroll — must keep List view prominent and respect reduced motion</li><li>Wide worlds need careful image budgets on phones</li><li>Playful tone may not suit every recruiter</li></ul></div>
+    </div>
+  </section>
+
+  <div class="note">
+    <h3>Content gaps that affect all three</h3>
+    <ul>
+      <li>The CV link points to the 2022 PDF (student, no current job). A new CV is needed before launch.</li>
+      <li>Education end date / final GPA and an up-to-date photo are missing.</li>
+      <li>Snake Game demo is dead (404) and the Streamlit batik app is asleep; mockups drop the dead link.</li>
+      <li>Full list: <code>content/AUDIT.md</code>; structured data: <code>content/content.json</code>.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

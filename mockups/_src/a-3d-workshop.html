@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Muhammad Fahmi Ady Susilo — The Night Desk (concept A)</title>
+<meta name="description" content="Software Developer from Lamongan, Indonesia. Explore a 3D desk: every object opens a part of the portfolio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1120;
+    --ink: #eef1f8;
+    --muted: #9aa3bd;
+    --line: rgba(255,255,255,.12);
+    --panel: rgba(16,21,38,.92);
+    --teal: #12f3d8;
+    --orange: #f97316;
+    --radius: 14px;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 15px/1.55 "Space Grotesk", system-ui, sans-serif; }
+  body { overflow: hidden; }
+  a { color: var(--teal); }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  #stage { position: fixed; inset: 0; }
+  #stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+
+  /* top bar */
+  .top { position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(#0d1120e6, #0d112000); display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 18px 22px; pointer-events: none; z-index: 5; }
+  .brand { pointer-events: auto; }
+  .brand h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+  .brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .brand p b { color: var(--teal); font-weight: 600; }
+  .actions { display: flex; gap: 8px; pointer-events: auto; flex-wrap: wrap; justify-content: flex-end; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(13,17,32,.7); backdrop-filter: blur(8px); color: var(--ink); text-decoration: none; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .btn:hover { border-color: var(--teal); }
+  .btn.primary { background: var(--teal); color: #04201c; border-color: var(--teal); }
+
+  /* hotspots */
+  #hotspots { position: fixed; inset: 0; pointer-events: none; z-index: 3; }
+  .hs { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px 6px 7px; border-radius: 999px; background: rgba(13,17,32,.78); border: 1px solid var(--line); color: var(--ink); font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: border-color .2s, background .2s, opacity .3s; }
+  .hs::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 4px rgba(249,115,22,.25); animation: pulse 2.2s infinite; }
+  .hs:hover, .hs.on { border-color: var(--orange); background: rgba(40,24,14,.9); }
+  .hs.dim { opacity: .25; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(249,115,22,0); } }
+
+  .hint { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); color: var(--muted); font-size: 12.5px; z-index: 2; background: rgba(13,17,32,.6); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+
+  /* mobile section dock */
+  .dock { display: none; }
+
+  /* side panel */
+  .panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px, 100%); background: var(--panel); backdrop-filter: blur(14px); border-left: 1px solid var(--line); z-index: 8; transform: translateX(105%); visibility: hidden; transition: transform .45s cubic-bezier(.2,.8,.2,1), visibility 0s .45s; display: flex; flex-direction: column; }
+  .panel.open { transform: none; visibility: visible; transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+  .panel.instant { transition: none; }
+  .panel header { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--line); }
+  .panel header h2 { margin: 0; font-size: 18px; }
+  .panel header small { display: block; color: var(--orange); font: 600 11px "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
+  .x { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 18px; }
+  .panel .body { overflow-y: auto; padding: 18px 22px 40px; overscroll-behavior: contain; }
+
+  /* content blocks (shared by panel + quick view) */
+  .proj { display: grid; grid-template-columns: 112px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .proj img { width: 112px; height: 72px; object-fit: cover; object-position: top; border-radius: 8px; border: 1px solid var(--line); }
+  .proj h3 { margin: 0 0 4px; font-size: 15px; }
+  .proj p { margin: 0 0 6px; color: var(--muted); font-size: 13px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 4px 0; }
+  .tag { font: 600 10.5px "JetBrains Mono", monospace; padding: 2px 7px; border-radius: 5px; background: rgba(18,243,216,.1); color: var(--teal); }
+  .links { display: flex; gap: 12px; font-size: 13px; font-weight: 600; }
+  .job { position: relative; padding: 0 0 18px 18px; border-left: 2px solid var(--line); margin-left: 4px; }
+  .job::before { content: ""; position: absolute; left: -7px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--orange); }
+  .job h3 { margin: 0; font-size: 15px; }
+  .job .meta { color: var(--muted); font-size: 12.5px; margin: 2px 0 6px; }
+  .job ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
+  .job li { margin: 3px 0; }
+  .badge { font: 600 10px "JetBrains Mono", monospace; background: var(--orange); color: #1b0d03; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: 2px; }
+  .skillgrp { margin: 0 0 14px; }
+  .skillgrp h4 { margin: 0 0 6px; font: 600 11px "JetBrains Mono", monospace; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; }
+  .chip img { width: 16px; height: 16px; }
+  .certs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .cert { margin: 0; font-size: 12px; color: var(--muted); }
+  .cert img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); background: #fff; }
+  .cert b { display: block; color: var(--ink); font-size: 12.5px; line-height: 1.3; margin-top: 4px; }
+  .about-photo { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 2px solid var(--teal); float: right; margin: 0 0 8px 12px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 14px; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; overflow-wrap: anywhere; }
+  .lead { font-size: 16px; }
+  .sec-title { font: 600 11px "JetBrains Mono", monospace; letter-spacing: .14em; color: var(--orange); text-transform: uppercase; margin: 28px 0 8px; }
+
+  /* quick view (recruiter) */
+  .quick { position: fixed; inset: 0; z-index: 20; background: #0b0f1c; overflow-y: auto; display: none; }
+  .quick.open { display: block; }
+  .quick .wrap { max-width: 860px; margin: 0 auto; padding: 28px 22px 80px; }
+  .quick .qhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; position: sticky; top: 0; background: #0b0f1c; padding: 14px 0; z-index: 2; border-bottom: 1px solid var(--line); }
+  .quick .qhead h2 { margin: 0; font-size: 18px; }
+  .quick .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+
+  .fallback { position: fixed; inset: 0; display: none; place-items: center; text-align: center; padding: 24px; z-index: 1; }
+
+  @media (max-width: 760px) {
+    .top { padding: 14px 14px; flex-direction: column; }
+    .actions { justify-content: flex-start; }
+    .actions .btn { padding: 8px 12px; }
+    .brand h1 { font-size: 17px; }
+    .hint { display: none; }
+    .hs { font-size: 11.5px; padding: 5px 9px 5px 6px; }
+    .dock { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; position: fixed; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); z-index: 4; background: rgba(13,17,32,.85); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 16px; padding: 6px; }
+    .dock button { border: 0; background: transparent; padding: 7px 2px; border-radius: 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; }
+    .dock button span { display: block; font-size: 17px; line-height: 1.1; }
+    .dock button.on { background: rgba(249,115,22,.18); color: var(--orange); }
+    .panel { top: auto; height: 72vh; width: 100%; border-left: 0; border-top: 1px solid var(--line); border-radius: 18px 18px 0 0; transform: translateY(105%); }
+    .quick .cols { grid-template-columns: 1fr; }
+    .certs { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hs::before { animation: none; }
+    .panel { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="stage" aria-hidden="true"></div>
+
+<div class="top">
+  <div class="brand">
+    <h1 id="name"></h1>
+    <p><b>Software Developer</b> · Lamongan, Indonesia</p>
+  </div>
+  <nav class="actions" aria-label="Quick links">
+    <button class="btn primary" id="quickBtn" type="button">☰ Quick view</button>
+    <a class="btn" id="cvBtn" target="_blank" rel="noopener">CV ↓</a>
+    <a class="btn" id="mailBtn">Email</a>
+  </nav>
+</div>
+
+<div id="hotspots"></div>
+<div class="hint">Drag to look around · click an object on the desk</div>
+<nav class="dock" id="dock" aria-label="Sections"></nav>
+
+<aside class="panel" id="panel" aria-live="polite" aria-hidden="true">
+  <header><div><small id="pKicker"></small><h2 id="pTitle"></h2></div><button class="x" id="pClose" type="button" aria-label="Close panel">×</button></header>
+  <div class="body" id="pBody"></div>
+</aside>
+
+<section class="quick" id="quick" aria-label="Quick view">
+  <div class="wrap">
+    <div class="qhead"><h2>Quick view — everything on one page</h2><button class="btn" id="quickClose" type="button">Back to the desk</button></div>
+    <div id="quickBody"></div>
+  </div>
+</section>
+
+<div class="fallback" id="fallback"><p>3D is not available on this device — showing the quick view.</p></div>
+
+<script>window.DATA = /*@DATA@*/;</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const D = window.DATA;
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt = (ym) => {
+  if (!ym) return 'Present';
+  const [y, m] = ym.split('-');
+  return new Date(+y, +m - 1).toLocaleString('en', { month: 'short' }) + ' ' + y;
+};
+
+$('#name').textContent = D.name;
+$('#cvBtn').href = D.cv;
+$('#mailBtn').href = 'mailto:' + D.email;
+
+/* ---------- section renderers (shared by panel + quick view) ---------- */
+const R = {
+  about: () => `
+    <img class="about-photo" src="${D.photo}" alt="Portrait of ${esc(D.name)}">
+    <p class="lead">${esc(D.about)}</p>
+    <p>Currently building higher-education platforms used by <b>400+ universities</b> at Sentra Vidya Utama.</p>
+    <dl class="kv"><dt>Based in</dt><dd>${esc(D.location)}</dd><dt>Email</dt><dd><a href="mailto:${D.email}">${D.email}</a></dd><dt>Phone</dt><dd>${esc(D.phone)}</dd></dl>`,
+  projects: () => D.projects.map((p) => `
+    <article class="proj">
+      <img src="${p.thumb}" alt="Screenshot of ${esc(p.title)}">
+      <div><h3>${esc(p.title)}</h3><p>${esc(p.description)}</p>
+        <div class="tags">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+        <div class="links">${p.website ? `<a href="${p.website}" target="_blank" rel="noopener">Live ↗</a>` : ''}${p.github ? `<a href="${p.github}" target="_blank" rel="noopener">Code ↗</a>` : ''}${!p.website && !p.github ? '<span style="color:var(--muted)">Private project</span>' : ''}</div>
+      </div>
+    </article>`).join(''),
+  experience: () => D.experience.map((e) => `
+    <div class="job"><h3>${esc(e.role)}${e.latest ? '<span class="badge">NOW</span>' : ''}</h3>
+      <div class="meta">${esc(e.company)} · ${fmt(e.start)} – ${fmt(e.end)}</div>
+      <ul>${e.highlights.map((h) => `<li>${esc(h)}</li>`).join('')}</ul></div>`).join(''),
+  skills: () => Object.entries(D.skills).map(([g, list]) => `
+    <div class="skillgrp"><h4>${esc(g)}</h4><div class="chips">${list.map((s) => `<span class="chip">${D.skillIcons[s] ? `<img src="${D.skillIcons[s]}" alt="">` : ''}${esc(s)}</span>`).join('')}</div></div>`).join(''),
+  education: () => `
+    ${D.education.map((e) => `<div class="job"><h3>${esc(e.degree)}</h3><div class="meta">${esc(e.school)} · ${esc(e.period)}</div><ul><li>${esc(e.detail)}</li></ul></div>`).join('')}
+    <div class="sec-title">Awards</div>
+    ${D.achievements.map((a) => `<div class="job"><h3>${esc(a.title)}</h3><div class="meta">${esc(a.date)}</div></div>`).join('')}
+    <div class="sec-title">Organizations</div>
+    ${D.organizations.map((o) => `<div class="job"><h3>${esc(o.role)}</h3><div class="meta">${esc(o.org)} · ${esc(o.period)}</div></div>`).join('')}`,
+  certificates: () => `<div class="certs">${D.certificates.map((c) => `
+    <figure class="cert"><img src="${c.thumb}" alt=""><b>${esc(c.title)}</b>${esc(c.issuer)}${c.date ? ' · ' + esc(c.date) : ''}</figure>`).join('')}</div>`,
+  contact: () => `
+    <p class="lead">Open to software developer roles and freelance projects. Fastest reply: email.</p>
+    <p><a class="btn primary" href="mailto:${D.email}">✉ ${D.email}</a></p>
+    <p><a class="btn" href="${D.cv}" target="_blank" rel="noopener">Download CV (PDF)</a></p>
+    <dl class="kv"><dt>Phone</dt><dd>${esc(D.phone)}</dd>${D.socials.map((s) => `<dt>${esc(s.name)}</dt><dd><a href="${s.url}" target="_blank" rel="noopener">${esc(s.handle)}</a></dd>`).join('')}</dl>`,
+};
+
+const SECTIONS = [
+  { id: 'projects', label: 'Projects', icon: '🖥', kicker: 'The monitor', title: 'Projects' },
+  { id: 'experience', label: 'Experience', icon: '📌', kicker: 'The corkboard', title: 'Experience' },
+  { id: 'skills', label: 'Skills', icon: '⌨', kicker: 'The keyboard', title: 'Skills' },
+  { id: 'about', label: 'About', icon: '🖼', kicker: 'The photo frame', title: 'About me' },
+  { id: 'certificates', label: 'Certs', icon: '📚', kicker: 'The bookshelf', title: 'Certificates (23)' },
+  { id: 'education', label: 'Education', icon: '🏆', kicker: 'The trophy', title: 'Education & awards' },
+  { id: 'contact', label: 'Contact', icon: '📱', kicker: 'The phone', title: 'Contact' },
+  { id: 'cv', label: 'CV', icon: '📄', kicker: '', title: '' },
+];
+
+/* ---------- panel ---------- */
+const panel = $('#panel');
+let current = null;
+function openSection(id) {
+  if (id === 'cv') { window.open(D.cv, '_blank', 'noopener'); return; }
+  const s = SECTIONS.find((x) => x.id === id);
+  current = id;
+  $('#pKicker').textContent = s.kicker;
+  $('#pTitle').textContent = s.title;
+  $('#pBody').innerHTML = R[id]();
+  $('#pBody').scrollTop = 0;
+  panel.classList.add('open');
+  panel.setAttribute('aria-hidden', 'false');
+  document.querySelectorAll('[data-sec]').forEach((b) => b.classList.toggle('on', b.dataset.sec === id));
+  focusObject(id);
+}
+function closePanel() {
+  current = null;
+  panel.classList.remove('open');
+  panel.setAttribute('aria-hidden', 'true');
+  document.querySelectorAll('[data-sec]').forEach((b) => b.classList.remove('on'));
+  focusObject(null);
+}
+$('#pClose').onclick = closePanel;
+addEventListener('keydown', (e) => { if (e.key === 'Escape') { closePanel(); closeQuick(); } });
+
+/* ---------- quick view ---------- */
+$('#quickBody').innerHTML = `
+  <div style="display:flex;gap:18px;align-items:center;margin:24px 0 8px">
+    <img src="${D.photo}" alt="" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--teal)">
+    <div><h1 style="margin:0;font-size:26px">${esc(D.name)}</h1><div style="color:var(--muted)">Software Developer · ${esc(D.location)}</div>
+    <div class="links" style="margin-top:6px"><a href="mailto:${D.email}">${D.email}</a><a href="${D.cv}" target="_blank" rel="noopener">CV (PDF)</a><a href="${D.socials[0].url}" target="_blank" rel="noopener">GitHub</a><a href="${D.socials[1].url}" target="_blank" rel="noopener">LinkedIn</a></div></div>
+  </div>
+  <p>${esc(D.about)}</p>
+  <div class="sec-title">Experience</div>${R.experience()}
+  <div class="sec-title">Projects</div>${R.projects()}
+  <div class="cols"><div><div class="sec-title">Skills</div>${R.skills()}</div><div><div class="sec-title">Education</div>${R.education()}</div></div>
+  <div class="sec-title">Certificates</div>${R.certificates()}`;
+const quick = $('#quick');
+function openQuick() { quick.classList.add('open'); quick.scrollTop = 0; }
+function closeQuick() { quick.classList.remove('open'); }
+$('#quickBtn').onclick = openQuick;
+$('#quickClose').onclick = closeQuick;
+
+/* ---------- mobile dock ---------- */
+$('#dock').innerHTML = SECTIONS.map((s) => `<button type="button" data-sec="${s.id}"><span aria-hidden="true">${s.icon}</span>${s.label}</button>`).join('');
+$('#dock').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) openSection(b.dataset.sec); });
+
+/* ---------- 3D scene ---------- */
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+} catch (err) {
+  $('#fallback').style.display = 'grid';
+  openQuick();
+  throw err;
+}
+const stage = $('#stage');
+renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 760 ? 1.5 : 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+stage.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#0d1120');
+scene.fog = new THREE.Fog('#0d1120', 14, 26);
+
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.enablePan = false;
+controls.minDistance = 3;
+controls.maxDistance = 16;
+controls.minPolarAngle = 0.55;
+controls.maxPolarAngle = 1.35;
+controls.minAzimuthAngle = -0.15;
+controls.maxAzimuthAngle = Math.PI / 2 + 0.15;
+
+const HOME = { pos: new THREE.Vector3(7.2, 5.6, 7.6), target: new THREE.Vector3(-0.4, 1.0, -0.6) };
+
+const mat = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.8, metalness: 0, ...o });
+const box = (w, h, d, m, r = 0) => {
+  const g = r ? new RoundedBoxGeometry(w, h, d, 3, r) : new THREE.BoxGeometry(w, h, d);
+  const mesh = new THREE.Mesh(g, m);
+  mesh.castShadow = true; mesh.receiveShadow = true;
+  return mesh;
+};
+const at = (obj, x, y, z, parent = scene) => { obj.position.set(x, y, z); parent.add(obj); return obj; };
+
+// canvas texture helper — draws text, never tainted
+function canvasTex(w, h, draw) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+const loader = new THREE.TextureLoader();
+const imgTex = (url) => { const t = loader.load(url); t.colorSpace = THREE.SRGBColorSpace; return t; };
+
+// room shell
+const floor = box(7, 0.2, 7, mat('#2a2f45'));
+at(floor, 0, -0.1, 0);
+const rug = box(3.2, 0.02, 2.2, mat('#9a3b12', { roughness: 1 }), 0.01);
+at(rug, 0.2, 0.01, 0.4);
+const wallMat = mat('#1b2238');
+at(box(7, 4, 0.2, wallMat), 0, 2, -3.6);
+at(box(0.2, 4, 7, wallMat), -3.6, 2, 0);
+// skirting
+at(box(7, 0.14, 0.04, mat('#12f3d8', { emissive: '#12f3d8', emissiveIntensity: 0.6 })), 0, 0.07, -3.48);
+at(box(0.04, 0.14, 7, mat('#12f3d8', { emissive: '#12f3d8', emissiveIntensity: 0.6 })), -3.48, 0.07, 0);
+
+// window with night sky
+const sky = canvasTex(512, 384, (g, w, h) => {
+  const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#0b1a3d'); gr.addColorStop(1, '#253a6b');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 70; i++) { g.fillStyle = `rgba(255,255,255,${Math.random() * 0.8})`; g.fillRect(Math.random() * w, Math.random() * h * 0.8, 2, 2); }
+  g.fillStyle = '#fff6d6'; g.beginPath(); g.arc(380, 90, 34, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#0a1226'; g.fillRect(0, h - 70, w, 70);
+  for (let x = 0; x < w; x += 46) { const bh = 30 + Math.random() * 60; g.fillRect(x, h - 70 - bh, 40, bh); g.fillStyle = '#f5c46b'; for (let k = 0; k < 4; k++) g.fillRect(x + 6 + (k % 2) * 16, h - 60 - bh + Math.floor(k / 2) * 18, 6, 6); g.fillStyle = '#0a1226'; }
+});
+const win = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.35), new THREE.MeshBasicMaterial({ map: sky }));
+at(win, -3.49, 2.2, -1.9).rotation.y = Math.PI / 2;
+const frameM = mat('#3a4466');
+at(box(0.08, 1.5, 0.08, frameM), -3.46, 2.2, -2.83); at(box(0.08, 1.5, 0.08, frameM), -3.46, 2.2, -0.97);
+at(box(0.08, 0.08, 1.9, frameM), -3.46, 2.92, -1.9); at(box(0.08, 0.08, 1.9, frameM), -3.46, 1.48, -1.9);
+at(box(0.06, 1.4, 0.05, frameM), -3.46, 2.2, -1.9);
+
+// desk
+const wood = mat('#b5763f', { roughness: 0.6 });
+const desk = new THREE.Group(); scene.add(desk);
+at(box(3.4, 0.08, 1.2, wood, 0.03), 0, 0.78, -2.85, desk);
+[[-1.6, -3.35], [1.6, -3.35], [-1.6, -2.35], [1.6, -2.35]].forEach(([x, z]) => at(box(0.07, 0.76, 0.07, mat('#20263d')), x, 0.38, z, desk));
+
+// interactive objects registry
+const objects = {}; // id -> { group, anchor, view:{pos,target} }
+function register(id, group, anchor, view) {
+  group.traverse((m) => { if (m.isMesh) m.userData.section = id; });
+  objects[id] = { group, anchor, view };
+}
+
+// monitor (projects) — screen cycles project titles + thumbs
+const monitor = new THREE.Group(); scene.add(monitor);
+at(box(0.34, 0.03, 0.22, mat('#151a2b'), 0.01), 0, 0.835, -3.0, monitor);
+at(box(0.06, 0.38, 0.05, mat('#151a2b')), 0, 1.02, -3.05, monitor);
+at(box(1.5, 0.9, 0.06, mat('#0f1322'), 0.03), 0, 1.5, -3.02, monitor);
+const screenCanvas = document.createElement('canvas'); screenCanvas.width = 960; screenCanvas.height = 560;
+const screenTex = new THREE.CanvasTexture(screenCanvas); screenTex.colorSpace = THREE.SRGBColorSpace;
+const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.42, 0.82), new THREE.MeshBasicMaterial({ map: screenTex, toneMapped: false }));
+at(screen, 0, 1.5, -2.985, monitor);
+const thumbs = D.projects.map((p) => { const im = new Image(); im.src = p.thumb; return im; });
+let projIdx = 0;
+function drawScreen() {
+  const g = screenCanvas.getContext('2d'); const W = 960, H = 560;
+  const p = D.projects[projIdx]; const im = thumbs[projIdx];
+  g.fillStyle = '#0b1020'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#161d33'; g.fillRect(0, 0, W, 40);
+  ['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => { g.fillStyle = c; g.beginPath(); g.arc(24 + i * 22, 20, 7, 0, 7); g.fill(); });
+  g.fillStyle = '#9aa3bd'; g.font = '600 18px "JetBrains Mono", monospace'; g.fillText(`~/projects/${p.slug}  (${projIdx + 1}/${D.projects.length})`, 100, 27);
+  try { if (im.complete && im.naturalWidth) g.drawImage(im, 0, 40, W, W * im.naturalHeight / im.naturalWidth); } catch (e) { /* ignore */ }
+  const gr = g.createLinearGradient(0, H - 210, 0, H); gr.addColorStop(0, 'rgba(11,16,32,0)'); gr.addColorStop(0.45, 'rgba(11,16,32,.92)'); gr.addColorStop(1, '#0b1020');
+  g.fillStyle = gr; g.fillRect(0, H - 210, W, 210);
+  g.fillStyle = '#12f3d8'; g.font = '700 46px "Space Grotesk", sans-serif'; g.fillText(p.title, 34, H - 64);
+  g.fillStyle = '#f97316'; g.font = '600 22px "JetBrains Mono", monospace'; g.fillText(p.tags.join(' · '), 36, H - 28);
+  screenTex.needsUpdate = true;
+}
+thumbs.forEach((im) => im.addEventListener('load', () => drawScreen()));
+setInterval(() => { projIdx = (projIdx + 1) % D.projects.length; drawScreen(); }, 2600);
+register('projects', monitor, new THREE.Vector3(0, 2.1, -3.0), { pos: new THREE.Vector3(0.6, 1.95, 0.1), target: new THREE.Vector3(0, 1.4, -3) });
+
+// keyboard (skills) — every keycap is a skill
+const allSkills = Object.values(D.skills).flat().slice(0, 21);
+const kbTex = canvasTex(1400, 440, (g, W, H) => {
+  g.fillStyle = '#1a2036'; g.fillRect(0, 0, W, H);
+  const cols = 7, rows = 3, pad = 14, cw = (W - pad * (cols + 1)) / cols, ch = (H - pad * (rows + 1)) / rows;
+  allSkills.forEach((s, i) => {
+    const x = pad + (i % cols) * (cw + pad), y = pad + Math.floor(i / cols) * (ch + pad);
+    g.fillStyle = i % 5 === 0 ? '#f97316' : '#e9ecf5'; g.beginPath(); g.roundRect(x, y, cw, ch, 14); g.fill();
+    g.fillStyle = i % 5 === 0 ? '#1b0d03' : '#1a2036'; g.font = `700 ${s.length > 9 ? 26 : 32}px "Space Grotesk", sans-serif`;
+    g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(s, x + cw / 2, y + ch / 2);
+  });
+});
+const keyboard = new THREE.Group(); scene.add(keyboard);
+at(box(1.1, 0.05, 0.36, mat('#1a2036'), 0.02), 0, 0.845, -2.5, keyboard);
+const kbTop = new THREE.Mesh(new THREE.PlaneGeometry(1.06, 0.33), new THREE.MeshStandardMaterial({ map: kbTex, roughness: 0.5 }));
+kbTop.rotation.x = -Math.PI / 2; at(kbTop, 0, 0.872, -2.5, keyboard);
+at(box(0.12, 0.04, 0.2, mat('#e9ecf5'), 0.02), 0.75, 0.84, -2.45, keyboard); // mouse
+register('skills', keyboard, new THREE.Vector3(0.1, 1.0, -2.25), { pos: new THREE.Vector3(0.2, 2.25, -1.4), target: new THREE.Vector3(0, 0.85, -2.5) });
+
+// lamp + mug + plant
+const lamp = new THREE.Group(); scene.add(lamp);
+at(box(0.22, 0.03, 0.22, mat('#20263d'), 0.01), 1.35, 0.835, -3.0, lamp);
+const arm = at(box(0.03, 0.6, 0.03, mat('#20263d')), 1.35, 1.13, -3.0, lamp); arm.rotation.z = 0.25;
+const shade = at(new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.2, 24, 1, true), mat('#f97316', { side: THREE.DoubleSide, emissive: '#7a2c05' })), 1.2, 1.45, -2.95, lamp);
+shade.rotation.z = 0.5;
+const bulb = new THREE.PointLight('#ffb36b', 9, 6, 1.6); at(bulb, 1.15, 1.35, -2.85);
+const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.055, 0.13, 20), mat('#12f3d8', { roughness: 0.4 }));
+mug.castShadow = true; at(mug, -0.85, 0.885, -2.55);
+const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.17, 0.4, 20), mat('#c2410c')); pot.castShadow = true; at(pot, 2.9, 0.2, -3.0);
+for (let i = 0; i < 7; i++) { const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), mat(i % 2 ? '#2f7d4a' : '#3f9a5c')); leaf.scale.set(0.6, 1.4, 0.6); leaf.castShadow = true; at(leaf, 2.9 + Math.cos(i) * 0.18, 0.75 + (i % 3) * 0.18, -3.0 + Math.sin(i * 2) * 0.18).rotation.z = Math.cos(i) * 0.4; }
+
+// phone (contact)
+const phone = new THREE.Group(); scene.add(phone);
+at(box(0.2, 0.025, 0.38, mat('#111522'), 0.02), -1.05, 0.835, -2.45, phone);
+const phTex = canvasTex(256, 480, (g, W, H) => {
+  const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#0f766e'); gr.addColorStop(1, '#0b1020'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#fff'; g.font = '700 30px "Space Grotesk"'; g.textAlign = 'center'; g.fillText('Say hi 👋', W / 2, 110);
+  g.font = '500 17px "JetBrains Mono"'; g.fillText('asfahmi5', W / 2, 160); g.fillText('@gmail.com', W / 2, 184);
+  ['✉', 'in', 'gh', 'ig'].forEach((t, i) => { g.fillStyle = 'rgba(255,255,255,.15)'; g.beginPath(); g.roundRect(28 + (i % 2) * 110, 240 + Math.floor(i / 2) * 110, 90, 90, 22); g.fill(); g.fillStyle = '#fff'; g.font = '700 30px "Space Grotesk"'; g.fillText(t, 73 + (i % 2) * 110, 296 + Math.floor(i / 2) * 110); });
+});
+const phScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.34), new THREE.MeshBasicMaterial({ map: phTex, toneMapped: false }));
+phScreen.rotation.x = -Math.PI / 2; at(phScreen, -1.05, 0.849, -2.45, phone);
+register('contact', phone, new THREE.Vector3(-0.95, 0.92, -2.2), { pos: new THREE.Vector3(-1.0, 2.0, -1.55), target: new THREE.Vector3(-1.05, 0.84, -2.45) });
+
+// CV paper stack
+const cv = new THREE.Group(); scene.add(cv);
+const cvTex = canvasTex(300, 400, (g, W, H) => {
+  g.fillStyle = '#f7f5ef'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#1a2036'; g.font = '700 46px "Space Grotesk"'; g.fillText('CV', 24, 70);
+  g.fillStyle = '#f97316'; g.fillRect(24, 88, 70, 6);
+  g.fillStyle = '#c9ccd6'; for (let i = 0; i < 12; i++) g.fillRect(24, 120 + i * 22, 140 + ((i * 53) % 110), 9);
+});
+for (let i = 0; i < 4; i++) { const sh = box(0.3, 0.008, 0.4, mat('#f2efe6')); sh.rotation.y = (i - 1.5) * 0.06; at(sh, -1.5, 0.825 + i * 0.009, -3.05, cv); }
+const cvTop = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.4), new THREE.MeshStandardMaterial({ map: cvTex }));
+cvTop.rotation.x = -Math.PI / 2; at(cvTop, -1.5, 0.866, -3.05, cv);
+register('cv', cv, new THREE.Vector3(-1.6, 1.5, -3.15), null);
+
+// corkboard (experience) on back wall
+const corkTex = canvasTex(1200, 760, (g, W, H) => {
+  g.fillStyle = '#b8895a'; g.fillRect(0, 0, W, H);
+  for (let i = 0; i < 2500; i++) { g.fillStyle = `rgba(${90 + Math.random() * 60},${60 + Math.random() * 40},30,.35)`; g.fillRect(Math.random() * W, Math.random() * H, 3, 3); }
+  const cards = D.experience.slice(0, 4);
+  cards.forEach((e, i) => {
+    const x = 50 + (i % 2) * 570, y = 50 + Math.floor(i / 2) * 350, rot = (i % 2 ? 1 : -1) * 0.025;
+    g.save(); g.translate(x + 250, y + 140); g.rotate(rot);
+    g.fillStyle = i === 0 ? '#fff4c2' : '#f8f6f0'; g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 14; g.fillRect(-250, -140, 500, 280); g.shadowBlur = 0;
+    g.fillStyle = '#d6332b'; g.beginPath(); g.arc(0, -122, 13, 0, 7); g.fill();
+    g.fillStyle = '#1a2036'; g.font = '700 36px "Space Grotesk"'; g.fillText(e.role.length > 22 ? e.role.slice(0, 21) + '…' : e.role, -220, -60);
+    g.fillStyle = '#c2410c'; g.font = '600 25px "JetBrains Mono"'; g.fillText(e.company.toUpperCase().slice(0, 28), -220, -18);
+    g.fillStyle = '#555c70'; g.font = '500 25px "JetBrains Mono"'; g.fillText(`${fmt(e.start)} – ${fmt(e.end)}`, -220, 22);
+    g.fillStyle = '#9aa0ad'; for (let k = 0; k < 3; k++) g.fillRect(-220, 58 + k * 22, 380 - k * 70, 8);
+    g.restore();
+  });
+});
+const cork = new THREE.Group(); scene.add(cork);
+at(box(2.3, 1.45, 0.06, mat('#5b3a22')), -1.95, 2.25, -3.47, cork);
+at(new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.35), new THREE.MeshStandardMaterial({ map: corkTex, roughness: 0.95 })), -1.95, 2.25, -3.435, cork);
+register('experience', cork, new THREE.Vector3(-1.95, 3.1, -3.4), { pos: new THREE.Vector3(-1.7, 2.3, -0.5), target: new THREE.Vector3(-1.95, 2.2, -3.45) });
+
+// photo frame (about)
+const frame = new THREE.Group(); scene.add(frame);
+at(box(0.8, 0.95, 0.05, mat('#f2efe6'), 0.02), 1.55, 2.35, -3.47, frame);
+const photo = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), new THREE.MeshStandardMaterial({ color: '#334' }));
+at(photo, 1.55, 2.42, -3.44, frame);
+const nameTex = canvasTex(400, 80, (g, W, H) => { g.fillStyle = '#f2efe6'; g.fillRect(0, 0, W, H); g.fillStyle = '#1a2036'; g.font = '700 34px "Space Grotesk"'; g.textAlign = 'center'; g.fillText('Fahmi Ady', W / 2, 52); });
+at(new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.12), new THREE.MeshBasicMaterial({ map: nameTex })), 1.55, 2.0, -3.443, frame);
+loader.load(D.photo, (t) => { t.colorSpace = THREE.SRGBColorSpace; photo.material.map = t; photo.material.color.set('#fff'); photo.material.needsUpdate = true; }, undefined, () => {});
+register('about', frame, new THREE.Vector3(1.55, 3.0, -3.4), { pos: new THREE.Vector3(1.4, 2.4, -1.2), target: new THREE.Vector3(1.55, 2.35, -3.45) });
+
+// bookshelf (certificates) on left wall: 23 books
+const shelf = new THREE.Group(); scene.add(shelf);
+const shelfWood = mat('#7a4a26');
+const SX = -3.25, SZ = 1.1;
+at(box(0.45, 2.4, 0.06, shelfWood), SX, 1.2, SZ - 1.0, shelf); at(box(0.45, 2.4, 0.06, shelfWood), SX, 1.2, SZ + 1.0, shelf);
+at(box(0.06, 2.4, 2.06, shelfWood), SX - 0.2, 1.2, SZ, shelf);
+[0.05, 0.75, 1.45, 2.15, 2.4].forEach((y) => at(box(0.45, 0.05, 2.0, shelfWood), SX, y, SZ, shelf));
+const bookColors = ['#12f3d8', '#f97316', '#e9ecf5', '#3b82f6', '#facc15', '#ef4444', '#a78bfa', '#22c55e'];
+let bi = 0;
+[0.08, 0.78, 1.48].forEach((y, row) => {
+  let z = SZ - 0.92;
+  const count = row === 2 ? 7 : 8;
+  for (let k = 0; k < count && bi < D.certificates.length; k++, bi++) {
+    const h = 0.42 + ((bi * 37) % 20) / 100, w = 0.07 + ((bi * 13) % 5) / 100;
+    const b = box(0.32, h, w, mat(bookColors[bi % bookColors.length], { roughness: 0.7 }));
+    at(b, SX + 0.02, y + h / 2 + 0.02, z + w / 2, shelf);
+    if (k === count - 1) b.rotation.x = -0.18;
+    z += w + 0.03;
+  }
+});
+// trophy (education & awards) on top of shelf
+const trophy = new THREE.Group(); scene.add(trophy);
+const gold = mat('#f5c542', { metalness: 0.9, roughness: 0.25, emissive: '#3a2a00' });
+at(box(0.22, 0.08, 0.22, mat('#20263d')), SX, 2.47, SZ + 0.55, trophy);
+at(new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.04, 0.16, 12), gold), SX, 2.59, SZ + 0.55, trophy);
+const cup = at(new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.06, 0.2, 20), gold), SX, 2.77, SZ + 0.55, trophy); cup.castShadow = true;
+const cap = new THREE.Group(); scene.add(cap);
+at(box(0.3, 0.03, 0.3, mat('#111522')), SX, 2.47, SZ - 0.45, trophy);
+at(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.08, 16), mat('#111522')), SX, 2.42, SZ - 0.45, trophy);
+register('education', trophy, new THREE.Vector3(SX + 0.1, 3.1, SZ + 0.05), { pos: new THREE.Vector3(-0.6, 2.9, 1.5), target: new THREE.Vector3(SX, 2.55, SZ) });
+register('certificates', shelf, new THREE.Vector3(SX + 0.2, 1.65, SZ + 1.15), { pos: new THREE.Vector3(0.7, 1.9, 2.4), target: new THREE.Vector3(SX, 1.25, SZ) });
+
+// chair
+const chair = new THREE.Group(); scene.add(chair);
+at(box(0.6, 0.08, 0.55, mat('#2b3352'), 0.03), 0.1, 0.55, -1.6, chair);
+at(box(0.6, 0.7, 0.08, mat('#2b3352'), 0.03), 0.1, 0.95, -1.33, chair);
+at(new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.5, 10), mat('#111522')), 0.1, 0.27, -1.6, chair);
+at(box(0.6, 0.04, 0.06, mat('#111522')), 0.1, 0.03, -1.6, chair);
+at(box(0.06, 0.04, 0.6, mat('#111522')), 0.1, 0.03, -1.6, chair);
+
+// lights
+scene.add(new THREE.HemisphereLight('#8fa3ff', '#2a1a10', 0.55));
+const moon = new THREE.DirectionalLight('#a9bfff', 1.4);
+moon.position.set(6, 9, 4); moon.castShadow = true; moon.shadow.mapSize.set(1024, 1024);
+Object.assign(moon.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6 }); moon.shadow.bias = -0.0005;
+scene.add(moon);
+const glow = new THREE.PointLight('#12f3d8', 3, 3.5, 2); at(glow, 0, 1.5, -2.5);
+
+/* ---------- hotspots (real buttons, projected each frame) ---------- */
+const hsWrap = $('#hotspots');
+const hsList = SECTIONS.filter((s) => objects[s.id]).map((s) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'hs'; b.dataset.sec = s.id; b.textContent = s.label;
+  b.setAttribute('aria-label', `Open ${s.title || s.label}`);
+  b.onclick = () => openSection(s.id);
+  hsWrap.appendChild(b);
+  return { b, v: objects[s.id].anchor };
+});
+const tmp = new THREE.Vector3();
+function placeHotspots() {
+  const w = innerWidth, h = innerHeight;
+  for (const { b, v } of hsList) {
+    tmp.copy(v).project(camera);
+    const x = (tmp.x * 0.5 + 0.5) * w, y = (-tmp.y * 0.5 + 0.5) * h;
+    b.style.left = x + 'px'; b.style.top = y + 'px';
+    b.style.display = tmp.z < 1 && x > 64 && x < w - 64 && y > 70 && y < h - 20 ? '' : 'none';
+    b.classList.toggle('dim', !!current && b.dataset.sec !== current);
+  }
+}
+
+/* ---------- picking ---------- */
+const ray = new THREE.Raycaster(); const ptr = new THREE.Vector2();
+let hovered = null, downAt = null;
+const pickables = Object.values(objects).map((o) => o.group);
+function pick(e) {
+  const r = renderer.domElement.getBoundingClientRect();
+  ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(pickables, true)[0];
+  return hit ? hit.object.userData.section : null;
+}
+function setHover(id) {
+  if (hovered === id) return;
+  if (hovered) objects[hovered].group.traverse((m) => m.isMesh && m.material.emissive && m.material.emissive.set(m.userData.baseEmissive ?? '#000'));
+  hovered = id;
+  renderer.domElement.style.cursor = id ? 'pointer' : 'grab';
+  if (id) objects[id].group.traverse((m) => { if (m.isMesh && m.material.emissive) { m.userData.baseEmissive ??= '#' + m.material.emissive.getHexString(); m.material = m.material.clone(); m.material.emissive.set('#3a2008'); } });
+}
+renderer.domElement.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') setHover(pick(e)); });
+renderer.domElement.addEventListener('pointerdown', (e) => { downAt = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener('pointerup', (e) => {
+  if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return;
+  const id = pick(e); if (id) openSection(id);
+});
+
+/* ---------- camera moves ---------- */
+let tween = null;
+function flyTo(pos, target) {
+  if (reduceMotion) { camera.position.copy(pos); controls.target.copy(target); return; }
+  tween = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone(), s: performance.now(), d: 1100 };
+}
+function focusObject(id) {
+  const o = id && objects[id];
+  if (o && o.view) {
+    const pos = o.view.pos.clone();
+    if (innerWidth < 760) pos.add(pos.clone().sub(o.view.target).multiplyScalar(0.45)).add(new THREE.Vector3(0, -0.35, 0)); // back off on phones (panel covers bottom)
+    flyTo(pos, o.view.target);
+  } else flyTo(homePos(), homeTarget());
+}
+// portrait screens frame the desk wall head-on with a wider lens; landscape gets the full room
+const HOME_PORTRAIT = { pos: new THREE.Vector3(2.9, 3.7, 5.6), target: new THREE.Vector3(-0.1, 1.5, -2.6) };
+const portrait = () => innerWidth / innerHeight < 0.8;
+function homeTarget() { return portrait() ? HOME_PORTRAIT.target : HOME.target; }
+function homePos() {
+  if (portrait()) return HOME_PORTRAIT.pos.clone();
+  const a = innerWidth / innerHeight;
+  return HOME.target.clone().add(HOME.pos.clone().sub(HOME.target).multiplyScalar(a < 1.2 ? 1.3 : 1));
+}
+const ease = (t) => 1 - Math.pow(1 - t, 3);
+let shift = 0; // px the projection centre moves away from the open panel
+function applyShift() {
+  const w = innerWidth, h = innerHeight, mobile = w < 760;
+  const want = current ? (mobile ? h * 0.72 : Math.min(460, w)) : 0;
+  shift += (want - shift) * (reduceMotion ? 1 : 0.12);
+  if (Math.abs(want - shift) < 0.5) shift = want;
+  if (shift < 0.5) { camera.clearViewOffset(); return; }
+  if (mobile) camera.setViewOffset(w, h + shift, 0, shift, w, h);
+  else camera.setViewOffset(w + shift, h, shift, 0, w, h);
+}
+
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = portrait() ? 58 : 38; camera.updateProjectionMatrix();
+}
+addEventListener('resize', () => { resize(); if (!current) { camera.position.copy(homePos()); controls.target.copy(homeTarget()); } });
+resize();
+camera.position.copy(homePos()); controls.target.copy(homeTarget());
+
+document.fonts.ready.then(() => { drawScreen(); });
+drawScreen();
+
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const t = clock.getElapsedTime();
+  if (tween) {
+    const k = Math.min(1, (performance.now() - tween.s) / tween.d), e = ease(k);
+    camera.position.lerpVectors(tween.p0, tween.p1, e); controls.target.lerpVectors(tween.t0, tween.t1, e);
+    if (k === 1) tween = null;
+  }
+  if (!reduceMotion) { bulb.intensity = 9 + Math.sin(t * 3) * 0.25; mug.rotation.y = t * 0.3; }
+  controls.update();
+  applyShift();
+  renderer.render(scene, camera);
+  placeHotspots();
+});
+
+const qs = new URLSearchParams(location.search).get('open');
+if (qs === 'quick') openQuick();
+else if (qs) { panel.classList.add('instant'); openSection(qs); requestAnimationFrame(() => panel.classList.remove('instant')); }
+</script>
+</body>
+</html>

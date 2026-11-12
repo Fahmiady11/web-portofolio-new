@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FahmiOS 11 — Muhammad Fahmi Ady Susilo (concept B)</title>
+<meta name="description" content="Software Developer from Lamongan, Indonesia. A portfolio you use like an operating system.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4ecdc;
+    --ink: #1c1917;
+    --muted: #6b6257;
+    --orange: #ea580c;
+    --teal: #0fb5a2;
+    --green: #15803d;
+    --yellow: #facc15;
+    --blue: #2563eb;
+    --shadow: 5px 5px 0 var(--ink);
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font: 14px/1.5 "IBM Plex Sans", system-ui, sans-serif; color: var(--ink); }
+  body { overflow: hidden; background: #e8dcc4; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  a { color: var(--blue); }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  /* wallpaper: kawung batik motif (nod to Madura) */
+  .desktop { position: fixed; inset: 0 0 46px 0; overflow: hidden;
+    background-color: #e9dcc1;
+    background-image:
+      radial-gradient(ellipse 22px 34px at 50% 0, #d9c39b 60%, transparent 62%),
+      radial-gradient(ellipse 22px 34px at 50% 100%, #d9c39b 60%, transparent 62%),
+      radial-gradient(ellipse 34px 22px at 0 50%, #d9c39b 60%, transparent 62%),
+      radial-gradient(ellipse 34px 22px at 100% 50%, #d9c39b 60%, transparent 62%),
+      radial-gradient(circle 5px at 50% 50%, #c9ab78 90%, transparent 100%);
+    background-size: 84px 84px; }
+  .wallmark { position: absolute; right: 36px; bottom: 26px; text-align: right; font-family: var(--mono); color: #b89a68; pointer-events: none; }
+  .wallmark b { display: block; font: 700 64px/1 "IBM Plex Sans"; letter-spacing: -.04em; color: #c9ab78; }
+
+  /* desktop icons */
+  .icons { position: absolute; top: 16px; left: 14px; display: grid; grid-auto-flow: column; grid-template-rows: repeat(5, 92px); gap: 6px 4px; }
+  .icon { width: 92px; border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 2px; border-radius: 6px; font-size: 12.5px; font-weight: 600; text-align: center; }
+  .icon .g { width: 46px; height: 46px; display: grid; place-items: center; font-size: 24px; border: 2px solid var(--ink); border-radius: 10px; box-shadow: 3px 3px 0 var(--ink); background: #fff; }
+  .icon:hover .g, .icon:focus-visible .g { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+  .icon span:last-child { background: rgba(244,236,220,.85); padding: 0 4px; border-radius: 3px; }
+
+  /* sticky note (recruiter path) */
+  .note { position: absolute; top: 18px; right: 22px; width: 236px; background: var(--yellow); border: 2px solid var(--ink); box-shadow: var(--shadow); padding: 12px 14px 14px; transform: rotate(1.5deg); z-index: 2; }
+  .note h3 { margin: 0 0 6px; font: 700 15px var(--mono); }
+  .note p { margin: 0 0 8px; font-size: 13px; }
+  .note .row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border: 2px solid var(--ink); background: #fff; box-shadow: 2px 2px 0 var(--ink); font: 600 12.5px var(--mono); text-decoration: none; color: var(--ink); white-space: nowrap; }
+  .pill:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+  .pill.dark { background: var(--ink); color: var(--paper); }
+  .pill.or { background: var(--orange); color: #fff; }
+
+  /* windows */
+  .win { position: absolute; display: flex; flex-direction: column; background: var(--paper); border: 2px solid var(--ink); box-shadow: var(--shadow); min-width: 280px; max-width: calc(100vw - 20px); max-height: calc(100vh - 66px); border-radius: 4px; }
+  .win.min { display: none; }
+  .win.max { left: 8px !important; top: 8px !important; width: calc(100vw - 16px) !important; height: calc(100vh - 70px) !important; }
+  .bar { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 2px solid var(--ink); background: var(--c, var(--teal)); cursor: grab; user-select: none; touch-action: none; }
+  .bar:active { cursor: grabbing; }
+  .bar .t { flex: 1; font: 600 13px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+  .win:not(.top) .bar { background: #d6cbb5; }
+  .bar button { width: 22px; height: 22px; border: 2px solid var(--ink); background: var(--paper); display: grid; place-items: center; font: 700 12px/1 var(--mono); padding: 0; }
+  .bar .back { display: none; }
+  .content { overflow: auto; padding: 16px 18px; flex: 1; }
+  .content.flush { padding: 0; }
+
+  /* app content */
+  .hello { display: grid; grid-template-columns: 112px 1fr; gap: 16px; align-items: start; }
+  .hello img { width: 112px; height: 112px; object-fit: cover; border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+  .hello h1 { margin: 0; font-size: 22px; line-height: 1.2; }
+  .hello .role { font: 600 13px var(--mono); color: var(--orange); margin: 4px 0 8px; }
+  .hello p { margin: 0 0 10px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .kicker { font: 600 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+
+  .files { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .file { border: 2px solid var(--ink); background: #fff; padding: 0; text-align: left; box-shadow: 3px 3px 0 var(--ink); display: flex; flex-direction: column; }
+  .file:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+  .file img { width: 100%; aspect-ratio: 16/10; object-fit: cover; object-position: top; border-bottom: 2px solid var(--ink); display: block; }
+  .file b { display: block; padding: 6px 8px 0; font-size: 13px; }
+  .file small { display: block; padding: 0 8px 8px; font: 500 11px var(--mono); color: var(--muted); }
+
+  .preview img { width: 100%; border: 2px solid var(--ink); display: block; margin-bottom: 12px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 12px; }
+  .tag { font: 600 11px var(--mono); padding: 1px 7px; border: 1.5px solid var(--ink); background: #fff; }
+
+  .log { font: 13px/1.6 var(--mono); background: #1c1917; color: #e7e1d4; padding: 16px 18px; min-height: 100%; }
+  .log .c { color: var(--yellow); }
+  .log .h { color: #5eead4; }
+  .log .d { color: #a8a29e; }
+  .log ul { margin: 4px 0 18px; padding-left: 4ch; }
+  .log li { margin: 2px 0; }
+  .log li::marker { content: "+ "; color: #86efac; }
+
+  table.pkg { width: 100%; border-collapse: collapse; font: 13px var(--mono); }
+  .pkg th, .pkg td { text-align: left; padding: 6px 8px; border-bottom: 1.5px dashed #c9bda6; }
+  .pkg th { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .pkg td img { width: 16px; height: 16px; vertical-align: -3px; margin-right: 6px; }
+  .pkg .ok { color: var(--green); font-weight: 600; }
+
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+  .gallery figure { margin: 0; font-size: 12px; }
+  .gallery button { padding: 0; border: 2px solid var(--ink); background: #fff; display: block; width: 100%; }
+  .gallery img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .gallery figcaption b { display: block; line-height: 1.3; margin-top: 4px; }
+  .gallery figcaption { color: var(--muted); }
+
+  .mail label { display: block; font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 8px 0 4px; }
+  .mail input, .mail textarea { width: 100%; font: inherit; padding: 8px 10px; border: 2px solid var(--ink); background: #fff; }
+  .mail textarea { min-height: 110px; resize: vertical; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 13px; margin-top: 12px; }
+  .kv dt { font: 600 12px var(--mono); color: var(--muted); }
+  .kv dd { margin: 0; overflow-wrap: anywhere; }
+
+  .term { background: #0f1412; color: #c7f9cc; font: 13px/1.55 var(--mono); padding: 12px 14px; min-height: 100%; cursor: text; }
+  .term .p { color: #5eead4; }
+  .term .o { color: #fde68a; }
+  .term .d { color: #6b7d74; }
+  .term pre { margin: 0; white-space: pre-wrap; font: inherit; }
+  .term form { display: flex; gap: 8px; }
+  .term input { flex: 1; min-width: 0; background: transparent; border: 0; color: inherit; font: inherit; outline: none; padding: 0; }
+
+  .job { border: 2px solid var(--ink); background: #fff; padding: 10px 12px; margin-bottom: 10px; }
+  .job h4 { margin: 0; font-size: 14px; }
+  .job small { font: 500 12px var(--mono); color: var(--muted); }
+  .job p { margin: 4px 0 0; font-size: 13px; }
+
+  /* taskbar */
+  .taskbar { position: fixed; left: 0; right: 0; bottom: 0; height: 46px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: var(--paper); border-top: 2px solid var(--ink); z-index: 9000; }
+  .start { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border: 2px solid var(--ink); background: var(--orange); color: #fff; font: 700 13px var(--mono); box-shadow: 2px 2px 0 var(--ink); }
+  .tasks { flex: 1; display: flex; gap: 6px; overflow: hidden; }
+  .task { max-width: 170px; padding: 5px 10px; border: 2px solid var(--ink); background: #fff; font: 600 12px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task.on { background: var(--ink); color: var(--paper); }
+  .tray { font: 600 12px var(--mono); display: flex; gap: 12px; align-items: center; white-space: nowrap; }
+  .menu { position: fixed; left: 8px; bottom: 54px; width: 270px; background: var(--paper); border: 2px solid var(--ink); box-shadow: var(--shadow); z-index: 9001; display: none; }
+  .menu.open { display: block; }
+  .menu header { background: var(--ink); color: var(--paper); padding: 12px 14px; font: 600 13px var(--mono); }
+  .menu button { display: flex; width: 100%; gap: 10px; padding: 9px 14px; border: 0; border-bottom: 1.5px dashed #c9bda6; background: transparent; text-align: left; font-weight: 600; }
+  .menu button:hover { background: #fff; }
+
+
+  /* phone mode */
+  .phone-home { display: none; }
+  @media (max-width: 760px) {
+    .desktop { inset: 0; background-size: 64px 64px; }
+    .icons, .note, .wallmark, .taskbar, .menu { display: none !important; }
+    .phone-home { display: block; position: absolute; inset: 0; overflow-y: auto; padding: 14px 16px 120px; }
+    .status { display: flex; justify-content: space-between; font: 600 12px var(--mono); margin-bottom: 14px; }
+    .widget { background: var(--paper); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 14px; border-radius: 14px; margin-bottom: 18px; }
+    .widget .hello { grid-template-columns: 76px 1fr; gap: 12px; }
+    .widget .hello img { width: 76px; height: 76px; border-radius: 12px; }
+    .widget .hello h1 { font-size: 18px; }
+    .apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 8px; }
+    .apps .icon, .pdock .icon { width: auto; min-width: 0; }
+    .apps .icon .g { width: 58px; height: 58px; border-radius: 16px; font-size: 28px; }
+    .apps .icon span:last-child { background: none; font-size: 12px; }
+    .pdock { position: fixed; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(4, 1fr); padding: 10px 6px; background: rgba(244,236,220,.92); border: 2px solid var(--ink); border-radius: 22px; box-shadow: 4px 4px 0 var(--ink); }
+    .pdock .icon span:last-child { display: none; }
+    .win { position: fixed !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; max-width: none; max-height: none; border: 0; border-radius: 0; box-shadow: none; z-index: 9500 !important; }
+    .win:not(.top) { display: none; }
+    .bar { cursor: default; padding: 10px 12px; }
+    .bar .back { display: grid; width: auto; padding: 0 10px; height: 30px; }
+    .bar .mm { display: none; }
+    .hello { grid-template-columns: 1fr; }
+    .files { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .gallery { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<main class="desktop" id="desktop">
+  <div class="wallmark"><b>FahmiOS 11</b>built in Lamongan, Indonesia</div>
+  <nav class="icons" id="icons" aria-label="Desktop"></nav>
+  <aside class="note" aria-label="Recruiter shortcuts">
+    <h3>📌 Hiring?</h3>
+    <p>Skip the tour. Everything you need in one click:</p>
+    <div class="row">
+      <button class="pill" data-open="projects">Projects</button>
+      <button class="pill" data-open="experience">Experience</button>
+      <a class="pill or" id="noteCv" target="_blank" rel="noopener">CV ↓</a>
+      <button class="pill dark" data-open="contact">Email me</button>
+    </div>
+  </aside>
+  <section class="phone-home" aria-label="Home screen">
+    <div class="status"><span id="pClock">09:41</span><span>FahmiOS · 5G ▮▮▮</span></div>
+    <div class="widget" id="pWidget"></div>
+    <nav class="apps" id="pApps" aria-label="Apps"></nav>
+    <nav class="pdock" id="pDock" aria-label="Dock"></nav>
+  </section>
+</main>
+
+<div class="menu" id="menu" role="menu"><header id="menuHead"></header><div id="menuItems"></div></div>
+<footer class="taskbar">
+  <button class="start" id="startBtn" aria-haspopup="menu" aria-controls="menu">▲ Start</button>
+  <div class="tasks" id="tasks"></div>
+  <div class="tray"><span>Lamongan 31°C ☀</span><span id="clock"></span></div>
+</footer>
+
+<script>window.DATA = /*@DATA@*/;</script>
+<script>
+(() => {
+const D = window.DATA;
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const mobile = () => innerWidth <= 760;
+const fmt = (ym) => { if (!ym) return 'present'; const [y, m] = ym.split('-'); return new Date(+y, +m - 1).toLocaleString('en', { month: 'short' }) + ' ' + y; };
+const qs = new URLSearchParams(location.search);
+
+/* ---------------- apps ---------------- */
+const APPS = {
+  about: { title: 'About.txt', icon: '👋', color: 'var(--yellow)', w: 560, h: 430, render: () => `
+    <div class="hello"><img src="${D.photo}" alt="Portrait of ${esc(D.name)}">
+      <div><h1>${esc(D.name)}</h1><div class="role">Software Developer @ Sentra Vidya Utama</div>
+      <p>${esc(D.about)}</p>
+      <p>Right now: building higher-education platforms used by <b>400+ universities</b> across Indonesia, plus government systems for two ministries.</p>
+      <div class="row"><button class="pill or" data-open="projects">Open Projects</button><a class="pill" href="${D.cv}" target="_blank" rel="noopener">CV.pdf ↓</a><button class="pill dark" data-open="contact">Say hi</button></div></div></div>
+    <div class="kicker">Tip</div><p style="margin:0">Double-click icons, drag windows by their title bar, or open <b>Terminal</b> and type <code>help</code>.</p>` },
+  projects: { title: 'Projects/', icon: '🗂', color: 'var(--orange)', w: 700, h: 520, render: () => `
+    <div class="files">${D.projects.map((p, i) => `
+      <button class="file" data-project="${i}"><img src="${p.thumb}" alt=""><b>${esc(p.title)}</b><small>${esc(p.tags.join(' · '))}</small></button>`).join('')}</div>` },
+  experience: { title: 'experience.log — git log', icon: '📜', color: 'var(--teal)', w: 680, h: 520, flush: true, render: () => `
+    <div class="log">${D.experience.map((e, i) => `
+      <div><span class="c">commit ${(0xf3a9c1 + i * 0x1d3b7).toString(16)}${e.latest ? ' <span class="h">(HEAD -&gt; now)</span>' : ''}</span>
+      <div>Author: ${esc(e.role)} &lt;${esc(e.company)}&gt;</div>
+      <div class="d">Date:   ${fmt(e.start)} → ${fmt(e.end)}</div>
+      <ul>${e.highlights.map((h) => `<li>${esc(h)}</li>`).join('')}</ul></div>`).join('')}</div>` },
+  skills: { title: 'Skills — package manager', icon: '📦', color: 'var(--green)', w: 560, h: 500, render: () => `
+    <table class="pkg"><thead><tr><th>Package</th><th>Group</th><th>Status</th></tr></thead><tbody>
+    ${Object.entries(D.skills).flatMap(([g, list]) => list.map((s) => `<tr><td>${D.skillIcons[s] ? `<img src="${D.skillIcons[s]}" alt="">` : '<span style="display:inline-block;width:22px"></span>'}${esc(s)}</td><td>${esc(g)}</td><td class="ok">installed ✓</td></tr>`)).join('')}
+    </tbody></table>` },
+  certificates: { title: 'Certificates/ (23)', icon: '🏅', color: 'var(--yellow)', w: 720, h: 540, render: () => `
+    <div class="gallery">${D.certificates.map((c, i) => `
+      <figure><button data-cert="${i}" aria-label="Open ${esc(c.title)}"><img src="${c.thumb}" alt=""></button>
+      <figcaption><b>${esc(c.title)}</b>${esc(c.issuer)}${c.date ? ' · ' + esc(c.date) : ''}</figcaption></figure>`).join('')}</div>` },
+  education: { title: 'School/', icon: '🎓', color: 'var(--blue)', w: 540, h: 480, render: () => `
+    <div class="kicker" style="margin-top:0">Education</div>
+    ${D.education.map((e) => `<div class="job"><h4>${esc(e.degree)}</h4><small>${esc(e.school)} · ${esc(e.period)}</small><p>${esc(e.detail)}</p></div>`).join('')}
+    <div class="kicker">Awards</div>
+    ${D.achievements.map((a) => `<div class="job"><h4>🏆 ${esc(a.title)}</h4><small>${esc(a.date)}</small></div>`).join('')}
+    <div class="kicker">Organizations</div>
+    ${D.organizations.map((o) => `<div class="job"><h4>${esc(o.role)}</h4><small>${esc(o.org)} · ${esc(o.period)}</small><p>${esc(o.detail)}</p></div>`).join('')}` },
+  terminal: { title: 'Terminal — fahmi@lamongan', icon: '⌨', color: '#86efac', w: 560, h: 340, flush: true, render: () => `<div class="term" id="term"><div id="termOut"></div><form id="termForm"><span class="p">fahmi@lamongan:~$</span><input id="termIn" autocomplete="off" spellcheck="false" aria-label="Terminal command"></form></div>`, mount: mountTerminal },
+  contact: { title: 'Mail — New message', icon: '✉', color: 'var(--orange)', w: 500, h: 520, render: () => `
+    <form class="mail" id="mailForm">
+      <label for="mTo">To</label><input id="mTo" value="${D.email}" readonly>
+      <label for="mSub">Subject</label><input id="mSub" value="Hi Fahmi — let's talk">
+      <label for="mBody">Message</label><textarea id="mBody">Hi Fahmi,\n\nI saw your portfolio and </textarea>
+      <div class="row" style="margin-top:10px"><button class="pill or" type="submit">Send ✈</button><a class="pill" href="${D.cv}" target="_blank" rel="noopener">CV.pdf</a></div>
+    </form>
+    <dl class="kv"><dt>Phone</dt><dd>${esc(D.phone)}</dd>${D.socials.map((s) => `<dt>${esc(s.name)}</dt><dd><a href="${s.url}" target="_blank" rel="noopener">${esc(s.handle)}</a></dd>`).join('')}</dl>`,
+    mount: (el) => { $('#mailForm', el).onsubmit = (e) => { e.preventDefault(); location.href = `mailto:${D.email}?subject=${encodeURIComponent($('#mSub', el).value)}&body=${encodeURIComponent($('#mBody', el).value)}`; }; } },
+  cv: { title: 'CV.pdf', icon: '📄', link: () => D.cv },
+};
+const DESK = ['about', 'projects', 'experience', 'skills', 'certificates', 'education', 'terminal', 'contact', 'cv'];
+
+/* ---------------- window manager ---------------- */
+let z = 10, cascade = 0;
+const wins = new Map(); // key -> element
+
+function openApp(key, opts = {}) {
+  const app = APPS[key];
+  if (app.link) { window.open(app.link(), '_blank', 'noopener'); return; }
+  if (wins.has(key)) { const w = wins.get(key); w.classList.remove('min'); focus(w); return w; }
+  return makeWindow(key, app.title, app.color, app.w, app.h, app.render(), app.flush, opts, app.mount);
+}
+function makeWindow(key, title, color, w, h, html, flush, opts = {}, mount) {
+  const el = document.createElement('section');
+  el.className = 'win'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', title);
+  el.style.setProperty('--c', color || 'var(--teal)');
+  const W = Math.min(w, innerWidth - 24), H = Math.min(h, innerHeight - 80);
+  const x = opts.x ?? Math.max(10, Math.min(innerWidth - W - 10, 130 + (cascade % 6) * 34));
+  const y = opts.y ?? Math.max(10, Math.min(innerHeight - H - 60, 40 + (cascade % 6) * 30));
+  cascade++;
+  Object.assign(el.style, { left: x + 'px', top: y + 'px', width: W + 'px', height: H + 'px' });
+  el.innerHTML = `<div class="bar"><button class="back" data-act="close" aria-label="Back to home">‹ Home</button><span class="t">${esc(title)}</span><button class="mm" data-act="min" aria-label="Minimize">_</button><button class="mm" data-act="max" aria-label="Maximize">□</button><button data-act="close" aria-label="Close">×</button></div><div class="content${flush ? ' flush' : ''}">${html}</div>`;
+  $('#desktop').appendChild(el);
+  wins.set(key, el);
+  el.addEventListener('pointerdown', () => focus(el));
+  el.querySelector('.bar').addEventListener('click', (e) => {
+    const act = e.target.dataset.act; if (!act) return;
+    if (act === 'close') { el.remove(); wins.delete(key); refreshTop(); }
+    if (act === 'min') { el.classList.add('min'); refreshTop(); }
+    if (act === 'max') el.classList.toggle('max');
+    renderTasks();
+  });
+  drag(el);
+  focus(el);
+  if (mount) mount(el);
+  renderTasks();
+  return el;
+}
+function focus(el) { el.style.zIndex = ++z; refreshTop(); }
+function refreshTop() {
+  let top = null, best = -1;
+  wins.forEach((w) => { w.classList.remove('top'); if (!w.classList.contains('min') && +w.style.zIndex > best) { best = +w.style.zIndex; top = w; } });
+  if (top) top.classList.add('top');
+  renderTasks();
+}
+function drag(el) {
+  const bar = el.querySelector('.bar');
+  bar.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('button') || mobile() || el.classList.contains('max')) return;
+    const sx = e.clientX - el.offsetLeft, sy = e.clientY - el.offsetTop;
+    bar.setPointerCapture(e.pointerId);
+    const move = (ev) => {
+      el.style.left = Math.max(-el.offsetWidth + 80, Math.min(innerWidth - 80, ev.clientX - sx)) + 'px';
+      el.style.top = Math.max(0, Math.min(innerHeight - 90, ev.clientY - sy)) + 'px';
+    };
+    const up = () => { bar.removeEventListener('pointermove', move); bar.removeEventListener('pointerup', up); };
+    bar.addEventListener('pointermove', move); bar.addEventListener('pointerup', up);
+  });
+}
+function renderTasks() {
+  const t = $('#tasks'); t.innerHTML = '';
+  wins.forEach((w, key) => {
+    const b = document.createElement('button');
+    b.className = 'task' + (w.classList.contains('top') ? ' on' : '');
+    b.textContent = (APPS[key]?.icon || '🖼') + ' ' + w.getAttribute('aria-label');
+    b.onclick = () => { if (w.classList.contains('top')) { w.classList.add('min'); refreshTop(); } else { w.classList.remove('min'); focus(w); } };
+    t.appendChild(b);
+  });
+}
+
+/* project + certificate viewers */
+function openProject(i) {
+  const p = D.projects[i];
+  makeWindow('project-' + i, `Preview — ${p.title}`, 'var(--orange)', 620, 560, `
+    <div class="preview"><img src="${p.thumb}" alt="Screenshot of ${esc(p.title)}">
+    <h2 style="margin:0">${esc(p.title)}</h2>
+    <div class="tags">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+    <p>${esc(p.description)}</p>
+    <div class="row">${p.website ? `<a class="pill or" href="${p.website}" target="_blank" rel="noopener">Open live site ↗</a>` : ''}${p.github ? `<a class="pill" href="${p.github}" target="_blank" rel="noopener">Source on GitHub ↗</a>` : ''}${!p.website && !p.github ? '<span class="pill">🔒 Private / client project</span>' : ''}</div></div>`);
+}
+function openCert(i) {
+  const c = D.certificates[i];
+  makeWindow('cert-' + i, c.title, 'var(--yellow)', 620, 520, `<img src="${c.thumb}" alt="Certificate: ${esc(c.title)}" style="width:100%;border:2px solid var(--ink)"><p style="margin:8px 0 0"><b>${esc(c.title)}</b><br>${esc(c.issuer)}${c.date ? ' · ' + esc(c.date) : ''}</p>`);
+}
+
+/* global click routing */
+document.addEventListener('click', (e) => {
+  const o = e.target.closest('[data-open]'); if (o) { openApp(o.dataset.open); closeMenu(); return; }
+  const p = e.target.closest('[data-project]'); if (p) { openProject(+p.dataset.project); return; }
+  const c = e.target.closest('[data-cert]'); if (c) { openCert(+c.dataset.cert); return; }
+});
+
+/* ---------------- terminal ---------------- */
+function mountTerminal(el) {
+  const out = $('#termOut', el), input = $('#termIn', el), box = $('#term', el);
+  const print = (html, cls = 'o') => { const d = document.createElement('pre'); d.className = cls; d.innerHTML = html; out.appendChild(d); box.parentElement.scrollTop = 1e9; };
+  const cmds = {
+    help: () => print('commands: whoami · about · ls · projects · open &lt;n&gt; · experience · skills · education · certs · contact · cv · neofetch · clear\ntry: sudo hire-fahmi'),
+    whoami: () => print(`${esc(D.name)} — Software Developer @ Sentra Vidya Utama\n${esc(D.location)}`),
+    about: () => print(esc(D.about)),
+    ls: () => print(DESK.map((k) => APPS[k].title).join('   ')),
+    projects: () => print(D.projects.map((p, i) => `[${i + 1}] ${esc(p.title).padEnd(32)} ${esc(p.tags.join(', '))}`).join('\n') + '\n\ntype "open 1" to preview a project'),
+    open: (a) => { const n = parseInt(a, 10); if (n >= 1 && n <= D.projects.length) { openProject(n - 1); print('opening ' + esc(D.projects[n - 1].title) + '…'); } else if (APPS[a]) openApp(a); else print('usage: open &lt;1-' + D.projects.length + '&gt;'); },
+    experience: () => { openApp('experience'); print('opened experience.log'); },
+    skills: () => print(Object.entries(D.skills).map(([g, l]) => `${g.padEnd(10)} ${l.join(', ')}`).join('\n')),
+    education: () => { openApp('education'); print('opened School/'); },
+    certs: () => { openApp('certificates'); print('opened Certificates/ (23 files)'); },
+    contact: () => { openApp('contact'); print(`mail: ${D.email}\nphone: ${esc(D.phone)}`); },
+    cv: () => { window.open(D.cv, '_blank', 'noopener'); print('downloading CV.pdf…'); },
+    clear: () => { out.innerHTML = ''; },
+    neofetch: () => print(`<span class="p">   ▄▄▄▄▄▄▄   </span>  fahmi@lamongan\n<span class="p">  █ ▄▄▄▄▄ █  </span>  OS: FahmiOS 11\n<span class="p">  █ █▄▄▄  █  </span>  Role: Software Developer\n<span class="p">  █ █     █  </span>  Uptime: since 2019 (UTM Informatika)\n<span class="p">  ▀▀▀▀▀▀▀▀▀  </span>  Stack: PHP · Laravel · React · PostgreSQL\n               Users served: 400+ universities`),
+    sudo: (a) => { if (a === 'hire-fahmi') { print('[sudo] permission granted ✓ opening mail…'); openApp('contact'); } else print('sudo: try "sudo hire-fahmi"'); },
+  };
+  const run = (line) => {
+    print(`<span class="p">fahmi@lamongan:~$</span> ${esc(line)}`, '');
+    const [c, ...rest] = line.trim().split(/\s+/);
+    if (!c) return;
+    (cmds[c.toLowerCase()] || (() => print(`command not found: ${esc(c)} — type "help"`)))(rest.join(' '));
+  };
+  $('#termForm', el).onsubmit = (e) => { e.preventDefault(); run(input.value); input.value = ''; };
+  box.addEventListener('click', () => input.focus());
+  // boot log lives here instead of a full-screen splash, so content is visible at once
+  const boot = ['FahmiOS 11 (Lamongan build)', 'checking universities served ...... 400+', 'mounting /projects ................ ' + D.projects.length + ' found', 'loading certificates .............. ' + D.certificates.length, 'starting window manager ........... ok'];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let i = 0;
+  const step = () => {
+    if (i < boot.length) { print(esc(boot[i++]), 'd'); setTimeout(step, reduce ? 0 : 140); return; }
+    run('whoami');
+    print('type "help" to see what this terminal can do', 'd');
+  };
+  step();
+}
+
+/* ---------------- desktop + phone UI ---------------- */
+const iconBtn = (k) => `<button class="icon" data-open="${k}"><span class="g" aria-hidden="true">${APPS[k].icon}</span><span>${esc(APPS[k].title.replace(/ —.*/, ''))}</span></button>`;
+$('#icons').innerHTML = DESK.map(iconBtn).join('');
+$('#icons').addEventListener('dblclick', (e) => { const b = e.target.closest('[data-open]'); if (b) openApp(b.dataset.open); });
+$('#noteCv').href = D.cv;
+$('#pWidget').innerHTML = `<div class="hello"><img src="${D.photo}" alt=""><div><h1>${esc(D.name)}</h1><div class="role">Software Developer · Lamongan</div><div class="row"><button class="pill or" data-open="projects">Projects</button><a class="pill" href="${D.cv}" target="_blank" rel="noopener">CV ↓</a><button class="pill dark" data-open="contact">Email</button></div></div></div>`;
+$('#pApps').innerHTML = ['about', 'experience', 'skills', 'certificates', 'education', 'terminal'].map(iconBtn).join('');
+$('#pDock').innerHTML = ['projects', 'terminal', 'contact', 'cv'].map(iconBtn).join('');
+$('#menuHead').textContent = D.name;
+$('#menuItems').innerHTML = DESK.map((k) => `<button role="menuitem" data-open="${k}">${APPS[k].icon} ${esc(APPS[k].title)}</button>`).join('');
+const menu = $('#menu');
+const closeMenu = () => menu.classList.remove('open');
+$('#startBtn').onclick = (e) => { e.stopPropagation(); menu.classList.toggle('open'); };
+document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#menu, #startBtn')) closeMenu(); });
+addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeMenu(); const top = $('.win.top'); if (top) top.querySelector('[data-act="close"]').click(); } });
+
+function tick() {
+  const t = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' });
+  $('#clock').textContent = t + ' WIB'; $('#pClock').textContent = t;
+}
+tick(); setInterval(tick, 15000);
+
+/* ---------------- start ---------------- */
+// desktop opens with About + Terminal; phones start on the home screen
+let greeted = false;
+function greet() {
+  if (greeted || mobile()) return;
+  greeted = true;
+  if (wins.size) return; // a deep link already opened something
+  if (!wins.has('terminal')) openApp('terminal', { x: Math.max(10, innerWidth - 600), y: Math.max(10, innerHeight - 46 - 360) });
+  if (!wins.has('about')) openApp('about', { x: 230, y: 50 });
+}
+greet();
+addEventListener('resize', greet);
+const o = qs.get('open');
+if (o && APPS[o]) openApp(o);
+else if (o === 'project') openProject(0);
+})();
+</script>
+</body>
+</html>

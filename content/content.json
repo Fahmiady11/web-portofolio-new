@@ -1,0 +1,774 @@
+{
+  "_meta": {
+    "extractedAt": "2026-11-12",
+    "sourceRepo": "https://github.com/Fahmiady11/WebPortofolio (local: ../WebPortofolio)",
+    "sourceCommit": "1b5b007 (+ uncommitted edits to ListExperience.js / ItemExperience.js that ARE in the live build)",
+    "liveSite": "https://fahmiadyportofolio.netlify.app/",
+    "liveBundle": "static/js/main.a5baafe3.js (identical hash to ../WebPortofolio/build)",
+    "language": "en (site copy). The 2022 CV PDF is in Indonesian.",
+    "assetRoot": "Paths in 'src' fields are relative to ../WebPortofolio/src/assets/. 'thumb' fields are optimized copies in ./assets/ made for the mockups."
+  },
+  "profile": {
+    "name": "Muhammad Fahmi Ady Susilo",
+    "shortName": "Fahmi Ady",
+    "brand": "FahmiAdy🚀",
+    "greeting": "Hello I'am",
+    "headline": "Fullstack Developer",
+    "currentRole": "Software Developer at Sentra Vidya Utama (July 2023 – present)",
+    "location": "Lamongan, Indonesia",
+    "about": "A Software Developer with hands-on experience in frontend development using ReactJS and Tailwind CSS, as well as a solid understanding of backend development with PHP, PostgreSQL, and frameworks such as CodeIgniter and Laravel.",
+    "photo": {
+      "src": "image/fotoutama.jpeg",
+      "thumb": "assets/avatar.jpg",
+      "note": "498x498 photo. Present in repo but its import is commented out; the live site shows no photo."
+    },
+    "photoDark": {
+      "src": "image/fotoutamadark.png",
+      "note": "4059x5601 PNG, unused."
+    },
+    "heroIllustrations": {
+      "light": "image/plane.png",
+      "dark": "image/rocket.png"
+    },
+    "copyrightLine": "Muhammad Fahmi ady susilo © 2022"
+  },
+  "contact": {
+    "email": "asfahmi5@gmail.com",
+    "phone": "+62 857-4589-8491",
+    "phoneE164": "+6285745898491",
+    "socials": [
+      {
+        "name": "GitHub",
+        "handle": "fahmiady11",
+        "url": "https://github.com/Fahmiady11"
+      },
+      {
+        "name": "LinkedIn",
+        "handle": "Muhammad Fahmi A.S",
+        "url": "https://www.linkedin.com/in/muhammad-fahmi-ady-susilo-ba05a41b0/"
+      },
+      {
+        "name": "Instagram",
+        "handle": "fahmiady_11",
+        "url": "https://www.instagram.com/fahmiady_11/"
+      },
+      {
+        "name": "Instagram (UI/UX portfolio)",
+        "handle": "uiux_11",
+        "url": "https://www.instagram.com/uiux_11/",
+        "note": "Only listed in the CV, not on the site."
+      }
+    ],
+    "cv": {
+      "src": "cv.pdf",
+      "copy": "assets/cv-2022.pdf",
+      "language": "id",
+      "note": "Imported in Home.js but the 'Download CV' button is commented out, so the live site has no CV link. The PDF is from 2022 (title 'Frontend Engginering', student semester 8) and does not mention Sentra Vidya Utama. Needs a new CV."
+    }
+  },
+  "skills": {
+    "_note": "Live site shows icons only (devicon CDN), no labels, no grouping. Grouping below is added for the new site; 'cvOnly' items come from the 2022 CV.",
+    "languages": [
+      "HTML5",
+      "CSS3",
+      "JavaScript",
+      "Python",
+      "PHP",
+      "Dart",
+      "C++"
+    ],
+    "frontend": [
+      "React",
+      "Next.js",
+      "Tailwind CSS",
+      "Bootstrap",
+      "Sass"
+    ],
+    "backend": [
+      "Laravel",
+      "CodeIgniter"
+    ],
+    "database": [
+      "MySQL",
+      "PostgreSQL"
+    ],
+    "design": [
+      "Figma"
+    ],
+    "fromAboutOrProjects": [
+      "Zustand",
+      "Chakra UI",
+      "Go",
+      "Streamlit",
+      "React Native",
+      "TypeScript"
+    ],
+    "cvOnly": [
+      "Java",
+      "CorelDRAW",
+      "Adobe Illustrator",
+      "Filmora",
+      "Macromedia Flash",
+      "MS Office"
+    ],
+    "icons": [
+      {
+        "name": "HTML5",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-plain.svg"
+      },
+      {
+        "name": "CSS3",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-plain.svg"
+      },
+      {
+        "name": "JavaScript",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-plain.svg"
+      },
+      {
+        "name": "Python",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
+      },
+      {
+        "name": "PHP",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/php/php-original.svg"
+      },
+      {
+        "name": "Dart",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg"
+      },
+      {
+        "name": "C++",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg"
+      },
+      {
+        "name": "React",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+      },
+      {
+        "name": "Next.js",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg"
+      },
+      {
+        "name": "Bootstrap",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg"
+      },
+      {
+        "name": "Tailwind CSS",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg"
+      },
+      {
+        "name": "Figma",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg"
+      },
+      {
+        "name": "Sass",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg"
+      },
+      {
+        "name": "MySQL",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original-wordmark.svg"
+      },
+      {
+        "name": "PostgreSQL",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg"
+      },
+      {
+        "name": "Laravel",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/laravel/laravel-original.svg"
+      },
+      {
+        "name": "CodeIgniter",
+        "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/codeigniter/codeigniter-plain.svg"
+      }
+    ],
+    "unusedLocalLogos": [
+      "image/logoSkill/next.png",
+      "image/logoSkill/zustand.png"
+    ]
+  },
+  "experience": [
+    {
+      "role": "Software Developer",
+      "company": "Sentra Vidya Utama",
+      "companyAsShown": "SENTRA VIDYA UTAMA",
+      "start": "2023-07",
+      "end": null,
+      "dateLabel": "Juli 2023 - Present",
+      "latest": true,
+      "highlights": [
+        "Developed and maintained higher-education digital services used by 400+ universities in Indonesia, contributing to Academic, PMB (Admissions), Simkerma, and MauKuliah modules.",
+        "Built government-backed systems including Beasiswa Sawit SDMPKS (Ministry of Agriculture) and Patriot Connect Research Portal (Ministry of Transmigration).",
+        "Utilized PHP, JavaScript, Laravel, PostgreSQL, and related technologies to deliver scalable web applications.",
+        "Delivered new features and fixes with an on-time completion rate of ~80%, aligned with sprint and Kanban productivity targets.",
+        "Reduced operational costs by optimizing SQL queries and eliminating N+1 issues in database access.",
+        "Produced 9 types of custom academic reports per university, completing 50+ SLA tasks monthly.",
+        "Generated recurring revenue of ~IDR 3M/month through continuous enhancement of custom report solutions."
+      ],
+      "stack": [
+        "PHP",
+        "JavaScript",
+        "Laravel",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "role": "Frontend Development",
+      "company": "Universitas Trunojoyo Madura",
+      "companyAsShown": "UNIVERSITAS TRUNOJOYO MADURA",
+      "start": "2022-12",
+      "end": "2023-12",
+      "dateLabel": "December 2022 - December 2023",
+      "context": "Part-time, Lanjalan UTM project (per CV)",
+      "highlights": [
+        "Developed an information system project inspired by Traveloka, featuring tourism, culinary, accommodation, transportation, and local crafts across the Madura region, as part of an initiative to promote local businesses and increase university revenue.",
+        "Built the frontend interface using ReactJS and Tailwind CSS to enhance development efficiency and design consistency.",
+        "Collaborated with the backend team to develop RESTful APIs, ensuring seamless integration with the web interface."
+      ],
+      "stack": [
+        "React",
+        "Tailwind CSS",
+        "REST API"
+      ]
+    },
+    {
+      "role": "Front End Engineering Bootcamp Student",
+      "company": "Ruangguru",
+      "companyAsShown": "RUANGGURU",
+      "start": "2022-02",
+      "end": "2022-07",
+      "dateLabel": "February 2022 - July 2022",
+      "context": "Kampus Merdeka Studi Independen; certificate shows Final GPA 4.00",
+      "highlights": [
+        "Ruangguru collaborates with Merdeka Campus as a step to realize these opportunities through the Independent Study program. Creating high-quality websites and dynamic applications to provide the best user experience is critical to increasing the competitiveness of a product or service."
+      ]
+    },
+    {
+      "role": "Lab Assistant",
+      "company": "Universitas Trunojoyo Madura",
+      "companyAsShown": "UNIVERSITAS TRUNOJOYO MADURA",
+      "start": "2021-07",
+      "end": "2022-07",
+      "dateLabel": "July 2021 - July 2022",
+      "highlights": [
+        "Responsible as an intermediary of knowledge from lecturers to students in practicum activities by providing material, guiding, and evaluating students in one class of web application programming, Database I, Database II, introductory information technology."
+      ]
+    }
+  ],
+  "experienceHiddenOrCvOnly": [
+    {
+      "role": "Frontend Development (Internship)",
+      "company": "Bangbeli, batch 7",
+      "year": "2022",
+      "source": "CV 2022 only (an 'Front End Development Intern' item existed commented-out in HEAD and was removed in the uncommitted edit)",
+      "highlights": [
+        "Built frontend features for web (ReactJS) and Android (React Native) using TypeScript."
+      ]
+    }
+  ],
+  "education": {
+    "_note": "Not shown anywhere on the live site. Source: CV 2022 (Indonesian). Graduation year / final GPA unknown.",
+    "items": [
+      {
+        "degree": "S1 Teknik Informatika (B.Sc. Informatics)",
+        "school": "Universitas Trunojoyo Madura",
+        "period": "2019 – ? (CV says 'sekarang')",
+        "detail": "GPA 3.70 through semester 7 (as of CV)."
+      },
+      {
+        "degree": "MAN – MIPA (science track)",
+        "school": "Madrasah Aliyah Negeri 1 Lamongan",
+        "period": "2016 – 2019",
+        "detail": "Graduated with 4th-best graduate award; PRODISTIK (one-year ICT diploma-equivalent program with ITS)."
+      }
+    ]
+  },
+  "organizations": {
+    "_note": "CV 2022 only, not on site.",
+    "items": [
+      {
+        "role": "Member, Public Relations & Publication Division",
+        "org": "Generasi Baru Indonesia (GenBI) UTM",
+        "period": "2022 – ?",
+        "detail": "Managed social media (~40 works) and relations with campus and other informatics programs."
+      },
+      {
+        "role": "Head of Public Relations Division",
+        "org": "Ikatan Mahasiswa Lamongan UTM",
+        "period": "2020 – 2021",
+        "detail": "Built relations internally, with campus and region; 15 members."
+      }
+    ]
+  },
+  "achievements": {
+    "_note": "CV 2022 only, not on site.",
+    "items": [
+      {
+        "date": "2022-06-08",
+        "title": "Bank Indonesia Scholarship recipient"
+      },
+      {
+        "date": "2018-11-24",
+        "title": "1st place, Smart Robot competition Java–Bali (PRODISTIK), held by Institut Teknologi Sepuluh Nopember (ITS)"
+      }
+    ]
+  },
+  "projects": [
+    {
+      "slug": "cbt",
+      "title": "Computer Based Test",
+      "description": "The Computer Based Test (CBT) website is used as a means for students to carry out Pre-Tests and Post-Tests, and also helps teachers to compile questions, monitor student progress in real-time, and evaluate exam results more efficiently through an automated system.",
+      "tags": [
+        "CodeIgniter 4",
+        "Tailwind"
+      ],
+      "github": null,
+      "website": null,
+      "images": [
+        "image/project/cbt/cbt4.png",
+        "image/project/cbt/cbt1.png",
+        "image/project/cbt/cbt2.png",
+        "image/project/cbt/cbt3.png",
+        "image/project/cbt/cbt5.png",
+        "image/project/cbt/cbt6.png"
+      ],
+      "thumb": "assets/projects/cbt.jpg",
+      "note": "Screens show 'CBT MAN 1 LAMONGAN'. No links. cbt1.png is 3.2 MB."
+    },
+    {
+      "slug": "lanjalan",
+      "title": "Lanjalan",
+      "description": "Lanjalan is a website that has the goal of introducing tourism, culinary and lodging located in the Madura area as well as being able to make travel, lodging and culinary bookings.",
+      "tags": [
+        "React",
+        "Tailwind",
+        "Laravel"
+      ],
+      "github": null,
+      "website": "https://aleng-fe-fahmiady11.vercel.app/",
+      "images": [
+        "image/project/lanjalan/image1.png",
+        "image/project/lanjalan/image2.png",
+        "image/project/lanjalan/image3.png",
+        "image/project/lanjalan/image4.png",
+        "image/project/lanjalan/image5.png"
+      ],
+      "thumb": "assets/projects/lanjalan.jpg",
+      "note": "image1.png is 6.8 MB (1920x4078)."
+    },
+    {
+      "slug": "codein",
+      "title": "CodeIn",
+      "description": "CodeIn is a platform created to make it easy for Indonesian programmers to interact to solve problems or provide useful information for other programmers.",
+      "tags": [
+        "React",
+        "Tailwind",
+        "GO"
+      ],
+      "github": "https://github.com/Fahmiady11/CodeIn_RuangGuru",
+      "website": null,
+      "images": [
+        "image/project/codein/listblog.png",
+        "image/project/codein/homepage.png",
+        "image/project/codein/detailblog.png",
+        "image/project/codein/detailforum.png",
+        "image/project/codein/inputforum.png"
+      ],
+      "thumb": "assets/projects/codein.jpg"
+    },
+    {
+      "slug": "batik",
+      "title": "Batik Selling Price Prediction",
+      "description": "A website project created to predict the selling price of Madura batik, with 4 parameters (Cloth Price, Production Time, Motif, Coloring) as the determinant. This project uses Fuzzy Mamdani and Genetic Algorithm",
+      "tags": [
+        "Python",
+        "Streamlit"
+      ],
+      "github": "https://github.com/Fahmiady11/streamlit_deploy2/",
+      "website": "https://fahmiskripsi2.streamlit.app/",
+      "images": [
+        "image/project/skripsi/skripsi1.png",
+        "image/project/skripsi/skripsi2.png"
+      ],
+      "thumb": "assets/projects/batik.jpg",
+      "note": "Undergraduate thesis (skripsi). Streamlit app redirects to a Streamlit login/wake page (303) — likely asleep or private."
+    },
+    {
+      "slug": "snake",
+      "title": "Snake Game",
+      "description": "The snake game that I have made is a browser game, there are already levels, Level and Life Challenges, so it is fun to play.",
+      "tags": [
+        "HTML",
+        "CSS",
+        "JS"
+      ],
+      "github": "https://github.com/Fahmiady11/se-fe6-kelompok8",
+      "website": "https://rg-km.github.io/se-fe6-kelompok8/",
+      "images": [
+        "image/project/snakegame/gameSnake.png"
+      ],
+      "thumb": "assets/projects/snake.jpg",
+      "note": "Website link is BROKEN (404). Team project (kelompok 8, Ruangguru)."
+    },
+    {
+      "slug": "pokemon",
+      "title": "Pokemon",
+      "description": "Simple website with pokemon API consumption",
+      "tags": [
+        "React",
+        "Tailwind",
+        "Zustand"
+      ],
+      "github": "https://github.com/Fahmiady11/pokemon-go",
+      "website": "https://fahmiady11.github.io/pokemon-go/",
+      "images": [
+        "image/project/pokemon/pokemon1.png"
+      ],
+      "thumb": "assets/projects/pokemon.jpg"
+    },
+    {
+      "slug": "todolist",
+      "title": "TodoList",
+      "description": "TodoList is a Wwebsite for us to be able to manage time well, we can manage the day we want to do any activity, or as a reminder, this website uses React and can CRUD related unfinished and completed work.",
+      "tags": [
+        "React",
+        "ChakraUI",
+        "Zustand"
+      ],
+      "github": "https://github.com/Fahmiady11/TodoList_progate",
+      "website": "https://reactprogatefahmi.netlify.app/",
+      "images": [
+        "image/project/todolist/todolist.png"
+      ],
+      "thumb": "assets/projects/todolist.jpg",
+      "note": "Typo 'Wwebsite' in source copy."
+    },
+    {
+      "slug": "calculator",
+      "title": "Calculator",
+      "description": "This Website Calculator is a website using HTML, CSS and native javascript, this Calculator is a simple calculator which can be added, subtracted, multiplied and divided.",
+      "tags": [
+        "HTML",
+        "CSS",
+        "JS"
+      ],
+      "github": "https://github.com/Fahmiady11/calculator_Progate_FGA",
+      "website": "https://fahmiady11.github.io/calculator_Progate_FGA/",
+      "images": [
+        "image/project/calculator/calculator.png"
+      ],
+      "thumb": "assets/projects/calculator.jpg"
+    },
+    {
+      "slug": "tictactou",
+      "title": "Tictactou",
+      "description": "This Tictactou game is a browser game, made using React and Tailwind Style, in this game there are features of the number of wins and draws",
+      "tags": [
+        "React",
+        "Tailwind"
+      ],
+      "github": "https://github.com/Fahmiady11/Tictactou-React",
+      "website": "https://tictactou.netlify.app/",
+      "images": [
+        "image/project/tictactou/tictac.png"
+      ],
+      "thumb": "assets/projects/tictactou.jpg",
+      "note": "Spelled 'Tictactou' (Tic-Tac-Toe)."
+    }
+  ],
+  "orphanProjectAssets": {
+    "_note": "Screenshots present in the repo but not referenced in code; no title/description/links exist for them.",
+    "items": [
+      {
+        "folder": "image/project/restourant/",
+        "files": [
+          "resto.png",
+          "resto2.png"
+        ],
+        "guess": "'Restourant Indonesia' — restaurant listing site with filter (Open Now / Price); hero still has Lorem Ipsum. Was in an older build (files still in build/static/media) but removed from ProjectMe.js."
+      },
+      {
+        "folder": "image/project/webtix/",
+        "files": [
+          "webtix1.png",
+          "webtix2.png",
+          "webtix3.png"
+        ],
+        "guess": "WEBTIX — cinema ticket booking site (Bootstrap), 2021, 'Made in Madura'."
+      },
+      {
+        "folder": "image/project/lapetshop/",
+        "files": [
+          "pet1.png",
+          "pet2.png",
+          "pet3.png"
+        ],
+        "guess": "LAPETSHOP — pet shop e-commerce catalog (Bootstrap)."
+      },
+      {
+        "folder": "image/project/profileImage/",
+        "files": [
+          "1.png … 10.png"
+        ],
+        "guess": "Mobile 'Profile' app screens (Fahmi Ady, FrontEnd Developer), probably Flutter/UI exercise."
+      }
+    ]
+  },
+  "certificates": [
+    {
+      "order": 1,
+      "title": "Front-End Engineering Bootcamp (Final GPA 4.00)",
+      "issuer": "Ruangguru Camp × Kampus Merdeka",
+      "date": "2022",
+      "src": "image/sertifikat/RG.png",
+      "thumb": "assets/certs/rg.jpg"
+    },
+    {
+      "order": 2,
+      "title": "Problem Solving (Basic)",
+      "issuer": "HackerRank",
+      "date": "2022-07-12",
+      "src": "image/sertifikat/hackerank.png",
+      "thumb": "assets/certs/hackerank.jpg"
+    },
+    {
+      "order": 3,
+      "title": "Cloud Practitioner Essentials (Belajar Dasar AWS Cloud)",
+      "issuer": "Dicoding",
+      "date": "2022-02",
+      "src": "image/sertifikat/aws.png",
+      "thumb": "assets/certs/aws.jpg"
+    },
+    {
+      "order": 4,
+      "title": "Belajar Dasar Pemrograman Web",
+      "issuer": "Dicoding",
+      "date": "2020",
+      "src": "image/sertifikat/BDPW.png",
+      "thumb": "assets/certs/bdpw.jpg"
+    },
+    {
+      "order": 5,
+      "title": "CCNAv7: Introduction to Networks",
+      "issuer": "Cisco Networking Academy",
+      "date": "2021",
+      "src": "image/sertifikat/cisco.png",
+      "thumb": "assets/certs/cisco.jpg"
+    },
+    {
+      "order": 6,
+      "title": "Memulai Pemrograman Dengan Dart",
+      "issuer": "Dicoding",
+      "date": "2020",
+      "src": "image/sertifikat/dartdico.png",
+      "thumb": "assets/certs/dartdico.jpg"
+    },
+    {
+      "order": 7,
+      "title": "Belajar Membuat Front-End Web untuk Pemula",
+      "issuer": "Dicoding",
+      "date": "2021",
+      "src": "image/sertifikat/FEDico.png",
+      "thumb": "assets/certs/fedico.jpg"
+    },
+    {
+      "order": 8,
+      "title": "Flutter For Designer 2021",
+      "issuer": "BuildWith Angga",
+      "date": "2021-02",
+      "src": "image/sertifikat/flutter.jpg",
+      "thumb": "assets/certs/flutter.jpg"
+    },
+    {
+      "order": 9,
+      "title": "JavaScript Algorithms and Data Structures",
+      "issuer": "freeCodeCamp",
+      "date": "2022-07-19",
+      "src": "image/sertifikat/freecodeCamp.png",
+      "thumb": "assets/certs/freecodecamp.jpg"
+    },
+    {
+      "order": 10,
+      "title": "Belajar Dasar Pemrograman JavaScript",
+      "issuer": "Dicoding",
+      "date": "2022-02",
+      "src": "image/sertifikat/jsdico.png",
+      "thumb": "assets/certs/jsdico.jpg"
+    },
+    {
+      "order": 11,
+      "title": "Kursus Git",
+      "issuer": "Progate",
+      "date": null,
+      "src": "image/sertifikat/git.png",
+      "thumb": "assets/certs/git.jpg"
+    },
+    {
+      "order": 12,
+      "title": "Kursus JavaScript",
+      "issuer": "Progate",
+      "date": null,
+      "src": "image/sertifikat/kursusJs.png",
+      "thumb": "assets/certs/kursusjs.jpg"
+    },
+    {
+      "order": 13,
+      "title": "Pelatihan Data Science Club",
+      "issuer": "HIMATIF UTM × Data Science Indonesia",
+      "date": "2020–2021",
+      "src": "image/sertifikat/pelHim.png",
+      "thumb": "assets/certs/pelhim.jpg"
+    },
+    {
+      "order": 14,
+      "title": "PRODISTIK — Program Terapan Bidang TIK",
+      "issuer": "ITS × MAN 1 Lamongan",
+      "date": "2019",
+      "src": "image/sertifikat/prodis.png",
+      "thumb": "assets/certs/prodis.jpg"
+    },
+    {
+      "order": 15,
+      "title": "Python 3 Tutorial",
+      "issuer": "SoloLearn",
+      "date": null,
+      "src": "image/sertifikat/Python_certificate.jpg",
+      "thumb": "assets/certs/python_certificate.jpg"
+    },
+    {
+      "order": 16,
+      "title": "Kursus React",
+      "issuer": "Progate",
+      "date": null,
+      "src": "image/sertifikat/react.png",
+      "thumb": "assets/certs/react.jpg"
+    },
+    {
+      "order": 17,
+      "title": "Memulai Pemrograman Dengan Python",
+      "issuer": "Dicoding",
+      "date": null,
+      "src": "image/sertifikat/pythonDico.png",
+      "thumb": "assets/certs/pythondico.jpg"
+    },
+    {
+      "order": 18,
+      "title": "Belajar Membuat Aplikasi Web dengan React",
+      "issuer": "Dicoding",
+      "date": "2022",
+      "src": "image/sertifikat/reactdico.png",
+      "thumb": "assets/certs/reactdico.jpg"
+    },
+    {
+      "order": 19,
+      "title": "Belajar Prinsip Pemrograman SOLID",
+      "issuer": "Dicoding",
+      "date": "2022-07",
+      "src": "image/sertifikat/solid.png",
+      "thumb": "assets/certs/solid.jpg"
+    },
+    {
+      "order": 20,
+      "title": "Microsoft Office Desktop Training",
+      "issuer": "Trust Training Partners (Microsoft Partner)",
+      "date": null,
+      "src": "image/sertifikat/trust.png",
+      "thumb": "assets/certs/trust.jpg"
+    },
+    {
+      "order": 21,
+      "title": "UX Design Gestalt",
+      "issuer": "BuildWith Angga",
+      "date": "2021-02",
+      "src": "image/sertifikat/uxdesign.png",
+      "thumb": "assets/certs/uxdesign.jpg"
+    },
+    {
+      "order": 22,
+      "title": "React JS for Web Developer",
+      "issuer": "Progate × FGA Digitalent (Kominfo)",
+      "date": "2022",
+      "src": "image/sertifikat/progateReact.jpg",
+      "thumb": "assets/certs/progatereact.jpg"
+    },
+    {
+      "order": 23,
+      "title": "Certificate of Appreciation — Build with AI 2025 volunteer",
+      "issuer": "Google Developer Groups Cloud Surabaya × Women Techmakers",
+      "date": "2025-05-31",
+      "src": "image/sertifikat/bwai.jpg",
+      "thumb": "assets/certs/bwai.jpg"
+    }
+  ],
+  "navigation": {
+    "routes": [
+      {
+        "no": "01",
+        "name": "Home",
+        "path": "/"
+      },
+      {
+        "no": "02",
+        "name": "About",
+        "path": "/about"
+      },
+      {
+        "no": "03",
+        "name": "Skill",
+        "path": "/skill"
+      },
+      {
+        "no": "04",
+        "name": "Experience",
+        "path": "/experience"
+      },
+      {
+        "no": "05",
+        "name": "Project",
+        "path": "/project"
+      },
+      {
+        "no": "06",
+        "name": "Contact",
+        "path": "/contact"
+      }
+    ],
+    "notFound": "image/404.svg",
+    "loader": {
+      "images": [
+        "iconload.png",
+        "awan.png"
+      ],
+      "texts": [
+        "Please wait",
+        "Just a moment!"
+      ],
+      "durationMs": 4000
+    }
+  },
+  "otherAssets": {
+    "icons": [
+      "github.svg",
+      "instagram.svg",
+      "linkedin.svg",
+      "google.svg",
+      "email.svg",
+      "image/githab.svg",
+      "image/githab-1.svg",
+      "image/linkedin.svg",
+      "image/linkedinput.svg",
+      "image/instagram.svg",
+      "image/instagram-1.svg"
+    ],
+    "unused": [
+      "wajah.svg",
+      "image/fotoutama.jpeg",
+      "image/fotoutamadark.png",
+      "image/logoSkill/next.png",
+      "image/logoSkill/zustand.png",
+      "image/project/webtix/*",
+      "image/project/lapetshop/*",
+      "image/project/profileImage/*",
+      "image/project/restourant/*"
+    ]
+  }
+}
