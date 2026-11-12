@@ -1,5 +1,10 @@
 node_modules/
 dist/
+.ssr/
 .DS_Store
 .env*
 __pycache__/
+# generated from content/ by scripts/build-assets.mjs
+public/img/
+public/files/
+test-results/
