@@ -417,18 +417,6 @@
       "thumb": "assets/projects/pokemon.jpg"
     }
   ],
-  "orphanProjectAssets": {
-    "_note": "Screenshots present in the repo but not referenced in code and not planned as projects (Webtix, Lapetshop, Restaurant moved to pendingProjects).",
-    "items": [
-      {
-        "folder": "image/project/profileImage/",
-        "files": [
-          "1.png … 10.png"
-        ],
-        "guess": "Mobile 'Profile' app screens (Fahmi Ady, FrontEnd Developer), probably Flutter/UI exercise."
-      }
-    ]
-  },
   "certificates": [
     {
       "order": 1,
@@ -680,10 +668,10 @@
       "image/fotoutama.jpeg",
       "image/fotoutamadark.png",
       "image/logoSkill/next.png",
-      "image/logoSkill/zustand.png",
-      "image/project/profileImage/*"
+      "image/logoSkill/zustand.png"
     ],
     "droppedProjectImages": [
+      "image/project/profileImage/*",
       "image/project/snakegame/gameSnake.png",
       "image/project/todolist/todolist.png",
       "image/project/calculator/calculator.png",

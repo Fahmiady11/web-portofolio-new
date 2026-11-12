@@ -44,7 +44,7 @@ Structured content lives in [`content.json`](content.json).
 
 - **No profile photo on site** — `image/fotoutama.jpeg` (498×498) exists but its import is commented out.
 - Orphan screenshots with no metadata: `project/restourant/*` (restaurant listing, dropped from an older build, hero still Lorem Ipsum), `project/webtix/*` (cinema ticketing), `project/lapetshop/*` (pet shop),
-  `project/profileImage/1–10.png` (mobile profile UI). Ask whether they should become projects.
+  `project/profileImage/1–10.png` (mobile profile UI). Decision: Webtix, Lapetshop, Restaurant become projects (user supplies descriptions); profileImage screenshots are dropped.
 - Unused: `wajah.svg`, `fotoutamadark.png` (4059×5601), `logoSkill/next.png`, `logoSkill/zustand.png`.
 - CBT and Lanjalan have no live link or repo; CodeIn has no demo.
 
