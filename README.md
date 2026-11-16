@@ -13,6 +13,8 @@ Vite + React + TypeScript + Tailwind, with React Three Fiber for the room.
 | `npm run lint` | ESLint. |
 | `npm test` | Drive the built site in headless Chrome (`tests/interactions.mjs`); screenshots in `test-results/`. |
 | `node scripts/capture-posters.mjs` | Re-capture `public/poster-*.webp` and `public/og.jpg` from the built room. |
+| `npm run lighthouse [-- --no-webgl]` | Lighthouse mobile profile against the built site (report in `test-results/`). |
+| `npm run models:build` / `models:optimize` | Blender pipeline for modelled, baked pieces: see `scripts/blender/README.md`. |
 
 ## Layout
 
@@ -25,3 +27,6 @@ Vite + React + TypeScript + Tailwind, with React Three Fiber for the room.
 - `mockups/` — the approved prototype (`a-detective-room.html`) and earlier concepts, for reference.
 
 Deep links: `?open=cases|board|evidence|about|wall|record|phone|dossier`, `?open=case-<n>`, `?open=quick`.
+`?quality=high|medium|low` pins the 3D quality (no automatic step-down).
+
+Canonical and Open Graph URLs use `https://portofolio.asfahmidev.com`; set `SITE_URL` at build time to override.

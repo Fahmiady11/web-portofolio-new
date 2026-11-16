@@ -7,6 +7,7 @@ import { M, std } from '../materials';
 import { Box, Cyl } from '../parts';
 import { canvasTexture, TYPE } from '../textures';
 import { Interactive } from '../interactive';
+import { Swappable } from '../Swappable';
 
 const folderLabel = (title: string, no: string, pending: boolean) => canvasTexture(512, 380, (g, W, H) => {
   g.fillStyle = pending ? '#c9bb98' : '#d6b878'; g.fillRect(0, 0, W, H);
@@ -80,10 +81,12 @@ export function DeskClutter() {
 export function Chair() {
   const leather = useMemo(() => std('#3a1712', { roughness: 0.55 }), []);
   return (
-    <group>
-      <Box size={[0.62, 0.1, 0.56]} radius={0.04} material={leather} position={[0.1, 0.55, -2.65]} />
-      <Box size={[0.66, 0.55, 0.12]} radius={0.05} material={leather} position={[0.1, 0.86, -2.95]} />
-      <Cyl top={0.035} height={0.5} segments={10} material={M.black} position={[0.1, 0.27, -2.65]} />
-    </group>
+    <Swappable model="chair">
+      <group>
+        <Box size={[0.62, 0.1, 0.56]} radius={0.04} material={leather} position={[0.1, 0.55, -2.65]} />
+        <Box size={[0.66, 0.55, 0.12]} radius={0.05} material={leather} position={[0.1, 0.86, -2.95]} />
+        <Cyl top={0.035} height={0.5} segments={10} material={M.black} position={[0.1, 0.27, -2.65]} />
+      </group>
+    </Swappable>
   );
 }

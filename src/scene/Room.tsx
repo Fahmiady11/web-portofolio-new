@@ -14,6 +14,7 @@ import { Walls } from './objects/Walls';
 import { Commendations, Diploma } from './objects/WallPieces';
 import { Window } from './objects/Window';
 import { QualityContext } from './quality';
+import { Swappable } from './Swappable';
 
 export function Room() {
   const quality = useContext(QualityContext);
@@ -23,8 +24,10 @@ export function Room() {
       <fogExp2 attach="fog" args={['#07080c', 0.026]} />
       <Lights />
       {/* the shell */}
-      <Floor />
-      <Walls />
+      <Swappable model="room-shell">
+        <Floor />
+        <Walls />
+      </Swappable>
       <Window />
       <CoatRack />
       {/* the desk and what is on it */}

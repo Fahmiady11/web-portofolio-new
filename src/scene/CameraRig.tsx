@@ -4,8 +4,9 @@ import { useEffect, useRef } from 'react';
 import { Vector3, type PerspectiveCamera } from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useRoom } from '../store';
-import { caseView, EVIDENCE, HOME, HOME_PORTRAIT, type View } from './layout';
+import { caseView, EVIDENCE, HOME, HOME_PORTRAIT, introStart, type View } from './layout';
 import { reduceMotion } from './quality';
+import { warm } from './warm';
 
 const PHONE = 760;
 const isPortrait = (w: number, h: number) => w / h < 0.8;
@@ -27,9 +28,16 @@ function viewFor(w: number, h: number): View {
   return w < PHONE ? { pos: v.pos.clone().add(v.pos.clone().sub(v.target).multiplyScalar(0.35)), target: v.target } : v;
 }
 
-const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
-interface Tween { p0: Vector3; t0: Vector3; p1: Vector3; t1: Vector3; start: number; ms: number }
+interface Tween { p0: Vector3; t0: Vector3; p1: Vector3; t1: Vector3; start: number; ms: number; ease: (t: number) => number }
+
+/** The intro dolly plays on a plain first visit only: not with reduced motion, a deep link, or a file already open. */
+function wantsIntro() {
+  const s = useRoom.getState();
+  return !reduceMotion && !s.deepLink && !s.current && !s.dossierOpen;
+}
 
 /** Orbit controls, the fly-to between pieces of evidence, and the off-centre framing beside the open panel. */
 export function CameraRig({ tweening }: { tweening: { current: boolean } }) {
@@ -39,6 +47,11 @@ export function CameraRig({ tweening }: { tweening: { current: boolean } }) {
   const invalidate = useThree((s) => s.invalidate);
   const tween = useRef<Tween | null>(null);
   const shift = useRef(0);
+  const started = useRef(false);
+
+  const flyTo = (v: View, ms: number, ease = easeInOut) => {
+    tween.current = { p0: camera.position.clone(), t0: controls.current!.target.clone(), p1: v.pos.clone(), t1: v.target.clone(), start: -1, ms, ease };
+  };
 
   const jump = (v: View) => {
     tween.current = null;
@@ -51,7 +64,13 @@ export function CameraRig({ tweening }: { tweening: { current: boolean } }) {
   useEffect(() => {
     camera.fov = isPortrait(size.width, size.height) ? 58 : 38;
     camera.updateProjectionMatrix();
-    if (!tween.current) jump(viewFor(size.width, size.height));
+    const v = viewFor(size.width, size.height);
+    if (!started.current && wantsIntro()) {
+      // the room comes into view: start back by the door and settle on the case wall
+      jump(introStart(v));
+      flyTo(v, 2800, easeOut);
+    } else if (!tween.current) jump(v);
+    started.current = true;
     invalidate();
   }, [size.width, size.height]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -60,7 +79,7 @@ export function CameraRig({ tweening }: { tweening: { current: boolean } }) {
     if (s.current === prev.current && s.focusCase === prev.focusCase && s.openCount === prev.openCount) return;
     const v = viewFor(size.width, size.height);
     if (reduceMotion || s.instant) jump(v);
-    else tween.current = { p0: camera.position.clone(), t0: controls.current!.target.clone(), p1: v.pos.clone(), t1: v.target.clone(), start: performance.now(), ms: 1200 };
+    else flyTo(v, 1200);
     invalidate();
   }), [size.width, size.height]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -68,9 +87,11 @@ export function CameraRig({ tweening }: { tweening: { current: boolean } }) {
     const c = controls.current;
     if (!c) return;
     const tw = tween.current;
-    if (tw) {
+    // the clock starts once the room is warmed up, so slow first frames never eat the move
+    if (tw && tw.start < 0 && warm.done) tw.start = performance.now();
+    if (tw && tw.start >= 0) {
       const k = Math.min(1, (performance.now() - tw.start) / tw.ms);
-      const e = ease(k);
+      const e = tw.ease(k);
       camera.position.lerpVectors(tw.p0, tw.p1, e);
       c.target.lerpVectors(tw.t0, tw.t1, e);
       c.update();
@@ -97,6 +118,8 @@ export function CameraRig({ tweening }: { tweening: { current: boolean } }) {
     <OrbitControls
       ref={controls}
       makeDefault
+      // dragging takes over from any camera move in progress (including the intro)
+      onStart={() => { tween.current = null; }}
       enableDamping
       enablePan={false}
       minDistance={2.5}

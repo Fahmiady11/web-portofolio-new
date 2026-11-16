@@ -12,6 +12,10 @@ declare global {
       current?: () => SectionId | null;
       caseCard?: (i: number) => ScreenPoint;
       busy?: () => boolean;
+      glowing?: () => SectionId[];
+      models?: () => string[];
+      quality?: () => 'high' | 'medium' | 'low';
+      bloom?: () => boolean;
     };
   }
 }

@@ -5,6 +5,7 @@ import { M, std } from '../materials';
 import { Box, Cyl, Plane } from '../parts';
 import { canvasTexture, TYPE } from '../textures';
 import { Interactive } from '../interactive';
+import { Swappable } from '../Swappable';
 
 const KEYS = 'QWERTYUIOPASDFGHJKLZXCVBNM.,-';
 const STATEMENT = ['STATEMENT OF THE SUBJECT', '', 'NAME: M. FAHMI ADY SUSILO', 'OCCUPATION: SOFTWARE DEV.', 'EMPLOYER: SENTRA VIDYA', 'BASE: LAMONGAN, ID', '', 'Builds systems used by', '400+ universities.', '', 'Click to read more_'];
@@ -35,9 +36,12 @@ export function Typewriter() {
   }), []);
   return (
     <Interactive id="about">
-      <Box size={[0.62, 0.14, 0.42]} radius={0.04} material={m.body} position={[0.05, TOP + 0.07, -1.72]} />
+      <Swappable model="typewriter">
+        <Box size={[0.62, 0.14, 0.42]} radius={0.04} material={m.body} position={[0.05, TOP + 0.07, -1.72]} />
+        <Cyl top={0.05} height={0.72} segments={16} material={m.body} position={[0.05, TOP + 0.2, -1.88]} rotation={[0, 0, Math.PI / 2]} />
+      </Swappable>
+      {/* painted labels stay live over a modelled body too */}
       <Plane size={[0.56, 0.24]} material={m.keys} position={[0.05, TOP + 0.16, -1.6]} rotation={[-Math.PI / 2 + 0.35, 0, 0]} />
-      <Cyl top={0.05} height={0.72} segments={16} material={m.body} position={[0.05, TOP + 0.2, -1.88]} rotation={[0, 0, Math.PI / 2]} />
       <Plane size={[0.34, 0.44]} material={m.sheet} position={[0.05, TOP + 0.42, -1.95]} rotation={[-0.25, 0, 0]} />
     </Interactive>
   );
@@ -58,16 +62,18 @@ export function Telephone() {
   }), []);
   return (
     <Interactive id="phone">
-      <Box size={[0.3, 0.1, 0.26]} radius={0.05} material={M.bakelite} position={[1.15, TOP + 0.05, -1.95]} />
-      <mesh geometry={m.dialGeo} material={m.dial} position={[1.15, TOP + 0.13, -1.86]} rotation={[-Math.PI / 2 + 0.5, 0, 0]} receiveShadow />
-      <mesh material={M.bakelite} position={[1.15, TOP + 0.15, -2.0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-        <capsuleGeometry args={[0.035, 0.26, 6, 12]} />
-      </mesh>
-      {[-1, 1].map((s) => (
-        <mesh key={s} material={M.bakelite} position={[1.15 + s * 0.15, TOP + 0.15, -2.0]} castShadow receiveShadow>
-          <sphereGeometry args={[0.055, 14, 10]} />
+      <Swappable model="telephone">
+        <Box size={[0.3, 0.1, 0.26]} radius={0.05} material={M.bakelite} position={[1.15, TOP + 0.05, -1.95]} />
+        <mesh material={M.bakelite} position={[1.15, TOP + 0.15, -2.0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+          <capsuleGeometry args={[0.035, 0.26, 6, 12]} />
         </mesh>
-      ))}
+        {[-1, 1].map((s) => (
+          <mesh key={s} material={M.bakelite} position={[1.15 + s * 0.15, TOP + 0.15, -2.0]} castShadow receiveShadow>
+            <sphereGeometry args={[0.055, 14, 10]} />
+          </mesh>
+        ))}
+      </Swappable>
+      <mesh geometry={m.dialGeo} material={m.dial} position={[1.15, TOP + 0.13, -1.86]} rotation={[-Math.PI / 2 + 0.5, 0, 0]} receiveShadow />
     </Interactive>
   );
 }

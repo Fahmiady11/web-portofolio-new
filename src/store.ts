@@ -16,11 +16,16 @@ interface RoomState {
   instant: boolean;
   dossierOpen: boolean;
   webgl: WebGLState;
+  /** The visit started from a ?open= link: no intro camera move. */
+  deepLink: boolean;
+  /** Evidence whose marker has keyboard focus: its object glows as if hovered. */
+  preview: SectionId | null;
   open: (id: SectionId, focusCase?: number, instant?: boolean) => void;
   close: () => void;
   openDossier: () => void;
   closeDossier: () => void;
   setWebGL: (s: WebGLState) => void;
+  setPreview: (id: SectionId | null) => void;
 }
 
 export const useRoom = create<RoomState>()((set) => ({
@@ -31,10 +36,13 @@ export const useRoom = create<RoomState>()((set) => ({
   instant: false,
   dossierOpen: false,
   webgl: 'unknown',
+  deepLink: false,
+  preview: null,
   open: (id, focusCase = -1, instant = false) =>
     set((s) => ({ current: id, shown: id, focusCase, instant, openCount: s.openCount + 1 })),
   close: () => set({ current: null, focusCase: -1, instant: false }),
   openDossier: () => set({ dossierOpen: true }),
   closeDossier: () => set({ dossierOpen: false }),
   setWebGL: (webgl) => set({ webgl }),
+  setPreview: (preview) => set({ preview }),
 }));

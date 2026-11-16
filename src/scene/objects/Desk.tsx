@@ -3,6 +3,7 @@ import { DESK } from '../layout';
 import { M, std } from '../materials';
 import { Box, Plane } from '../parts';
 import { brassPlate, canvasTexture } from '../textures';
+import { Swappable } from '../Swappable';
 
 const materials = () => ({
     wood: std('#fff', {
@@ -24,17 +25,22 @@ export function Desk() {
   const m = useMemo(() => materials(), []);
   const { x, y, z } = DESK;
   return (
-    <group>
-      <Box size={[2.7, 0.08, 1.25]} radius={0.02} material={m.wood} position={[x, y, z]} />
-      <Box size={[2.5, 0.02, 1.0]} material={m.blotter} position={[x, y + 0.05, z - 0.02]} />
-      {[-0.95, 1.15].map((px) => (
-        <group key={px}>
-          <Box size={[0.66, 0.76, 1.15]} material={m.wood} position={[x + px - 0.1, 0.38, z]} />
-          {[0, 1, 2].map((k) => <Box key={k} size={[0.12, 0.025, 0.03]} material={M.brass} position={[x + px - 0.1, 0.62 - k * 0.22, z + 0.59]} />)}
+    <>
+      <Swappable model="desk">
+        <group>
+          <Box size={[2.7, 0.08, 1.25]} radius={0.02} material={m.wood} position={[x, y, z]} />
+          <Box size={[2.5, 0.02, 1.0]} material={m.blotter} position={[x, y + 0.05, z - 0.02]} />
+          {[-0.95, 1.15].map((px) => (
+            <group key={px}>
+              <Box size={[0.66, 0.76, 1.15]} material={m.wood} position={[x + px - 0.1, 0.38, z]} />
+              {[0, 1, 2].map((k) => <Box key={k} size={[0.12, 0.025, 0.03]} material={M.brass} position={[x + px - 0.1, 0.62 - k * 0.22, z + 0.59]} />)}
+            </group>
+          ))}
+          <Box size={[1.4, 0.6, 0.04]} material={m.wood} position={[x + 0.1, 0.45, z + 0.5]} />
         </group>
-      ))}
-      <Box size={[1.4, 0.6, 0.04]} material={m.wood} position={[x + 0.1, 0.45, z + 0.5]} />
+      </Swappable>
+      {/* the engraved plate stays live over a modelled desk too */}
       <Plane size={[0.85, 0.16]} material={m.plate} position={[x + 0.1, 0.5, z + 0.525]} />
-    </group>
+    </>
   );
 }

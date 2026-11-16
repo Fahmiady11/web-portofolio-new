@@ -28,3 +28,7 @@ export const SECTIONS: Section[] = [
 ];
 
 export const sectionById = (id: string) => SECTIONS.find((s) => s.id === id);
+
+/** The next (dir 1) or previous (dir -1) section in marker order, wrapping around. */
+export const stepSection = (id: SectionId, dir: 1 | -1) =>
+  SECTIONS[(SECTIONS.findIndex((s) => s.id === id) + dir + SECTIONS.length) % SECTIONS.length];

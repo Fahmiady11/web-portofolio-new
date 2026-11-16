@@ -29,7 +29,9 @@ try {
     await load(c, base + '/', s.w, s.h, { mobile: !!s.mobile });
     await c.send('Emulation.setDeviceMetricsOverride', { width: s.w, height: s.h, deviceScaleFactor: s.dpr, mobile: !!s.mobile });
     await c.evaluate(`document.head.insertAdjacentHTML('beforeend', '<style>${s.css}</style>')`);
-    await sleep(2500); // photos on the case wall, settled lighting
+    // the intro move and lights-on finish, the case wall photos arrive
+    for (let i = 0; i < 80 && (await c.evaluate('window.__room.busy()')); i++) await sleep(100);
+    await sleep(2500);
     const png = join(tmp, s.name + '.png');
     await shot(c, png);
     c.close();

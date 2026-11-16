@@ -2,11 +2,11 @@
 import { useFrame } from '@react-three/fiber';
 import { useLayoutEffect, useMemo, useRef } from 'react';
 import { AdditiveBlending, BufferAttribute, BufferGeometry, PointsMaterial, type PointLight, type SpotLight } from 'three';
-import { reduceMotion, useShadows } from '../quality';
+import { LIGHTS, lightProps } from '../layout';
+import { reduceMotion } from '../quality';
 import { canvasTexture } from '../textures';
 
 export function Lights() {
-  const shadows = useShadows();
   const moon = useRef<SpotLight>(null);
   const flash = useRef<PointLight>(null);
   // the slat pattern of the blinds, projected by the moonlight
@@ -19,7 +19,7 @@ export function Lights() {
   useLayoutEffect(() => {
     const l = moon.current!;
     l.map = blinds;
-    l.target.position.set(0, 0.7, -1.2);
+    l.target.position.set(...LIGHTS.moon.target);
     l.target.updateMatrixWorld();
   }, [blinds]);
 
@@ -31,23 +31,22 @@ export function Lights() {
     if (next.current < 0) next.current = t + 6 + Math.random() * 8;
     if (t < next.current) return;
     const f = t - next.current;
-    flash.current.intensity = f < 0.08 || (f > 0.16 && f < 0.22) ? 60 : 0;
+    flash.current.intensity = f < 0.08 || (f > 0.16 && f < 0.22) ? LIGHTS.lightning.intensity : 0;
     if (f > 0.4) { flash.current.intensity = 0; next.current = t + 8 + Math.random() * 10; }
   });
 
   return (
     <>
-      <hemisphereLight args={['#5a6a90', '#2a180c', 0.75]} />
+      <hemisphereLight args={[LIGHTS.hemisphere.color, LIGHTS.hemisphere.groundColor, LIGHTS.hemisphere.intensity]} />
       {/* keeps the walls readable */}
-      <pointLight color="#ffb070" intensity={4} distance={8} decay={1.5} position={[0.6, 3.3, -1.6]} />
+      <pointLight {...lightProps(LIGHTS.wash)} />
       <spotLight
         ref={moon}
-        color="#9db4ff" intensity={160} distance={16} angle={0.32} penumbra={0.25} decay={1.2}
-        position={[-7.2, 4.4, 0.4]}
-        castShadow={shadows} shadow-mapSize={[1024, 1024]} shadow-bias={-0.0006}
+        {...lightProps(LIGHTS.moon)}
+        castShadow shadow-mapSize={[1024, 1024]} shadow-bias={-0.0006}
       />
-      <directionalLight color="#7d7090" intensity={0.8} position={[5, 6, 6]} />
-      <pointLight ref={flash} color="#bcd2ff" intensity={0} distance={12} decay={1.2} position={[-4.5, 2.6, -0.2]} />
+      <directionalLight color={LIGHTS.front.color} intensity={LIGHTS.front.intensity} position={LIGHTS.front.position} />
+      <pointLight ref={flash} {...lightProps(LIGHTS.lightning)} intensity={0} />
     </>
   );
 }

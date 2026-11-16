@@ -13,6 +13,7 @@ export type MarkerRefs = Map<SectionId, HTMLButtonElement>;
 export function Hotspots({ markers }: { markers: MarkerRefs }) {
   const open = useRoom((s) => s.open);
   const current = useRoom((s) => s.current);
+  const setPreview = useRoom((s) => s.setPreview);
   const host = document.getElementById('hotspots');
   if (!host) return null;
   return createPortal(
@@ -25,6 +26,8 @@ export function Hotspots({ markers }: { markers: MarkerRefs }) {
         data-sec={s.id}
         aria-label={`Open ${s.title}`}
         onClick={() => open(s.id)}
+        onFocus={() => setPreview(s.id)}
+        onBlur={() => setPreview(null)}
       >
         <b>{s.no}</b>{s.label}
       </button>

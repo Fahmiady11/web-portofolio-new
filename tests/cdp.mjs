@@ -6,7 +6,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 export const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const CMD_MS = 20_000; // any single DevTools command
+// any single DevTools command; software WebGL with bloom can hold the page's main thread for a while
+const CMD_MS = 45_000;
 const LAUNCH_MS = 20_000; // Chrome answering its first command
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -50,7 +51,7 @@ export async function preview(root, port = Number(process.env.PREVIEW_PORT ?? 43
   const until = Date.now() + 20_000;
   for (;;) {
     if (proc.exitCode !== null) throw new Error(`vite preview exited: ${log.join('').trim()}`);
-    try { if ((await fetch(base + '/')).ok) return base; } catch { /* not up yet */ }
+    try { if ((await fetch(base + '/', { signal: AbortSignal.timeout(2000) })).ok) return base; } catch { /* not up yet */ }
     if (Date.now() > until) throw new Error(`vite preview did not answer on ${base} within 20s: ${log.join('').trim()}`);
     await sleep(200);
   }
@@ -116,8 +117,9 @@ export async function click(c, x, y) {
 }
 
 export async function key(c, k) {
-  const codes = { Escape: 27, Tab: 9, Enter: 13 };
-  await c.send('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code: k, windowsVirtualKeyCode: codes[k] ?? 0 });
+  const codes = { Escape: 27, Tab: 9, Enter: 13, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 };
+  // Enter needs its text to activate a focused button
+  await c.send('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code: k, windowsVirtualKeyCode: codes[k] ?? 0, ...(k === 'Enter' ? { text: '\r' } : {}) });
   await c.send('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code: k, windowsVirtualKeyCode: codes[k] ?? 0 });
 }
 

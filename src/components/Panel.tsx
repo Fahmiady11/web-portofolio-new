@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react';
-import { sectionById, type SectionId } from '../sections';
+import { sectionById, stepSection, type SectionId } from '../sections';
 import { useRoom } from '../store';
 import { About, Cases, Certificates, Contact, DossierSummary, Record, Skills, Timeline } from './files';
 import { HeadingBase } from './heading';
@@ -18,7 +18,7 @@ const FILES: Record<SectionId, ReactNode> = {
 
 /** The case-file panel: slides in from the right, or up as a bottom sheet on phones. */
 export function Panel() {
-  const { current, shown, focusCase, openCount, instant, close } = useRoom();
+  const { current, shown, focusCase, openCount, instant, close, open } = useRoom();
   const body = useRef<HTMLDivElement>(null);
   const title = useRef<HTMLHeadingElement>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -43,8 +43,10 @@ export function Panel() {
       if (active && active !== document.body && !active.closest('#panel')) opener.current = active;
       title.current?.focus({ preventScroll: true });
     } else if (opener.current) {
-      opener.current.focus({ preventScroll: true });
+      // markers are hidden while a file is open: wait for the scene to show them again
+      const el = opener.current;
       opener.current = null;
+      requestAnimationFrame(() => requestAnimationFrame(() => el.focus({ preventScroll: true })));
     }
   }, [current, openCount]);
 
@@ -54,6 +56,12 @@ export function Panel() {
       <header>
         <small id="pKicker">{section?.kicker}</small>
         <h2 id="pTitle" ref={title} tabIndex={-1}>{section?.title}</h2>
+        {shown && (
+          <nav className="pnav" aria-label="Other files">
+            <button type="button" id="pPrev" aria-label={`Previous file: ${stepSection(shown, -1).title}`} title="Previous file (←)" onClick={() => open(stepSection(shown, -1).id)}>‹</button>
+            <button type="button" id="pNext" aria-label={`Next file: ${stepSection(shown, 1).title}`} title="Next file (→)" onClick={() => open(stepSection(shown, 1).id)}>›</button>
+          </nav>
+        )}
         <button className="x" id="pClose" type="button" aria-label="Close file" onClick={close}>×</button>
       </header>
       <div className="body" id="pBody" ref={body}>

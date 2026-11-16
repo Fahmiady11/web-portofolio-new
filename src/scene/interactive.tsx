@@ -1,5 +1,5 @@
 import { useThree, type ThreeEvent } from '@react-three/fiber';
-import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react';
 import { Color, Mesh, type Group, type Material, type MeshStandardMaterial, type Object3D } from 'three';
 import type { SectionId } from '../sections';
 import { useRoom } from '../store';
@@ -14,8 +14,9 @@ function highlight(root: Object3D, on: boolean) {
       const m = o.material as Material | Material[];
       if (Array.isArray(m) || !('emissive' in m) || o.userData.noHighlight || o.userData.base) return;
       const lit = (m as MeshStandardMaterial).clone();
-      lit.emissive = GLOW;
-      lit.emissiveIntensity = 0.6;
+      // baked models (Model.tsx) are lit by their emission: brighten it instead of tinting
+      if (m.userData.baked) lit.emissiveIntensity = 1.45;
+      else { lit.emissive = GLOW; lit.emissiveIntensity = 0.6; }
       o.userData.base = m;
       o.material = lit;
     } else if (o.userData.base) {
@@ -40,6 +41,7 @@ export function Interactive({ id, track = true, pickCase, children }: Props) {
   const ref = useRef<Group>(null);
   const open = useRoom((s) => s.open);
   const canvas = useThree((s) => s.gl.domElement);
+  const invalidate = useThree((s) => s.invalidate);
 
   useLayoutEffect(() => {
     const g = ref.current;
@@ -48,17 +50,27 @@ export function Interactive({ id, track = true, pickCase, children }: Props) {
     return () => { tracked.delete(id); };
   }, [id, track]);
 
+  // a keyboard-focused marker lights its object the same way the mouse does
+  const hovered = useRef(false);
+  const previewed = useRoom((s) => s.preview === id);
+  useEffect(() => {
+    if (ref.current && !hovered.current) highlight(ref.current, previewed);
+    invalidate();
+  }, [previewed, invalidate]);
+
   return (
     <group
       ref={ref}
       onPointerOver={(e) => {
         e.stopPropagation();
         if (e.pointerType !== 'mouse') return;
+        hovered.current = true;
         highlight(ref.current!, true);
         canvas.style.cursor = 'pointer';
       }}
       onPointerOut={() => {
-        highlight(ref.current!, false);
+        hovered.current = false;
+        if (useRoom.getState().preview !== id) highlight(ref.current!, false);
         canvas.style.cursor = 'grab';
       }}
       onClick={(e) => {

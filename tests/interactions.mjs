@@ -1,13 +1,17 @@
 // Drives the built site in headless Chrome and checks the main interactions: clicking each object
 // (camera moves + panel opens), Escape, marker buttons, a case photo opening that exact case, the
-// full dossier (projects first), the phone dock, deep links, the prerendered HTML and the no-WebGL fallback.
+// full dossier (projects first), the phone dock, deep links, the prerendered HTML and the no-WebGL fallback;
+// and since milestone 2: the intro camera move and lights-on, bloom, keyboard navigation, the phone hint,
+// and the 3D waiting for an idle page on slow connections.
 // Ported from mockups/_check-interactions.mjs; same checks, run against `vite preview` of dist/.
 //
 // Usage: npm run build && npm test            (screenshots go to test-results/, or pass a folder)
 //        BASE_URL=https://… npm test           (check an already running/deployed site instead)
+//        ROOM_CHECK_ONLY=desktop,phone npm test (only some blocks: desktop, deep links, quality,
+//                                              reduced motion, phone, slow connection, no-webgl)
 //
 // Needs Google Chrome (override with CHROME=/path) and Node 22. Every step has a timeout, the whole run
-// has one (ROOM_CHECK_TIMEOUT seconds, default 240), and Chrome and the preview server are always killed.
+// has one (ROOM_CHECK_TIMEOUT seconds, default 480), and Chrome and the preview server are always killed.
 // Exit code: 0 all passed, 1 some checks failed, 2 aborted (timeout / crash).
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -16,7 +20,7 @@ import { click, key, killAll, launch, load, preview, say, shot as capture, sleep
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = resolve(process.argv[2] ?? join(root, 'test-results'));
-const OVERALL_S = Number(process.env.ROOM_CHECK_TIMEOUT ?? 240);
+const OVERALL_S = Number(process.env.ROOM_CHECK_TIMEOUT ?? 480);
 const content = JSON.parse(readFileSync(join(root, 'content/content.json'), 'utf8'));
 const expectedCases = content.projects.length + content.pendingProjects.items.length;
 const expectedLinks = content.projects.reduce((n, p) => n + !!p.website + !!p.github, 0);
@@ -53,8 +57,12 @@ async function settle(c) {
 const rectOf = (c, sel) => c.evaluate(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, visible: r.width > 0 }; })()`);
 const panelOpen = (c) => c.evaluate('document.getElementById("panel").classList.contains("open")');
 
+// ROOM_CHECK_ONLY="desktop,phone" runs just those blocks (the static HTML checks always run)
+const ONLY = process.env.ROOM_CHECK_ONLY ? new Set(process.env.ROOM_CHECK_ONLY.split(',').map((s) => s.trim())) : null;
+
 // Runs one block in its own Chrome; a timeout or crash fails that block and the run continues.
 async function block(label, extra, body) {
+  if (ONLY && !ONLY.has(label)) return;
   let c;
   try {
     step(`${label}: launching headless Chrome`);
@@ -87,9 +95,10 @@ const staticOk = {
   name: html.includes('<h1 id="name">Muhammad Fahmi Ady Susilo</h1>'),
   projects: [...content.projects.map((p) => p.title), ...content.pendingProjects.items.map((p) => p.workingTitle)].every((t) => html.includes(`>${t}</h4>`)),
   links: content.projects.flatMap((p) => [p.website, p.github]).filter(Boolean).every((l) => html.includes(`href="${l}"`)),
+  fontPreload: /<link rel="preload" href="\/assets\/special-elite-[^"]+\.woff2" as="font"/.test(html),
 };
-check('prerendered HTML has title, meta, Open Graph, name, every project and every link', Object.values(staticOk).every(Boolean), JSON.stringify(staticOk));
-for (const asset of ['og.jpg', 'favicon.svg', 'poster-wide.webp', 'poster-tall.webp']) {
+check('prerendered HTML has title, meta, Open Graph, name, every project and every link, font preload', Object.values(staticOk).every(Boolean), JSON.stringify(staticOk));
+for (const asset of ['og.jpg', 'favicon.svg', 'poster-wide.webp', 'poster-tall.webp', 'grain.webp', 'sitemap.xml', 'robots.txt']) {
   const r = await fetch(url(asset));
   check(`/${asset} is served`, r.ok, String(r.status));
 }
@@ -97,12 +106,21 @@ for (const asset of ['og.jpg', 'favicon.svg', 'poster-wide.webp', 'poster-tall.w
 await block('desktop', [], async (c) => {
   step('desktop: loading at 1280×800');
   await load(c, url(), 1280, 800);
-  await sleep(1200);
+  const start = await c.evaluate('({ cam: window.__room.cam(), busy: window.__room.busy() })');
+  await shot(c, 'desktop-intro');
+  await settle(c);
+  await sleep(600);
   check('WebGL scene running', await c.evaluate('window.__room.webgl === true'));
-  await shot(c, 'desktop-home');
   const home = await c.evaluate('window.__room.cam()');
+  check('intro: the camera flies in from the door and settles on the case wall', start.busy && dist(start.cam, home) > 1, `moved ${dist(start.cam, home).toFixed(2)}`);
+  const look = await c.evaluate(`({ poster: document.querySelector('.poster').classList.contains('gone'), quality: window.__room.quality(), bloom: window.__room.bloom() })`);
+  // the quality may step down on a slow (software-rendered) run; bloom must follow it
+  check('poster gives way to the live room; bloom on unless quality stepped down to low', look.poster && look.bloom === (look.quality !== 'low'), JSON.stringify(look));
+  await shot(c, 'desktop-home');
   const ids = await c.evaluate('[...document.querySelectorAll("#hotspots .hs")].map(b => b.dataset.sec)');
   const shown = await c.evaluate('[...document.querySelectorAll("#hotspots .hs")].filter(b => getComputedStyle(b).display !== "none").length');
+  const star = await c.evaluate(`(() => { const b = document.querySelector('#hotspots .hs.star'); const st = getComputedStyle(b); return { opacity: st.opacity, width: Math.round(b.getBoundingClientRect().width) }; })()`);
+  check('the Case files marker is fully visible (no stray keyframes hiding it)', star.opacity === '1' && star.width < 300, JSON.stringify(star));
   check('evidence markers rendered and all on screen', ids.length >= 8 && shown === ids.length, `${shown}/${ids.length} visible: ${ids.join(', ')}`);
 
   step('desktop: hover test');
@@ -171,6 +189,33 @@ await block('desktop', [], async (c) => {
   await click(c, xb.x, xb.y); await settle(c);
   check('close button (×) closes the panel', !(await panelOpen(c)));
 
+  step('desktop: keyboard navigation');
+  await c.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 6, y: 794 }); // nothing hovered
+  await c.evaluate('document.activeElement?.blur()');
+  await key(c, 'ArrowRight');
+  await sleep(200);
+  const k1 = await c.evaluate('({ focus: document.activeElement?.dataset?.sec, glowing: window.__room.glowing() })');
+  check('→ in the room focuses the first marker and lights its object', k1.focus === 'cases' && k1.glowing.join() === 'cases', JSON.stringify(k1));
+  await key(c, 'ArrowRight');
+  await sleep(200);
+  const k2 = await c.evaluate('({ focus: document.activeElement?.dataset?.sec, glowing: window.__room.glowing() })');
+  check('→ again moves to the next marker, and the glow follows', k2.focus === 'board' && k2.glowing.join() === 'board', JSON.stringify(k2));
+  await shot(c, 'desktop-keyboard');
+  await key(c, 'Enter'); await settle(c);
+  check('Enter on a marker opens its file', (await c.evaluate('window.__room.current()')) === 'board');
+  await key(c, 'ArrowRight'); await settle(c);
+  const k3 = await c.evaluate('window.__room.current()');
+  await key(c, 'ArrowLeft'); await settle(c);
+  const k4 = await c.evaluate('window.__room.current()');
+  check('with a file open, → / ← walk to the next / previous file', k3 === 'evidence' && k4 === 'board', `→ ${k3}, ← ${k4}`);
+  const nb = await rectOf(c, '#pNext');
+  await click(c, nb.x, nb.y); await settle(c);
+  check('the panel\'s › button opens the next file', (await c.evaluate('window.__room.current()')) === 'evidence');
+  await key(c, 'Escape'); await settle(c);
+  const k5 = await c.evaluate('({ open: document.getElementById("panel").classList.contains("open"), focus: document.activeElement?.dataset?.sec })');
+  check('Escape closes it and focus returns to the marker it was opened from', !k5.open && k5.focus === 'board', JSON.stringify(k5));
+  await c.evaluate('document.activeElement?.blur()');
+
   step('desktop: full dossier (quick view)');
   const qb = await rectOf(c, '#quickBtn');
   await click(c, qb.x, qb.y); await sleep(400);
@@ -199,8 +244,8 @@ await block('deep links', [], async (c) => {
   check('?open=case-2 lands on that case', d.current === 'cases' && d.focused && d.open, JSON.stringify(d));
   step('deep links: ?open=phone');
   await load(c, url('?open=phone'), 1280, 800);
-  await sleep(500);
-  check('?open=<section> opens that file', (await c.evaluate('window.__room.current()')) === 'phone');
+  const dl = await c.evaluate('({ current: window.__room.current(), busy: window.__room.busy() })');
+  check('?open=<section> opens that file, with no intro move', dl.current === 'phone' && !dl.busy, JSON.stringify(dl));
   step('deep links: ?open=quick');
   await load(c, url('?open=quick'), 1280, 800);
   await sleep(500);
@@ -208,10 +253,21 @@ await block('deep links', [], async (c) => {
   check('no JS errors (deep links)', c.errors.length === 0, c.errors.join(' | '));
 });
 
+await block('quality', [], async (c) => {
+  // only the low end is pinned here: software WebGL can't keep up with pinned high plus bloom, and the
+  // desktop block already checks that bloom follows whatever quality the room is running at
+  step('quality: pinned low');
+  await load(c, url('?quality=low'), 800, 500);
+  const lo = await c.evaluate('({ q: window.__room.quality(), bloom: window.__room.bloom() })');
+  check('?quality=low drops bloom', lo.q === 'low' && !lo.bloom, JSON.stringify(lo));
+  check('no JS errors (quality)', c.errors.length === 0, c.errors.join(' | '));
+});
+
 await block('reduced motion', [], async (c) => {
   step('reduced motion: loading with prefers-reduced-motion: reduce');
   await c.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await load(c, url(), 1280, 800);
+  check('reduced motion: no intro move', !(await c.evaluate('window.__room.busy()')));
   await sleep(800);
   const home = await c.evaluate('window.__room.cam()');
   const cb = await rectOf(c, '#casesBtn');
@@ -225,7 +281,11 @@ await block('reduced motion', [], async (c) => {
 await block('phone', [], async (c) => {
   step('phone: loading at 390×844');
   await load(c, url(), 390, 844, { mobile: true });
-  await sleep(1200);
+  await sleep(300);
+  const hint = await rectOf(c, '.phint'); // it leaves by itself after 7 s, so look straight away
+  check('phone hint shows above the dock once the room is live', !!hint?.visible);
+  await settle(c);
+  await sleep(600);
   await shot(c, 'phone-home');
   step('phone: dock → cases (first slot)');
   const first = await c.evaluate('(() => { const b = document.querySelector("#dock button"); return { sec: b.dataset.sec, star: b.classList.contains("star") }; })()');
@@ -233,6 +293,7 @@ await block('phone', [], async (c) => {
   const cs = await rectOf(c, '#dock [data-sec="cases"]');
   await click(c, cs.x, cs.y); await settle(c);
   check('phone dock opens the projects panel', (await c.evaluate('window.__room.current()')) === 'cases');
+  check('the phone hint goes away after the first tap', !(await c.evaluate('!!document.querySelector(".phint")')));
   await shot(c, 'phone-cases');
   await key(c, 'Escape'); await settle(c);
   step('phone: dock → contact');
@@ -247,6 +308,19 @@ await block('phone', [], async (c) => {
   await click(c, qb.x, qb.y); await sleep(400);
   await shot(c, 'phone-quick');
   check('no JS errors (phone)', c.errors.length === 0, c.errors.join(' | '));
+});
+
+await block('slow connection', [], async (c) => {
+  step('slow connection: Save-Data on, 3g');
+  await c.send('Page.addScriptToEvaluateOnNewDocument', { source: "Object.defineProperty(navigator, 'connection', { value: { saveData: true, effectiveType: '3g' } })" });
+  await load(c, url(), 1280, 800, { readyMs: 60_000 }); // the room starts only after load + idle
+  const t = await c.evaluate(`(() => {
+    const nav = performance.getEntriesByType('navigation')[0];
+    const scene = performance.getEntriesByType('resource').find((r) => /Scene-/.test(r.name));
+    return { loadEnd: Math.round(nav.loadEventEnd), sceneStart: Math.round(scene?.startTime ?? -1) };
+  })()`);
+  check('on slow connections the 3D waits until the page has loaded', t.sceneStart > t.loadEnd && t.loadEnd > 0, JSON.stringify(t));
+  check('no JS errors (slow connection)', c.errors.length === 0, c.errors.join(' | '));
 });
 
 await block('no-webgl', ['--disable-3d-apis', '--disable-webgl', '--disable-gpu'], async (c) => {

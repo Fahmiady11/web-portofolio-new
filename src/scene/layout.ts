@@ -25,11 +25,59 @@ export const CABINET = { x: 3.1, z: -3.05 };
 export const EVIDENCE_BOX = { x: CABINET.x, y: 1.32, z: CABINET.z };
 export const COAT_RACK = { x: -3.05, z: 2.75 };
 
+type XYZ = [number, number, number];
+
+/** A light in the room. The scene and the Blender bake (scripts/blender) both read these. */
+export interface LightSpec {
+  kind: 'spot' | 'point' | 'directional' | 'hemisphere';
+  color: string;
+  /** three.js units (physically based, as in the scene); the bake script converts. */
+  intensity: number;
+  position?: XYZ;
+  target?: XYZ;
+  distance?: number;
+  angle?: number;
+  penumbra?: number;
+  decay?: number;
+  /** hemisphere only */
+  groundColor?: string;
+  /** Casts a shadow in the live scene. */
+  shadow?: boolean;
+  /** Moves at runtime (flicker, lightning): left out of the bake. */
+  dynamic?: boolean;
+}
+
+export const LIGHTS = {
+  hemisphere: { kind: 'hemisphere', color: '#5a6a90', groundColor: '#2a180c', intensity: 0.75 },
+  /** keeps the walls readable */
+  wash: { kind: 'point', color: '#ffb070', intensity: 4, distance: 8, decay: 1.5, position: [0.6, 3.3, -1.6] },
+  /** moonlight through the blinds: projects the slat pattern into the room */
+  moon: { kind: 'spot', color: '#9db4ff', intensity: 160, distance: 16, angle: 0.32, penumbra: 0.25, decay: 1.2, position: [-7.2, 4.4, 0.4], target: [0, 0.7, -1.2], shadow: true },
+  front: { kind: 'directional', color: '#7d7090', intensity: 0.8, position: [5, 6, 6] },
+  lightning: { kind: 'point', color: '#bcd2ff', intensity: 60, distance: 12, decay: 1.2, position: [-4.5, 2.6, -0.2], dynamic: true },
+  lamp: { kind: 'spot', color: '#ffb45c', intensity: 26, distance: 4.5, angle: 1.05, penumbra: 0.65, decay: 1.4, position: [-0.95, TOP + 0.36, -1.9], target: [-0.3, TOP, -1.55], shadow: true },
+  lampFill: { kind: 'point', color: '#ff9a3d', intensity: 2.2, distance: 5, decay: 1.6, position: [-0.6, TOP + 0.5, -1.3] },
+  neon: { kind: 'point', color: '#ff3030', intensity: 5, distance: 4.5, decay: 1.6, position: [CW.x, CW.y + CW.h / 2 + 0.3, CW.z + 0.5] },
+  pictureLeft: { kind: 'spot', color: '#ffe3b8', intensity: 11, distance: 6, angle: 0.75, penumbra: 0.6, decay: 1.2, position: [CW.x - 1.2, 3.95, CW.z + 1.3], target: [CW.x - 1.08, CW.y - 0.2, CW.z] },
+  pictureRight: { kind: 'spot', color: '#ffe3b8', intensity: 11, distance: 6, angle: 0.75, penumbra: 0.6, decay: 1.2, position: [CW.x + 1.2, 3.95, CW.z + 1.3], target: [CW.x + 1.08, CW.y - 0.2, CW.z] },
+} satisfies Record<string, LightSpec>;
+
+/** spotLight / pointLight props for a light spec (target and shadow are handled by the caller). */
+export const lightProps = (l: LightSpec) => ({
+  color: l.color, intensity: l.intensity, distance: l.distance, angle: l.angle, penumbra: l.penumbra, decay: l.decay, position: l.position,
+});
+
 export interface View { pos: Vector3; target: Vector3 }
 
 /** Default camera: the case wall fills the frame. Portrait screens get a closer, taller framing. */
 export const HOME: View = { pos: new Vector3(3.0, 3.7, 5.9), target: new Vector3(-0.2, 1.95, -2.0) };
 export const HOME_PORTRAIT: View = { pos: new Vector3(0.6, 3.1, 5.6), target: new Vector3(-0.25, 1.6, -2.4) };
+
+/** Where the intro camera move starts: further back and higher, looking at the same spot as home. */
+export const introStart = (home: View): View => ({
+  pos: home.target.clone().add(home.pos.clone().sub(home.target).multiplyScalar(1.45)).add(new Vector3(0, 0.9, 0)),
+  target: home.target.clone().add(new Vector3(0, 0.35, 0)),
+});
 
 /** canvas px on the case wall → world position just in front of it */
 export const caseWallPoint = (px: number, py: number) =>

@@ -8,3 +8,7 @@ __pycache__/
 public/img/
 public/files/
 test-results/
+# Blender pipeline intermediates (scripts/blender); the finished models live in src/assets/models/
+scripts/blender/out/
+scripts/blender/layout.json
+__pycache__/

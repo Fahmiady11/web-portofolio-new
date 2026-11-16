@@ -1,8 +1,8 @@
 import type { ThreeEvent } from '@react-three/fiber';
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { CanvasTexture, MeshBasicMaterial, SphereGeometry, SRGBColorSpace, type Mesh, type SpotLight } from 'three';
+import { CanvasTexture, Color, MeshBasicMaterial, SphereGeometry, SRGBColorSpace, type Mesh, type SpotLight } from 'three';
 import { cases } from '../../content/site';
-import { CW, CW_PX, caseRect, caseWallPoint } from '../layout';
+import { CW, CW_PX, caseRect, caseWallPoint, LIGHTS, lightProps } from '../layout';
 import { M, std } from '../materials';
 import { Box, Plane } from '../parts';
 import { canvasTexture, loadImage, MONO, TYPE } from '../textures';
@@ -64,6 +64,8 @@ export function CaseWall() {
       backing: std('#1a120a', { roughness: 0.5 }),
       pin: new SphereGeometry(0.03, 12, 8),
       neon: new MeshBasicMaterial({
+        // brighter than white, so the bloom pass picks the neon out
+        color: new Color(2.6, 2.6, 2.6),
         transparent: true, toneMapped: false, depthWrite: false,
         map: canvasTexture(1024, 220, (g, W, H) => {
           g.font = '128px ' + TYPE; g.textAlign = 'center'; g.textBaseline = 'middle';
@@ -105,18 +107,19 @@ export function CaseWall() {
         })}
         <Plane size={[2.3, 0.5]} material={wall.neon} position={[CW.x, CW.y + CW.h / 2 + 0.33, CW.z + 0.05]} />
       </Interactive>
-      <pointLight color="#ff3030" intensity={5} distance={4.5} decay={1.6} position={[CW.x, CW.y + CW.h / 2 + 0.3, CW.z + 0.5]} />
+      <pointLight {...lightProps(LIGHTS.neon)} />
       {/* two picture lights wash the photos */}
-      {[-1.2, 1.2].map((dx) => <PictureLight key={dx} dx={dx} />)}
+      <PictureLight spec={LIGHTS.pictureLeft} />
+      <PictureLight spec={LIGHTS.pictureRight} />
     </>
   );
 }
 
-function PictureLight({ dx }: { dx: number }) {
+function PictureLight({ spec }: { spec: typeof LIGHTS.pictureLeft }) {
   const light = useRef<SpotLight>(null);
   useLayoutEffect(() => {
-    light.current!.target.position.set(CW.x + dx * 0.9, CW.y - 0.2, CW.z);
+    light.current!.target.position.set(...spec.target);
     light.current!.target.updateMatrixWorld();
-  }, [dx]);
-  return <spotLight ref={light} color="#ffe3b8" intensity={11} distance={6} angle={0.75} penumbra={0.6} decay={1.2} position={[CW.x + dx, 3.95, CW.z + 1.3]} />;
+  }, [spec]);
+  return <spotLight ref={light} {...lightProps(spec)} />;
 }

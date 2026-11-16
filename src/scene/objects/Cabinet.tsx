@@ -5,6 +5,7 @@ import { M, std } from '../materials';
 import { Box } from '../parts';
 import { canvasTexture, TYPE } from '../textures';
 import { Interactive } from '../interactive';
+import { Swappable } from '../Swappable';
 
 /** Steel filing cabinet in the back-right corner. */
 export function Cabinet() {
@@ -14,15 +15,17 @@ export function Cabinet() {
   }), []);
   const { x, z } = CABINET;
   return (
-    <group>
-      <Box size={[0.62, 1.32, 0.66]} radius={0.02} material={m.steel} position={[x, 0.66, z]} />
-      {[0, 1, 2].map((k) => (
-        <group key={k}>
-          <Box size={[0.56, 0.38, 0.02]} material={m.drawer} position={[x, 1.1 - k * 0.42, z + 0.34]} />
-          <Box size={[0.16, 0.03, 0.04]} material={M.brass} position={[x, 1.12 - k * 0.42, z + 0.36]} />
-        </group>
-      ))}
-    </group>
+    <Swappable model="cabinet">
+      <group>
+        <Box size={[0.62, 1.32, 0.66]} radius={0.02} material={m.steel} position={[x, 0.66, z]} />
+        {[0, 1, 2].map((k) => (
+          <group key={k}>
+            <Box size={[0.56, 0.38, 0.02]} material={m.drawer} position={[x, 1.1 - k * 0.42, z + 0.34]} />
+            <Box size={[0.16, 0.03, 0.04]} material={M.brass} position={[x, 1.12 - k * 0.42, z + 0.36]} />
+          </group>
+        ))}
+      </group>
+    </Swappable>
   );
 }
 

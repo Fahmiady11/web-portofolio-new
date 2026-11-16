@@ -6,11 +6,13 @@ import { Box3, Vector3 } from 'three';
 import type { SectionId } from '../sections';
 import { useRoom } from '../store';
 import { CameraRig } from './CameraRig';
+import Effects from './Effects';
 import { HotspotTracker, Hotspots, type MarkerRefs } from './Hotspots';
-import { tracked } from './registry';
+import { glowing, loadedModels, tracked } from './registry';
 import { caseRect, caseWallPoint } from './layout';
-import { QualityContext, reduceMotion, type Quality } from './quality';
+import { liveQuality, pinnedQuality, QualityContext, reduceMotion, type Quality } from './quality';
 import { Room } from './Room';
+import { warm } from './warm';
 
 // labels are painted into textures once, so wait (briefly) for the typewriter font first
 const fontsReady = Promise.race([
@@ -18,27 +20,56 @@ const fontsReady = Promise.race([
   new Promise((ok) => setTimeout(ok, 1500)),
 ]);
 
-const MAX_DPR: Record<Quality, number> = { high: 2, medium: 1.5, low: 1 };
 
-/** Shadows are rendered once, not every frame: nothing that casts them moves. */
-function StaticShadows({ quality }: { quality: Quality }) {
+const EXPOSURE = 1.3;
+/** The first frames carry shader compiles and texture uploads; animations start after them. */
+const WARM_FRAMES = 4;
+
+/** Lights coming on: on a plain first visit the exposure rises from near dark as the poster fades. */
+function LightsOn() {
   const gl = useThree((s) => s.gl);
-  const invalidate = useThree((s) => s.invalidate);
+  const ramp = useRef<{ start: number } | null>(null);
   useEffect(() => {
-    gl.shadowMap.enabled = quality !== 'low';
-    gl.shadowMap.autoUpdate = false;
-    gl.shadowMap.needsUpdate = true;
-    invalidate();
-  }, [gl, quality, invalidate]);
+    const s = useRoom.getState();
+    if (reduceMotion || s.deepLink || s.current || s.dossierOpen) return;
+    gl.toneMappingExposure = 0.08;
+    ramp.current = { start: -1 };
+  }, [gl]);
+  useFrame(() => {
+    const r = ramp.current;
+    if (!r) return;
+    if (r.start < 0) { if (!warm.done) return; r.start = performance.now(); }
+    const k = Math.min(1, (performance.now() - r.start) / 2200);
+    gl.toneMappingExposure = 0.08 + (EXPOSURE - 0.08) * (1 - Math.pow(1 - k, 2));
+    if (k === 1) ramp.current = null;
+  });
   return null;
 }
 
-/** Marks the room ready after its first frame, and exposes hooks for tests/interactions.mjs. */
+const MAX_DPR: Record<Quality, number> = { high: 2, medium: 1.5, low: 1 };
+
+/** Shadows are rendered once, not every frame: nothing that casts them moves. */
+function StaticShadows() {
+  const gl = useThree((s) => s.gl);
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    gl.shadowMap.autoUpdate = false;
+    gl.shadowMap.needsUpdate = true;
+    invalidate();
+  }, [gl, invalidate]);
+  return null;
+}
+
+/**
+ * Marks the room ready once it is warmed up (shaders compiled, first frames out), and exposes hooks for
+ * tests/interactions.mjs. Until then the poster stays up and the intro waits.
+ */
 function Ready({ tweening }: { tweening: { current: boolean } }) {
   const get = useThree((s) => s.get);
-  const frames = useRef(0);
-  useFrame(() => {
-    if (++frames.current !== 1) return;
+  useFrame(({ invalidate }) => {
+    if (warm.done) return;
+    if (++warm.frames < WARM_FRAMES) { invalidate(); return; }
+    warm.done = true;
     const toScreen = (p: Vector3) => {
       const { camera, size } = get();
       const v = p.clone().project(camera);
@@ -52,6 +83,10 @@ function Ready({ tweening }: { tweening: { current: boolean } }) {
       current: () => useRoom.getState().current,
       caseCard: (i: number) => { const r = caseRect(i); return toScreen(caseWallPoint(r.x + r.w / 2, r.y + r.h / 2)); },
       busy: () => tweening.current,
+      glowing,
+      models: () => [...loadedModels],
+      quality: () => liveQuality.value,
+      bloom: () => liveQuality.bloom,
     };
     useRoom.getState().setWebGL('ready');
   });
@@ -60,8 +95,9 @@ function Ready({ tweening }: { tweening: { current: boolean } }) {
 
 export default function Scene() {
   use(fontsReady);
-  const [quality, setQuality] = useState<Quality>(() => (innerWidth < 760 ? 'medium' : 'high'));
+  const [quality, setQuality] = useState<Quality>(() => pinnedQuality ?? (innerWidth < 760 ? 'medium' : 'high'));
   const dossierOpen = useRoom((s) => s.dossierOpen);
+  useEffect(() => { liveQuality.value = quality; }, [quality]);
   const [markers] = useState<MarkerRefs>(() => new Map());
   const tweening = useRef(false);
 
@@ -75,15 +111,17 @@ export default function Scene() {
         shadows
         camera={{ fov: 38, near: 0.1, far: 100, position: [3, 3.7, 5.9] }}
         onCreated={({ gl }) => {
-          gl.toneMappingExposure = 1.3;
+          gl.toneMappingExposure = EXPOSURE;
           gl.domElement.style.cursor = 'grab';
         }}
       >
-        <PerformanceMonitor onDecline={() => setQuality('low')} onFallback={() => setQuality('low')} flipflops={3} />
+        {!pinnedQuality && <PerformanceMonitor onDecline={() => setQuality('low')} onFallback={() => setQuality('low')} flipflops={3} />}
         <QualityContext.Provider value={quality}>
-          <StaticShadows quality={quality} />
+          <StaticShadows />
           <Room />
         </QualityContext.Provider>
+        <LightsOn />
+        {quality !== 'low' && <Effects />}
         <CameraRig tweening={tweening} />
         <HotspotTracker markers={markers} />
         <Ready tweening={tweening} />
