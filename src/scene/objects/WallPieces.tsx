@@ -13,8 +13,9 @@ export function Commendations() {
   const m = useMemo(() => {
     const loader = new TextureLoader();
     return {
-      frames: site.certificates.slice(0, 6).map((c) => {
-        const t = loader.load(c.image.src);
+      // the six framed ones need a scan; certificates without one are listed in the panel only
+      frames: site.certificates.filter((c) => c.image).slice(0, 6).map((c) => {
+        const t = loader.load(c.image!.src);
         t.colorSpace = SRGBColorSpace;
         return std('#fff', { map: t, roughness: 0.4 });
       }),
@@ -49,7 +50,7 @@ export function Diploma() {
       map: canvasTexture(512, 380, (g, W, H) => {
         g.fillStyle = '#f1e7cf'; g.fillRect(0, 0, W, H); g.strokeStyle = '#8a6c33'; g.lineWidth = 6; g.strokeRect(16, 16, W - 32, H - 32);
         g.fillStyle = '#2b1a08'; g.textAlign = 'center'; g.font = '30px ' + TYPE; g.fillText('UNIVERSITAS TRUNOJOYO MADURA', W / 2, 80);
-        g.font = '24px ' + TYPE; g.fillText('S1 TEKNIK INFORMATIKA', W / 2, 140); g.font = 'italic 34px Georgia, serif'; g.fillText('M. Fahmi Ady Susilo', W / 2, 210);
+        g.font = '24px ' + TYPE; g.fillText('SARJANA ILMU KOMPUTER', W / 2, 140); g.font = 'italic 34px Georgia, serif'; g.fillText('M. Fahmi Ady Susilo', W / 2, 210);
         g.fillStyle = '#b3261e'; g.beginPath(); g.arc(W - 90, H - 80, 36, 0, 7); g.fill();
       }),
     }),

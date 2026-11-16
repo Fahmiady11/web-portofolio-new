@@ -31,7 +31,7 @@ function drawBoard(canvas: HTMLCanvasElement, avatar: HTMLImageElement | null) {
   g.fillStyle = '#111'; g.font = 'bold 26px Georgia, serif'; g.textAlign = 'left';
   g.fillText('THE DAILY COMMIT', -CLIP.w / 2 + 18, -CLIP.h / 2 + 38);
   g.fillRect(-CLIP.w / 2 + 18, -CLIP.h / 2 + 50, CLIP.w - 36, 3);
-  g.font = 'bold 38px Georgia, serif'; g.fillText('400+ CAMPUSES', -CLIP.w / 2 + 18, -CLIP.h / 2 + 100); g.fillText('RUN THE CODE', -CLIP.w / 2 + 18, -CLIP.h / 2 + 142);
+  g.font = 'bold 38px Georgia, serif'; g.fillText('20,000+', -CLIP.w / 2 + 18, -CLIP.h / 2 + 100); g.fillText('APPLICANTS', -CLIP.w / 2 + 18, -CLIP.h / 2 + 142);
   g.fillStyle = 'rgba(0,0,0,.35)'; for (let k = 0; k < 4; k++) g.fillRect(-CLIP.w / 2 + 18, -CLIP.h / 2 + 168 + k * 14, CLIP.w - 40 - (k % 2) * 60, 6);
   g.restore();
   // sticky note: modus operandi
@@ -47,9 +47,11 @@ function drawBoard(canvas: HTMLCanvasElement, avatar: HTMLImageElement | null) {
     g.fillStyle = e.latest ? '#fff6d0' : '#f7f4ec'; g.fillRect(-w / 2, -h / 2, w, h); noShadow();
     g.strokeStyle = 'rgba(179,38,30,.35)'; g.lineWidth = 2; g.beginPath(); g.moveTo(-w / 2, -h / 2 + 56); g.lineTo(w / 2, -h / 2 + 56); g.stroke();
     g.strokeStyle = 'rgba(60,110,180,.25)'; for (let k = 1; k < 5; k++) { g.beginPath(); g.moveTo(-w / 2, -h / 2 + 56 + k * 30); g.lineTo(w / 2, -h / 2 + 56 + k * 30); g.stroke(); }
-    g.textAlign = 'left'; g.fillStyle = '#b3261e'; g.font = '26px ' + TYPE; g.fillText(`${e.start.slice(0, 4)} – ${e.end ? e.end.slice(0, 4) : 'NOW'}`, -w / 2 + 16, -h / 2 + 40);
+    g.textAlign = 'left'; g.fillStyle = '#b3261e'; g.font = '26px ' + TYPE; const from = e.start.slice(0, 4), to = e.end ? e.end.slice(0, 4) : 'NOW';
+    g.fillText(from === to ? from : `${from} – ${to}`, -w / 2 + 16, -h / 2 + 40);
     g.fillStyle = '#1b1b1b'; g.font = '27px ' + TYPE;
-    g.fillText(e.role.length > 21 ? e.role.slice(0, 20) + '…' : e.role, -w / 2 + 16, -h / 2 + 92);
+    const role = e.role.split(',')[0]; // "Speaker, Workshop …" → "Speaker"
+    g.fillText(role.length > 21 ? role.slice(0, 20) + '…' : role, -w / 2 + 16, -h / 2 + 92);
     g.font = '22px ' + TYPE; g.fillStyle = '#3b3b3b';
     let line = '', ly = -h / 2 + 128;
     for (const word of e.company.toUpperCase().split(' ')) {

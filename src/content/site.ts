@@ -15,6 +15,9 @@ import {
 import sizes from './image-sizes.json';
 import type { Case, Picture, Site } from './types';
 
+// pendingProjects.items may be empty, which JSON typing reads as never[]: give it its shape
+type PendingItem = { slug: string; workingTitle: string; thumb: string };
+
 /** content/<dir>/<name>.<ext> → /img/<subdir>/<name>-<w>.<fmt>, as written by scripts/build-assets.mjs. */
 export function picture(path: string): Picture {
   const dir = path.slice(0, path.lastIndexOf('/'));
@@ -30,14 +33,9 @@ export function picture(path: string): Picture {
   };
 }
 
-/** content/assets/<file> → the copy served from /files/ */
-const file = (path: string) => '/files/' + path.replace(/^assets\//, '');
 
-// devicon SVGs are vendored in public/icons/skills (MIT, pinned to devicon v2.16.0)
+// icons are vendored in public/icons/skills (devicon v2.16.0, MIT; simple-icons 13, CC0); content.json keeps their sources
 const icons = new Map(skills.icons.map((s) => [s.name, '/icons/skills/' + s.icon.split('/').pop()]));
-const group = (name: string, list: string[]) => ({ group: name, skills: list.map((s) => ({ name: s, icon: icons.get(s) })) });
-
-const current = experience[0];
 
 export const site: Site = {
   name: profile.name,
@@ -45,46 +43,49 @@ export const site: Site = {
   headline: profile.headline,
   location: profile.location,
   about: profile.about,
-  employer: { name: current.company, since: current.start },
   photo: picture(profile.photo.thumb),
   email: contact.email,
-  phone: contact.phone,
-  phoneE164: contact.phoneE164,
-  cv: file(contact.cv.copy),
+  // published under a readable name by scripts/build-assets.mjs; the phone number stays in the PDF only
+  cv: '/files/' + contact.cv.publicName,
   // the CV-only UI/UX Instagram stays off the site, as on the live one
   socials: contact.socials.filter((s) => !('note' in s)).map(({ name, handle, url }) => ({ name, handle, url })),
-  skills: [
-    group('Languages', skills.languages),
-    group('Frontend', skills.frontend),
-    group('Backend', skills.backend),
-    group('Database', skills.database),
-    group('Design', skills.design),
-    // React Native only appears in the hidden Bangbeli internship, so it is left out
-    group('Also used', skills.fromAboutOrProjects.filter((s) => s !== 'React Native')),
-  ],
+  skills: skills.groups.map((g) => ({ group: g.name, skills: g.items.map((s) => ({ name: s, icon: icons.get(s) })) })),
   experience: experience.map((e) => ({
     role: e.role,
     company: e.company,
     start: e.start,
     end: e.end,
-    latest: 'latest' in e && e.latest === true,
+    latest: e.end === null,
+    link: ('link' in e ? e.link : null) ?? null,
+    linkLabel: ('linkLabel' in e ? e.linkLabel : null) ?? null,
     highlights: e.highlights,
   })),
   education: education.items,
+  nonFormal: education.nonFormal,
   organizations: organizations.items,
   achievements: achievements.items,
   projects: projects.map((p) => ({
     slug: p.slug,
     title: p.title,
+    year: p.year,
     description: p.description,
     tags: p.tags,
     github: p.github,
     website: p.website,
+    link: p.link,
+    install: ('install' in p ? p.install : null) ?? null,
     image: picture(p.thumb),
+    imageAlt: ('imageAlt' in p ? p.imageAlt : null) ?? null,
   })),
   // descriptions come from the user later: only the working title and screenshot are shown
-  pending: pendingProjects.items.map((p) => ({ slug: p.slug, title: p.workingTitle, image: picture(p.thumb) })),
-  certificates: certificates.map((c) => ({ title: c.title, issuer: c.issuer, date: c.date, image: picture(c.thumb) })),
+  pending: (pendingProjects.items as PendingItem[]).map((p) => ({ slug: p.slug, title: p.workingTitle, image: picture(p.thumb) })),
+  certificates: certificates.map((c) => ({
+    title: c.title,
+    issuer: c.issuer,
+    date: c.date,
+    url: ('url' in c ? c.url : null) ?? null,
+    image: c.thumb ? picture(c.thumb) : null,
+  })),
 };
 
 export const caseNo = (i: number) => '#' + String(i + 1).padStart(3, '0');
@@ -98,9 +99,16 @@ export const cases: Case[] = [
   }),
 ];
 
-/** "2023-07" → "Jul 2023"; null → "Present" */
+/** "2023-07" → "Jul 2023", "2023" → "2023"; null → "Present" */
 export function monthYear(ym: string | null) {
   if (!ym) return 'Present';
   const [y, m] = ym.split('-').map(Number);
-  return new Date(y, m - 1).toLocaleString('en', { month: 'short' }) + ' ' + y;
+  return m ? new Date(y, m - 1).toLocaleString('en', { month: 'short' }) + ' ' + y : String(y);
 }
+
+/** "2023 – 2026", or one date when start and end are the same */
+export const period = (start: string, end: string | null) =>
+  start === end ? monthYear(start) : `${monthYear(start)} – ${monthYear(end)}`;
+
+/** The job at the top of the CV, and whether it is still ongoing. */
+export const latestJob = site.experience[0];

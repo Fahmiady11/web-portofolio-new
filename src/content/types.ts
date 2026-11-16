@@ -28,11 +28,15 @@ export interface SkillGroup {
 export interface Experience {
   role: string;
   company: string;
-  /** YYYY-MM */
+  /** YYYY or YYYY-MM */
   start: string;
-  /** YYYY-MM, or null while ongoing. */
+  /** YYYY or YYYY-MM, or null while ongoing. */
   end: string | null;
+  /** Still ongoing (end is null). */
   latest: boolean;
+  /** Certificate or project page, when the CV gives one, and its label. */
+  link: string | null;
+  linkLabel: string | null;
   highlights: string[];
 }
 
@@ -40,6 +44,15 @@ export interface Education {
   degree: string;
   school: string;
   period: string;
+  detail: string;
+}
+
+/** Courses and bootcamps (the CV's "Pendidikan Non Formal"). */
+export interface NonFormal {
+  title: string;
+  org: string;
+  period: string;
+  link: string | null;
   detail: string;
 }
 
@@ -58,11 +71,18 @@ export interface Achievement {
 export interface Project {
   slug: string;
   title: string;
+  year: number;
   description: string;
   tags: string[];
   github: string | null;
   website: string | null;
+  /** Any other project page (e.g. the CV's short link). */
+  link: string | null;
+  /** Install command, shown with the GitHub link. */
+  install: string | null;
   image: Picture;
+  /** Alt text when the image is not a screenshot (a diagram or a drawing). */
+  imageAlt: string | null;
 }
 
 /** A confirmed project still waiting for its description; only the screenshot is known. */
@@ -76,7 +96,10 @@ export interface Certificate {
   title: string;
   issuer: string;
   date: string | null;
-  image: Picture;
+  /** Verification page, when the CV links one. */
+  url: string | null;
+  /** A scan of the certificate, when there is one. */
+  image: Picture | null;
 }
 
 export interface Site {
@@ -85,16 +108,14 @@ export interface Site {
   headline: string;
   location: string;
   about: string;
-  employer: { name: string; since: string };
   photo: Picture;
   email: string;
-  phone: string;
-  phoneE164: string;
   cv: string;
   socials: Social[];
   skills: SkillGroup[];
   experience: Experience[];
   education: Education[];
+  nonFormal: NonFormal[];
   organizations: Organization[];
   achievements: Achievement[];
   projects: Project[];

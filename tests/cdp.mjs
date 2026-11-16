@@ -62,7 +62,9 @@ export async function launch(extra = []) {
   if (!existsSync(CHROME)) throw new Error(`Chrome not found at ${CHROME} (set CHROME=/path/to/chrome)`);
   const profile = mkdtempSync(join(tmpdir(), 'room-check-chrome-'));
   const proc = spawn(CHROME, ['--headless=new', '--remote-debugging-pipe', `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
-    '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--window-size=1280,800', ...extra, 'about:blank'],
+    '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--window-size=1280,800',
+    // never throttle the page under test, even if something else takes the foreground
+    '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows', '--disable-background-timer-throttling', ...extra, 'about:blank'],
   { stdio: ['ignore', 'ignore', 'pipe', 'pipe', 'pipe'], detached: true }); // own process group → kill helpers too
   const stderr = [];
   proc.stdio[2].on('data', (d) => { stderr.push(...String(d).split('\n').filter(Boolean)); stderr.splice(0, Math.max(0, stderr.length - 20)); });
@@ -99,8 +101,14 @@ export async function launch(extra = []) {
   } catch (e) {
     throw new Error(`${e.message}. Chrome stderr: ${stderr.slice(-5).join(' | ') || 'none'}`, { cause: e });
   }
-  const { targetId } = await send('Target.createTarget', { url: 'about:blank' });
+  // Drive the tab Chrome opened itself. A second tab (Target.createTarget) races with that first window:
+  // on a cold start Chrome can bring its own about:blank to the front a few seconds later, which hides
+  // our tab, and hidden tabs get no requestAnimationFrame, so the room never finishes warming up.
+  const { targetInfos } = await send('Target.getTargets');
+  const first = targetInfos.find((t) => t.type === 'page');
+  const targetId = first ? first.targetId : (await send('Target.createTarget', { url: 'about:blank' })).targetId;
   ({ sessionId } = await send('Target.attachToTarget', { targetId, flatten: true }));
+  await send('Page.bringToFront');
   await send('Runtime.enable'); await send('Page.enable'); await send('Log.enable');
   const evaluate = async (expr) => {
     const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true });
@@ -128,13 +136,18 @@ export async function shot(c, file, format = 'png', quality) {
   writeFileSync(file, Buffer.from(data, 'base64'));
 }
 
-/** Opens url at w×h and waits until the page has decided on the room (window.__room is set). */
+/** Opens url at w×h, waits until the page has decided on the room (window.__room is set), and returns how long it took. */
 export async function load(c, url, w, h, { mobile = false, readyMs = 30_000 } = {}) {
   await c.send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile });
+  const t0 = Date.now();
   await c.send('Page.navigate', { url });
-  const until = Date.now() + readyMs;
+  const until = t0 + readyMs;
   while (!(await c.evaluate('!!window.__room'))) {
-    if (Date.now() > until) throw new Error(`page did not expose window.__room within ${readyMs / 1000}s (${c.errors.slice(-2).join(' | ') || 'no console errors'})`);
+    if (Date.now() > until) {
+      const vis = await c.evaluate('document.visibilityState');
+      throw new Error(`page did not expose window.__room within ${readyMs / 1000}s (tab ${vis}; ${c.errors.slice(-2).join(' | ') || 'no console errors'})`);
+    }
     await sleep(250);
   }
+  return (Date.now() - t0) / 1000;
 }

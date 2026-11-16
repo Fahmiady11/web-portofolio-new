@@ -16,14 +16,14 @@
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { click, key, killAll, launch, load, preview, say, shot as capture, sleep } from './cdp.mjs';
+import { click, key, killAll, launch, load as loadPage, preview, say, shot as capture, sleep } from './cdp.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = resolve(process.argv[2] ?? join(root, 'test-results'));
 const OVERALL_S = Number(process.env.ROOM_CHECK_TIMEOUT ?? 480);
 const content = JSON.parse(readFileSync(join(root, 'content/content.json'), 'utf8'));
 const expectedCases = content.projects.length + content.pendingProjects.items.length;
-const expectedLinks = content.projects.reduce((n, p) => n + !!p.website + !!p.github, 0);
+const expectedLinks = content.projects.reduce((n, p) => n + !!p.website + !!p.github + !!p.link, 0);
 
 const t0 = Date.now();
 const secs = () => ((Date.now() - t0) / 1000).toFixed(1).padStart(5);
@@ -32,9 +32,18 @@ const step = (s) => { currentStep = s; say(`  … [${secs()}s] ${s}`); };
 const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok }); say(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ' — ' + detail : ''}`); };
 const shot = (c, name) => capture(c, join(out, name + '.png'));
+// every page load reports how long the room took to be ready, and the run ends with the list
+const timings = [];
+async function load(c, ...args) {
+  const s = await loadPage(c, ...args);
+  timings.push([currentStep, s]);
+  say(`  ⏱ [${secs()}s] room ready in ${s.toFixed(1)}s (${currentStep})`);
+  return s;
+}
 
 function finish(code) {
   killAll();
+  if (timings.length) say('\nTime to window.__room:\n' + timings.map(([step, t]) => `  ${t.toFixed(1).padStart(5)}s  ${step}`).join('\n'));
   const failed = results.filter((r) => !r.ok).length;
   const summary = `${results.length - failed}/${results.length} checks passed in ${secs().trim()}s · screenshots in ${out}`;
   say(code === 2 ? `\nABORTED — ${summary}` : `\n${summary}`);
@@ -94,7 +103,11 @@ const staticOk = {
   og: /<meta property="og:image" content="https?:\/\/[^"]+\/og\.jpg"/.test(html) && /twitter:card/.test(html),
   name: html.includes('<h1 id="name">Muhammad Fahmi Ady Susilo</h1>'),
   projects: [...content.projects.map((p) => p.title), ...content.pendingProjects.items.map((p) => p.workingTitle)].every((t) => html.includes(`>${t}</h4>`)),
-  links: content.projects.flatMap((p) => [p.website, p.github]).filter(Boolean).every((l) => html.includes(`href="${l}"`)),
+  links: content.projects.flatMap((p) => [p.website, p.github, p.link]).filter(Boolean).every((l) => html.includes(`href="${l}"`)),
+  // CV 2026 content: the published CV, no phone number, no "currently at"
+  cv: html.includes(`href="/files/${content.contact.cv.publicName}"`) && !html.includes('cv-2022'),
+  noPhone: !/857[- ]?4589|tel:/.test(html),
+  noCurrent: !/currently at/i.test(html),
   fontPreload: /<link rel="preload" href="\/assets\/special-elite-[^"]+\.woff2" as="font"/.test(html),
 };
 check('prerendered HTML has title, meta, Open Graph, name, every project and every link, font preload', Object.values(staticOk).every(Boolean), JSON.stringify(staticOk));
@@ -160,13 +173,15 @@ await block('desktop', [], async (c) => {
       cases: b.querySelectorAll('.case').length,
       shotsLoaded: shots.filter((i) => i.complete && i.naturalWidth > 0).length,
       live: b.querySelectorAll('.case a[href^="http"]').length,
+      titles: [...b.querySelectorAll('.case > h3')].map((h) => h.textContent),
       pending: [...b.querySelectorAll('.case.pending')].map((e) => e.querySelector('.stamp').textContent + '|' + e.querySelector('p').textContent),
       focused: document.activeElement?.id,
     };
   })()`);
   check('"View cases" opens the projects panel', pc2.current === 'cases' && pc2.wide >= 600, `current=${pc2.current} width=${pc2.wide}`);
+  check('cases are in content order, newest first (Clipper Studio, Lega, …)', JSON.stringify(pc2.titles) === JSON.stringify(content.projects.map((p) => p.title)), pc2.titles.join(' | '));
   check('every case has a loaded screenshot', pc2.cases === expectedCases && pc2.shotsLoaded === expectedCases, `${pc2.shotsLoaded}/${expectedCases} screenshots`);
-  check('Live / GitHub buttons for every public link', pc2.live === expectedLinks, `${pc2.live}/${expectedLinks} links`);
+  check('Live / GitHub / project-link buttons for every public link', pc2.live === expectedLinks, `${pc2.live}/${expectedLinks} links`);
   check('pending files show only the FILE PENDING placeholder', pc2.pending.length === content.pendingProjects.items.length && pc2.pending.every((t) => t === 'FILE PENDING|Case notes not filed yet.'), JSON.stringify(pc2.pending));
   check('opening a file moves keyboard focus into the panel', pc2.focused === 'pTitle', `focused=${pc2.focused}`);
   await key(c, 'Escape'); await settle(c);
@@ -313,7 +328,7 @@ await block('phone', [], async (c) => {
 await block('slow connection', [], async (c) => {
   step('slow connection: Save-Data on, 3g');
   await c.send('Page.addScriptToEvaluateOnNewDocument', { source: "Object.defineProperty(navigator, 'connection', { value: { saveData: true, effectiveType: '3g' } })" });
-  await load(c, url(), 1280, 800, { readyMs: 60_000 }); // the room starts only after load + idle
+  await load(c, url(), 1280, 800);
   const t = await c.evaluate(`(() => {
     const nav = performance.getEntriesByType('navigation')[0];
     const scene = performance.getEntriesByType('resource').find((r) => /Scene-/.test(r.name));

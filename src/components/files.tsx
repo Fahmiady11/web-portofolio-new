@@ -1,6 +1,6 @@
 // The contents of each case file. Shared by the side panel and the full dossier.
 import type { ReactNode } from 'react';
-import { cases, monthYear, site } from '../content/site';
+import { cases, latestJob, period, site } from '../content/site';
 import type { Case } from '../content/types';
 import { useRoom } from '../store';
 import { Heading } from './heading';
@@ -10,11 +10,12 @@ const SHOT_SIZES = '(max-width: 760px) 92vw, 560px';
 const ext = { target: '_blank', rel: 'noopener' } as const;
 
 function CaseLinks({ c }: { c: Extract<Case, { kind: 'closed' }> }) {
-  if (!c.website && !c.github) return <span className="private">Private project — no public link</span>;
+  if (!c.website && !c.github && !c.link) return <span className="private">Private project — no public link</span>;
   return (
     <>
       {c.website && <a className="pbtn" href={c.website} {...ext}>Live site ↗<span className="sr-only"> ({c.title})</span></a>}
       {c.github && <a className="pbtn ghost" href={c.github} {...ext}>GitHub ↗<span className="sr-only"> ({c.title})</span></a>}
+      {c.link && <a className="pbtn ghost" href={c.link} {...ext}>Project link ↗<span className="sr-only"> ({c.title})</span></a>}
     </>
   );
 }
@@ -31,13 +32,15 @@ export function CaseCard({ c, idPrefix, eager }: { c: Case; idPrefix: string; ea
     );
   }
   return (
-    <article className="case" id={idPrefix + c.index} data-no={`CASE ${c.no}`}>
+    <article className="case" id={idPrefix + c.index} data-no={`CASE ${c.no} · ${c.year}`}>
       <span className="stamp">CLOSED</span>
-      <Img className="shot" picture={c.image} alt={`Screenshot of ${c.title}`} sizes={SHOT_SIZES} eager={eager} />
+      <Img className="shot" picture={c.image} alt={c.imageAlt ?? `Screenshot of ${c.title}`} sizes={SHOT_SIZES} eager={eager} />
       <Heading>{c.title}</Heading>
       <ul className="tags" aria-label="Built with">{c.tags.map((t) => <li className="tag" key={t}>{t}</li>)}</ul>
       <p>{c.description}</p>
       <div className="row"><CaseLinks c={c} /></div>
+      {/* the installer only works while the repo is public, so it shows with the GitHub link */}
+      {c.install && c.github && <p className="install">Install: <code>{c.install}</code></p>}
     </article>
   );
 }
@@ -46,7 +49,9 @@ export function CaseCard({ c, idPrefix, eager }: { c: Case; idPrefix: string; ea
 export function Cases({ idPrefix, eager }: { idPrefix: string; eager?: boolean }) {
   return (
     <>
-      <p className="lead intro">{site.projects.length} closed cases with screenshots and links, {site.pending.length} files still pending.</p>
+      <p className="lead intro">
+        {site.projects.length} closed cases{site.pending.length ? `, and ${site.pending.length} files still pending` : ''}.
+      </p>
       {cases.map((c) => <CaseCard key={c.slug} c={c} idPrefix={idPrefix} eager={eager} />)}
     </>
   );
@@ -58,8 +63,9 @@ export function Timeline() {
       {site.experience.map((e) => (
         <li className="ev" key={e.role + e.start}>
           <Heading>{e.role}{e.latest && <span className="stamp small">ACTIVE</span>}</Heading>
-          <p className="meta">{e.company} · {monthYear(e.start)} – {monthYear(e.end)}</p>
+          <p className="meta">{e.company} · {period(e.start, e.end)}</p>
           <ul>{e.highlights.map((h) => <li key={h}>{h}</li>)}</ul>
+          {e.link && <p className="evlink"><a href={e.link} {...ext}>{e.linkLabel ?? 'Link'} ↗</a></p>}
         </li>
       ))}
     </ol>
@@ -85,8 +91,13 @@ export function Certificates() {
       {site.certificates.map((c) => (
         <li key={c.title}>
           <figure>
-            <Img picture={c.image} alt={`Certificate: ${c.title}`} sizes="(max-width: 760px) 45vw, 220px" />
-            <figcaption><b>{c.title}</b>{c.issuer}{c.date ? ' · ' + c.date : ''}</figcaption>
+            {c.image
+              ? <Img picture={c.image} alt={`Certificate: ${c.title}`} sizes="(max-width: 760px) 45vw, 220px" />
+              : <div className="blank" aria-hidden="true"><span>{c.issuer}</span>{c.title}</div>}
+            <figcaption>
+              <b>{c.title}</b>{c.issuer}{c.date ? ' · ' + c.date : ''}
+              {c.url && <> · <a href={c.url} {...ext}>verify ↗<span className="sr-only"> ({c.title})</span></a></>}
+            </figcaption>
           </figure>
         </li>
       ))}
@@ -99,6 +110,14 @@ export function Record() {
     <>
       {site.education.map((e) => (
         <div className="record" key={e.degree}><Heading>{e.degree}</Heading><p className="meta">{e.school} · {e.period}</p><p>{e.detail}</p></div>
+      ))}
+      <Heading className="sec">Courses &amp; bootcamps</Heading>
+      {site.nonFormal.map((n) => (
+        <div className="record" key={n.title}>
+          <Heading offset={1}>{n.title}</Heading>
+          <p className="meta">{n.org} · {n.period}{n.link && <> · <a href={n.link} {...ext}>certificate ↗</a></>}</p>
+          <p>{n.detail}</p>
+        </div>
       ))}
       <Heading className="sec">Awards</Heading>
       {site.achievements.map((a) => (
@@ -128,17 +147,18 @@ export function About() {
         <dl className="facts">
           <dt>Name</dt><dd>{site.name}</dd>
           <dt>Occupation</dt><dd>{site.headline}</dd>
-          <dt>Employer</dt><dd>{site.employer.name} (since {monthYear(site.employer.since)})</dd>
+          <dt>{latestJob.latest ? 'Employer' : 'Last role'}</dt><dd>{latestJob.company}, {period(latestJob.start, latestJob.end)}</dd>
           <dt>Based in</dt><dd>{site.location}</dd>
         </dl>
       </Mug>
       <Heading className="sec">Statement</Heading>
       <p className="lead">{site.about}</p>
       {/* figures quoted from the current job's highlights in content.json */}
+      {/* figures from the CV's SEVIMA highlights */}
       <ul className="nums">
-        <li><b>400+</b><span>universities served</span></li>
-        <li><b>2</b><span>ministries' systems</span></li>
-        <li><b>~80%</b><span>on-time delivery</span></li>
+        <li><b>20,000+</b><span>scholarship applicants (SDMPKS)</span></li>
+        <li><b>~200</b><span>campuses on the Litabmas module</span></li>
+        <li><b>2</b><span>ministries' platforms</span></li>
       </ul>
     </>
   );
@@ -150,9 +170,10 @@ export function Contact() {
       <p className="lead">Got a case? The line is open.</p>
       <div className="row">
         <a className="pbtn" href={`mailto:${site.email}`}>✉ {site.email}</a>
-        <a className="pbtn ghost" href={`tel:${site.phoneE164}`}>☎ {site.phone}</a>
+        <a className="pbtn ghost" href={site.cv} {...ext}>CV (PDF)</a>
       </div>
       <dl className="facts spaced">
+        <dt>Based in</dt><dd>{site.location}</dd>
         {site.socials.map((s) => (
           <div key={s.url} className="contents"><dt>{s.name}</dt><dd><a href={s.url} {...ext}>{s.handle}</a></dd></div>
         ))}
@@ -163,7 +184,7 @@ export function Contact() {
 
 export function DossierSummary() {
   const openDossier = useRoom((s) => s.openDossier);
-  const job = site.experience[0];
+  const job = latestJob;
   return (
     <>
       <Mug alt="">
@@ -179,10 +200,10 @@ export function DossierSummary() {
       </div>
       <Heading className="sec">Summary</Heading>
       <ul className="summary">
-        <li>{job.role} at {job.company} since {monthYear(job.start)}.</li>
+        <li>{job.role} at {job.company}, {period(job.start, job.end)}.</li>
         <li>{job.highlights[0]}</li>
         <li>{job.highlights[1]}</li>
-        <li>Stack: PHP, Laravel, JavaScript, React, PostgreSQL, Tailwind CSS.</li>
+        <li>Stack: PHP, Laravel, CodeIgniter, PostgreSQL, React, Tailwind CSS.</li>
       </ul>
     </>
   );

@@ -9,7 +9,7 @@ export function Header() {
       <div className="brand">
         <small>CASE FILE · {site.location.toUpperCase()}</small>
         <h1 id="name">{site.name}</h1>
-        <p>{site.headline} · currently at {site.employer.name}</p>
+        <p>{site.headline}</p>
       </div>
       <nav className="actions" aria-label="Quick links">
         <button className="btn cases" id="casesBtn" type="button" onClick={() => { closeDossier(); open('cases'); }}>

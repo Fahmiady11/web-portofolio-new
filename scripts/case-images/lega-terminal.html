@@ -1,0 +1,42 @@
+<!doctype html>
+<!-- Case photo for Lega. Lega is a terminal app, so this is a drawing of its screen: every line of text is copied
+     from the lega source (src/lega/cli.py, ui.py, actions/backup.py, categories.py); the progress figures are an
+     illustration, not a recorded run. Rendered by scripts/case-images/render.mjs. -->
+<html><head><meta charset="utf-8"><style>
+@font-face { font-family: Plex; src: url(../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2); }
+@font-face { font-family: Plex; font-weight: 600; src: url(../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-600-normal.woff2); }
+html, body { margin: 0; width: 1600px; height: 1000px; background: #0b0d10; font: 21px/1.5 Plex, monospace; color: #d7dbe0; }
+.win { position: absolute; inset: 40px 60px; border-radius: 14px; background: #16181d; box-shadow: 0 30px 80px rgba(0,0,0,.6); overflow: hidden; border: 1px solid #2a2e36; }
+.bar { height: 46px; display: flex; align-items: center; gap: 9px; padding: 0 18px; background: #1d2027; border-bottom: 1px solid #2a2e36; }
+.bar i { width: 13px; height: 13px; border-radius: 50%; display: inline-block; }
+.bar span { margin: 0 auto; color: #8a919c; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.bar img { width: 22px; height: 22px; }
+pre { margin: 0; padding: 22px 30px; font: inherit; white-space: pre; }
+.p { color: #34d3be; } .c { color: #5fd7ff; font-weight: 600; } .d { color: #7d8590; } .g { color: #8ae234; } .b { color: #729fcf; } .w { color: #fff; font-weight: 600; }
+.panel { margin: 0 30px; border: 2px solid #729fcf; border-radius: 6px; padding: 0 0 6px; color: #d7dbe0; }
+.panel legend { color: #729fcf; padding: 0 12px; margin: 0 auto; }
+.panel pre { padding: 8px 16px; }
+.note { position: absolute; right: 74px; bottom: 54px; font-size: 15px; color: #6b7280; }
+</style></head><body>
+<div class="win">
+  <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span><img src="lega-icon.svg" alt="">lega — Terminal</span></div>
+<pre><span class="p">~ $</span> lega
+<span class="c">›</span> <span class="w">lega — pilih tindakan</span> <span class="d">(panah ↑↓, Enter)</span>
+   Analisa storage iPhone
+ <span class="c">» Backup ke laptop + Google Drive</span>
+   Cek backup (checksum)
+   Hapus dari iPhone (yang sudah aman)
+   Hapus salinan di laptop
+   Diagnosa &amp; pengaturan
+   Keluar
+<span class="c">›</span> <span class="w">Backup jenis apa?</span> <span class="d">Video, Foto-HEIC, Foto-JPG</span>
+</pre>
+<fieldset class="panel"><legend>iPhone → laptop → Google Drive</legend><pre>iPhone → laptop  <span class="g">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span><span class="d">━━━━━━━━━━</span>  6.1/7.4 GB
+laptop → Drive   <span class="g">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span><span class="d">━━━━━━━━━━━━━━━━━━━━━</span>  4.3/7.4 GB
+<span class="c">Jenis          File    Ukuran   Disalin   Terunggah   Sudah ada   Gagal</span>
+Foto-HEIC      1204    3.1 GB      1031         842         120       0
+Foto-JPG        318    0.6 GB       318         240           0       0
+Video           142    3.7 GB        96          51          12       0</pre>
+</div>
+<div class="note">Menu text from the lega source · progress figures illustrative</div>
+</body></html>

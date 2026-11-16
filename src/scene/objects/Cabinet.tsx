@@ -44,14 +44,19 @@ export function EvidenceBox() {
       cardboard,
       // a box's material groups are +x, -x, +y, -y, +z, -z: the label faces the room
       front: [cardboard, cardboard, cardboard, cardboard, front, cardboard],
-      bags: site.skills.map(({ group }, i) => std('#fff', {
+      bags: site.skills.map(({ group, skills }, i) => std('#fff', {
         transparent: true, opacity: 0.92, roughness: 0.2,
         map: canvasTexture(256, 330, (g, W) => {
           g.fillStyle = 'rgba(235,240,245,.92)'; g.fillRect(0, 0, W, 330); g.fillStyle = '#b3261e'; g.fillRect(0, 0, W, 64);
           g.fillStyle = '#fff'; g.font = '30px ' + TYPE; g.textAlign = 'center'; g.fillText('EVIDENCE', W / 2, 44);
           g.fillStyle = '#1b1b1b'; g.font = '26px ' + TYPE; g.fillText('EXHIBIT ' + String.fromCharCode(65 + i), W / 2, 110);
-          g.font = '24px ' + TYPE; g.fillText(group.toUpperCase(), W / 2, 150);
-          g.strokeStyle = '#999'; for (let k = 0; k < 4; k++) { g.beginPath(); g.moveTo(24, 200 + k * 30); g.lineTo(W - 24, 200 + k * 30); g.stroke(); }
+          // longer group names ("FRAMEWORKS & TOOLS") shrink to fit the label
+          const name = group.toUpperCase();
+          let px = 24;
+          do { g.font = `${px}px ${TYPE}`; } while (g.measureText(name).width > W - 28 && --px > 13);
+          g.fillText(name, W / 2, 150);
+          g.font = '20px ' + TYPE; g.fillStyle = '#555'; g.fillText(`${skills.length} ITEMS`, W / 2, 186);
+          g.strokeStyle = '#999'; for (let k = 1; k < 4; k++) { g.beginPath(); g.moveTo(24, 200 + k * 30); g.lineTo(W - 24, 200 + k * 30); g.stroke(); }
         }),
       })),
     };
@@ -63,10 +68,14 @@ export function EvidenceBox() {
       <Box size={[0.56, 0.22, 0.02]} material={m.cardboard} position={[x, y + 0.12, z - 0.24]} />
       <Box size={[0.56, 0.22, 0.02]} material={m.front} position={[x, y + 0.12, z + 0.24]} />
       {[-1, 1].map((s) => <Box key={s} size={[0.02, 0.22, 0.5]} material={m.cardboard} position={[x + s * 0.27, y + 0.12, z]} />)}
-      {m.bags.map((bag, i) => (
-        <Box key={i} size={[0.2, 0.26, 0.01]} material={bag} rotation={[-0.25 - i * 0.05, 0, 0]}
-          position={[x - 0.17 + (i % 3) * 0.17, y + 0.2 + Math.floor(i / 3) * 0.02, z - 0.12 + Math.floor(i / 3) * 0.16]} />
-      ))}
+      {m.bags.map((bag, i) => {
+        // two rows: the back row stands taller so its labels show above the front row
+        const row = Math.floor(i / 3), inRow = Math.min(3, m.bags.length - row * 3), col = i % 3;
+        return (
+          <Box key={i} size={[0.2, 0.26, 0.01]} material={bag} rotation={[-0.22 - row * 0.1, 0, (col - (inRow - 1) / 2) * -0.06]}
+            position={[x + (col - (inRow - 1) / 2) * 0.17, y + (row ? 0.17 : 0.28), z + (row ? 0.07 : -0.12)]} />
+        );
+      })}
     </Interactive>
   );
 }

@@ -1,12 +1,12 @@
 // <head> tags built from the content, put into dist/index.html by scripts/prerender.mjs.
-import { site } from '../content/site';
+import { latestJob, site } from '../content/site';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 export function headTags(siteUrl: string) {
   const url = siteUrl.replace(/\/$/, '') + '/';
   const title = `${site.name} — ${site.headline}`;
-  const description = `${site.name} is a ${site.headline} from ${site.location}, currently at ${site.employer.name}. ` +
+  const description = `${site.name} is a ${site.headline} based in ${site.location}. ` +
     `Step into a noir detective office where every piece of evidence opens part of the portfolio: projects, experience, skills and certificates.`;
   const image = url + 'og.jpg';
   const person = {
@@ -14,7 +14,8 @@ export function headTags(siteUrl: string) {
     '@type': 'Person',
     name: site.name,
     jobTitle: site.headline,
-    worksFor: { '@type': 'Organization', name: site.employer.name },
+    // only a job that is still ongoing counts as worksFor
+    ...(latestJob.latest ? { worksFor: { '@type': 'Organization', name: latestJob.company } } : {}),
     address: { '@type': 'PostalAddress', addressLocality: site.location },
     email: 'mailto:' + site.email,
     image: url.replace(/\/$/, '') + site.photo.src,

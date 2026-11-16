@@ -2,6 +2,7 @@
 // Objects, camera views and evidence markers all read from here, so an object can be swapped for a
 // modelled .glb without touching the camera or the markers.
 import { Vector3 } from 'three';
+import { cases } from '../content/site';
 import type { SectionId } from '../sections';
 
 export const ROOM = { size: 7.4, height: 4 };
@@ -84,15 +85,17 @@ export const caseWallPoint = (px: number, py: number) =>
   new Vector3(CW.x - CW.w / 2 + px / CW_PX, CW.y + CW.h / 2 - py / CW_PX, CW.z + 0.04);
 
 const cwCanvas = { w: CW.w * CW_PX, h: CW.h * CW_PX };
-const gapX = (cwCanvas.w - CASE_CARD.cols * CASE_CARD.w) / (CASE_CARD.cols + 1);
-const gapY = (cwCanvas.h - 2 * CASE_CARD.h) / 3;
+const ROWS = 2;
+const gapY = (cwCanvas.h - ROWS * CASE_CARD.h) / (ROWS + 1);
+/** How many photos sit on each row: the top row fills first, the rest are centred below it. */
+const perRow = (row: number) => Math.max(0, Math.min(CASE_CARD.cols, cases.length - row * CASE_CARD.cols));
 /** Where case i is pinned on the case wall canvas, in px. */
-export const caseRect = (i: number) => ({
-  x: gapX + (i % CASE_CARD.cols) * (CASE_CARD.w + gapX),
-  y: gapY + Math.floor(i / CASE_CARD.cols) * (CASE_CARD.h + gapY),
-  w: CASE_CARD.w,
-  h: CASE_CARD.h,
-});
+const gapX = (cwCanvas.w - CASE_CARD.cols * CASE_CARD.w) / (CASE_CARD.cols + 1);
+export const caseRect = (i: number) => {
+  const row = Math.floor(i / CASE_CARD.cols), col = i % CASE_CARD.cols, n = perRow(row) || CASE_CARD.cols;
+  const left = (cwCanvas.w - (n * CASE_CARD.w + (n - 1) * gapX)) / 2;
+  return { x: left + col * (CASE_CARD.w + gapX), y: gapY + row * (CASE_CARD.h + gapY), w: CASE_CARD.w, h: CASE_CARD.h };
+};
 
 /** The camera close-up on one case photo. */
 export function caseView(i: number, phone: boolean): View {

@@ -8,7 +8,7 @@ import { Interactive } from '../interactive';
 import { Swappable } from '../Swappable';
 
 const KEYS = 'QWERTYUIOPASDFGHJKLZXCVBNM.,-';
-const STATEMENT = ['STATEMENT OF THE SUBJECT', '', 'NAME: M. FAHMI ADY SUSILO', 'OCCUPATION: SOFTWARE DEV.', 'EMPLOYER: SENTRA VIDYA', 'BASE: LAMONGAN, ID', '', 'Builds systems used by', '400+ universities.', '', 'Click to read more_'];
+const STATEMENT = ['STATEMENT OF THE SUBJECT', '', 'NAME: M. FAHMI ADY SUSILO', 'OCCUPATION: SOFTWARE DEV.', 'LAST POST: SEVIMA 2023-26', 'BASE: SURABAYA, ID', '', 'Built a scholarship site', 'for 20,000+ applicants.', '', 'Click to read more_'];
 
 /** Typewriter with the subject's statement in it: opens the profile. */
 export function Typewriter() {

@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- Case image for the Jira → WhatsApp notifier: a diagram of the flow described in the CV (Jira webhook events,
+     processed in Python, sent as WhatsApp alerts via WWeb.js). Not a screenshot. Rendered by render.mjs. -->
+<html><head><meta charset="utf-8"><style>
+@font-face { font-family: Plex; src: url(../../node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2); }
+@font-face { font-family: Plex; font-weight: 600; src: url(../../node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2); }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-600-normal.woff2); }
+html, body { margin: 0; width: 1600px; height: 1000px; background: #f4f1ea; font: 24px/1.4 Plex, sans-serif; color: #1f2328; }
+h1 { position: absolute; left: 90px; top: 70px; margin: 0; font: 600 52px/1.15 Plex; }
+.sub { position: absolute; left: 92px; top: 144px; color: #5b6168; font-size: 26px; }
+.flow { position: absolute; left: 90px; right: 90px; top: 290px; display: flex; align-items: center; justify-content: space-between; }
+.node { width: 330px; height: 290px; border-radius: 22px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.08); border: 2px solid #e3ded3; padding: 30px; box-sizing: border-box; }
+.node b { display: block; font-size: 30px; margin: 18px 0 8px; }
+.node p { margin: 0; color: #5b6168; font-size: 22px; }
+.icon { width: 74px; height: 74px; border-radius: 18px; display: grid; place-items: center; color: #fff; font: 600 30px Mono; }
+.arrow { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; color: #5b6168; font: 600 19px Mono; }
+.arrow i { display: block; width: 100%; height: 4px; background: #9aa1a9; position: relative; }
+.arrow i::after { content: ''; position: absolute; right: -2px; top: -9px; border: 11px solid transparent; border-left: 18px solid #9aa1a9; border-right: 0; }
+.tag { position: absolute; left: 90px; bottom: 80px; display: flex; gap: 12px; }
+.tag span { font: 600 20px Mono; padding: 8px 16px; border-radius: 10px; background: #e7e2d6; }
+.cap { position: absolute; right: 90px; bottom: 88px; color: #8a8f96; font-size: 20px; }
+</style></head><body>
+<h1>Real-time Jira → WhatsApp notifications</h1>
+<div class="sub">Jira events become WhatsApp alerts, the moment they happen</div>
+<div class="flow">
+  <div class="node"><div class="icon" style="background:#2684ff">J</div><b>Jira</b><p>An issue changes and Jira fires a webhook with the event</p></div>
+  <div class="arrow">webhook<i></i></div>
+  <div class="node"><div class="icon" style="background:#3776ab">Py</div><b>Python service</b><p>Receives the event and turns it into a short alert</p></div>
+  <div class="arrow">WWeb.js<i></i></div>
+  <div class="node"><div class="icon" style="background:#25d366">W</div><b>WhatsApp</b><p>The alert arrives as a WhatsApp message</p></div>
+</div>
+<div class="tag"><span>Python</span><span>WWeb.js</span><span>Jira Webhooks</span></div>
+<div class="cap">Diagram of the flow, not a screenshot</div>
+</body></html>
