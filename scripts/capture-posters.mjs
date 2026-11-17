@@ -12,8 +12,8 @@ import { killAll, launch, load, preview, say, shot, sleep } from '../tests/cdp.m
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const tmp = mkdtempSync(join(tmpdir(), 'posters-'));
 // the poster sits under the real header, so only the scene is captured for it
-const SCENE_ONLY = '.top, #hotspots, .hint, .dock { display: none !important; }';
-const OG = '#hotspots, .hint, .dock { display: none !important; }';
+const SCENE_ONLY = '.top, #hotspots, .hint, .dock, .phint, .credits { display: none !important; }';
+const OG = '#hotspots, .hint, .dock, .phint, .credits { display: none !important; }';
 
 const shots = [
   { name: 'poster-wide', w: 1600, h: 1000, dpr: 1, css: SCENE_ONLY, write: (s) => s.webp({ quality: 70 }) },

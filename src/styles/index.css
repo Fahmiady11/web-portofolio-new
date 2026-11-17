@@ -71,6 +71,41 @@
   .mailmenu button, .mailmenu a { display: block; padding: 8px; border: 0; background: transparent; color: var(--color-ink) !important; font: 15px var(--font-type); text-align: left; text-decoration: none; cursor: pointer; }
   .mailmenu button:hover, .mailmenu a:hover, .mailmenu button:focus-visible, .mailmenu a:focus-visible { background: var(--color-ink); color: var(--color-paper) !important; outline: none; }
   .selectable { user-select: text; }
+  /* music: header switch, the gramophone's small marker, and the credit line */
+  .btn.sound { padding-left: 10px; padding-right: 10px; }
+  .btn.sound.on { border-color: var(--color-amber); color: var(--color-amber); }
+  .hs .lbl-short { display: none; }
+  /* the narrowest phones: four header buttons in one row */
+  @media (max-width: 380px) {
+    .actions { gap: 4px; }
+    .actions .btn { padding: 6px 7px; font-size: 12px; }
+    .btn.cases { padding: 6px 9px; font-size: 12.5px; }
+    .btn.cases span[aria-hidden] { display: none; }
+  }
+  /* small screens: number + one word, so all eight fit without overlapping */
+  /* landscape phones: a slimmer header, no drag hint */
+  @media (max-height: 500px) and (min-width: 761px) {
+    .top { padding: 8px 16px 16px; }
+    .brand h1 { font-size: 17px; }
+    .brand p { font-size: 12px; }
+    .actions { gap: 6px; flex-wrap: nowrap; }
+    .actions .btn { padding: 6px 9px; font-size: 12.5px; }
+    .btn.cases { font-size: 13px; padding: 6px 11px; }
+    .hint { display: none; }
+    .credits.on-page { font-size: 10px; max-width: 300px; bottom: 8px; left: 14px; }
+  }
+  @media (max-width: 760px), (max-height: 500px) {
+    .hs .lbl-full { display: none; }
+    .hs .lbl-short { display: inline; }
+    .hs, .hs.star { font-size: 11.5px; padding: 3px 7px 3px 3px; gap: 5px; }
+    .hs b, .hs.star b { width: 17px; height: 17px; font-size: 11px; }
+  }
+  .hs-music { position: absolute; display: none; transform: translate(-50%, -100%); pointer-events: auto; width: 26px; height: 26px; align-items: center; justify-content: center; border: 1px solid rgba(255, 210, 63, 0.7); border-radius: 50%; background: rgba(7, 8, 12, 0.7); color: var(--color-gold); font: 15px/1 var(--font-sans); cursor: pointer; }
+  .hs-music[aria-pressed='true'] { background: var(--color-gold); color: #111; }
+  .credits { margin: 0; font: 11px/1.4 var(--font-sans); color: #8d846f; }
+  .credits a { color: inherit; }
+  .credits.on-page { position: fixed; left: 22px; bottom: 14px; z-index: 2; max-width: 380px; }
+  .credits.in-dossier { margin-top: 28px; padding-top: 10px; border-top: 1px dashed rgba(30, 26, 20, 0.3); color: var(--color-muted); }
   .hint { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); color: #b9ad94; font: 13px var(--font-type); z-index: 2; background: rgba(7, 8, 12, 0.65); padding: 6px 14px; white-space: nowrap; }
   .dock, .phint { display: none; }
 
@@ -182,21 +217,17 @@
     .actions { justify-content: flex-start; gap: 6px; flex-wrap: nowrap; }
     .actions .btn { padding: 7px 9px; font-size: 12.5px; }
     .btn.cases { font-size: 13.5px; padding: 7px 12px; }
-    /* email menu (EmailMenu.tsx) */
-  .mailpop { position: relative; display: inline-flex; }
-  .mailmenu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; display: flex; flex-direction: column; min-width: 220px; padding: 6px; background: var(--color-paper); color: var(--color-ink); border: 2px solid var(--color-ink); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45); font: 14px var(--font-sans); text-align: left; }
-  .mailpop.right .mailmenu { left: auto; right: 0; }
-  .mailmenu .mailaddr { padding: 4px 8px 6px; font: 600 12px var(--font-mono); color: var(--color-muted); user-select: all; }
-  .mailmenu button, .mailmenu a { display: block; padding: 8px; border: 0; background: transparent; color: var(--color-ink) !important; font: 15px var(--font-type); text-align: left; text-decoration: none; cursor: pointer; }
-  .mailmenu button:hover, .mailmenu a:hover, .mailmenu button:focus-visible, .mailmenu a:focus-visible { background: var(--color-ink); color: var(--color-paper) !important; outline: none; }
-  .selectable { user-select: text; }
-  .hint { display: none; }
+      .hint { display: none; }
+    /* the music switch sits beside the name; the header's button row is full */
+    .btn.sound { position: absolute; top: 12px; right: 14px; padding: 6px 8px; }
+    .btn.sound .sound-label { display: none; }
+    .credits.on-page { left: 14px; right: 14px; max-width: none; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 118px); font-size: 10px; text-align: center; }
     .hs { font-size: 11.5px; }
     .hs b { width: 17px; height: 17px; font-size: 11px; }
     .dock { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; position: fixed; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); z-index: 4; background: rgba(7, 8, 12, 0.88); border: 1px solid rgba(239, 228, 200, 0.25); padding: 6px; }
     .dock button { border: 0; background: transparent; padding: 6px 2px; font: 12px var(--font-type); color: #e9dfc6; cursor: pointer; }
     .dock button span { display: block; font-size: 17px; line-height: 1.15; }
-    .phint { display: block; position: fixed; left: 50%; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 118px); transform: translateX(-50%); z-index: 4; margin: 0; padding: 6px 12px; white-space: nowrap; font: 13px var(--font-type); color: #111; background: var(--color-tape); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55); animation: hint-in 0.4s ease-out; }
+    .phint { display: block; position: fixed; left: 50%; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 152px); transform: translateX(-50%); z-index: 4; margin: 0; padding: 6px 12px; white-space: nowrap; font: 13px var(--font-type); color: #111; background: var(--color-tape); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55); animation: hint-in 0.4s ease-out; }
     .dock button.on { background: var(--color-tape); color: #111; }
     .dock button.star { background: var(--color-gold); color: #111; font-weight: 600; }
     .panel { top: auto; height: 74vh; width: 100%; transform: translateY(105%); box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.6); }

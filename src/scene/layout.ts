@@ -25,6 +25,14 @@ export const DIPLOMA = { x: -3.1, y: 2.45, z: -3.57 };
 export const CABINET = { x: 3.1, z: -3.05 };
 export const EVIDENCE_BOX = { x: CABINET.x, y: 1.32, z: CABINET.z };
 export const COAT_RACK = { x: -3.05, z: 2.75 };
+/** A deep windowsill board under the blinds. */
+export const SILL = { x: WIN.x + 0.2, y: WIN.y - WIN.h / 2 - 0.02, z: WIN.z, depth: 0.42, w: WIN.w + 0.5 };
+/** The cat, loafed on the desk's front-left corner in the lamp's pool of light, three-quarters to the camera. */
+export const CAT = { x: -0.95, y: TOP, z: -1.2, facing: -0.85, scale: 1.25 };
+/** Side table with the gramophone (the music switch), right of the desk. */
+export const GRAMOPHONE = { x: 2.3, z: -1.25, top: 0.72 };
+/** Where its small ♪ marker is pinned. */
+export const MUSIC_ANCHOR = new Vector3(GRAMOPHONE.x, GRAMOPHONE.top + 0.78, GRAMOPHONE.z - 0.1);
 
 type XYZ = [number, number, number];
 
@@ -142,7 +150,8 @@ export const EVIDENCE: Record<SectionId, Evidence> = {
     view: { pos: new Vector3(1.7, 1.7, -0.75), target: new Vector3(1.15, TOP + 0.08, -1.95) },
   },
   dossier: {
-    anchor: new Vector3(-0.5, TOP + 0.2, -1.25),
+    // a little higher than the folder, so its label clears the cat beside it
+    anchor: new Vector3(-0.45, TOP + 0.36, -1.3),
     view: { pos: new Vector3(-0.2, 1.75, -0.4), target: new Vector3(-0.45, TOP, -1.35) },
   },
 };

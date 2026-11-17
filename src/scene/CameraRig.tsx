@@ -1,17 +1,42 @@
 import { OrbitControls } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
-import { Vector3, type PerspectiveCamera } from 'three';
+import { Box3, Vector3, type PerspectiveCamera } from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useRoom } from '../store';
+import { fitView, isCompact, measureSafe } from './fit';
 import { caseView, EVIDENCE, HOME, HOME_PORTRAIT, introStart, type View } from './layout';
+import { tracked } from './registry';
 import { reduceMotion } from './quality';
 import { warm } from './warm';
 
 const PHONE = 760;
 const isPortrait = (w: number, h: number) => w / h < 0.8;
 
+const ROOM_FLOOR = new Box3(new Vector3(-3.7, 0, -3.7), new Vector3(3.7, 0.01, 0.9));
+
+// tall screens: a gentle downward look (about 24° below eye level), a little from the right like desktop
+const PORTRAIT_POLAR = 1.15, PORTRAIT_AZIMUTH = 0.3;
+const PORTRAIT_FIT: View = {
+  target: new Vector3(0, 1.4, -1.6),
+  pos: new Vector3(0, 1.4, -1.6).add(new Vector3(
+    Math.sin(PORTRAIT_POLAR) * Math.sin(PORTRAIT_AZIMUTH), Math.cos(PORTRAIT_POLAR), Math.sin(PORTRAIT_POLAR) * Math.cos(PORTRAIT_AZIMUTH),
+  ).multiplyScalar(9)),
+};
+
+const fovFor = (w: number, h: number) => (isPortrait(w, h) ? 58 : 38);
+
+/** The whole room on a small screen: every piece of evidence and its marker inside the visible strip. */
+function fittedHome(w: number, h: number): View {
+  const boxes = [...tracked.values()].map((o) => { o.updateWorldMatrix(true, true); return new Box3().setFromObject(o); });
+  // and the floor the eye reads as the room's lower edge, so the room is centred, not just the evidence
+  boxes.push(ROOM_FLOOR);
+  const pins = Object.values(EVIDENCE).map((e) => e.anchor);
+  return fitView(isPortrait(w, h) ? PORTRAIT_FIT : HOME, fovFor(w, h), w, h, boxes, pins);
+}
+
 function homeView(w: number, h: number): View {
+  if (isCompact(w, h) && tracked.size) return fittedHome(w, h);
   if (isPortrait(w, h)) return HOME_PORTRAIT;
   // squarer windows step back a little so the whole case wall stays in frame
   const pos = HOME.target.clone().add(HOME.pos.clone().sub(HOME.target).multiplyScalar(w / h < 1.2 ? 1.25 : 1));
@@ -62,8 +87,9 @@ export function CameraRig({ tweening }: { tweening: { current: boolean } }) {
 
   // lens and home framing follow the window shape
   useEffect(() => {
-    camera.fov = isPortrait(size.width, size.height) ? 58 : 38;
+    camera.fov = fovFor(size.width, size.height);
     camera.updateProjectionMatrix();
+    measureSafe(size.height);
     const v = viewFor(size.width, size.height);
     if (!started.current && wantsIntro()) {
       // the room comes into view: start back by the door and settle on the case wall
@@ -123,7 +149,7 @@ export function CameraRig({ tweening }: { tweening: { current: boolean } }) {
       enableDamping
       enablePan={false}
       minDistance={2.5}
-      maxDistance={15}
+      maxDistance={isCompact(size.width, size.height) ? 40 : 15}
       minPolarAngle={0.55}
       maxPolarAngle={1.38}
       minAzimuthAngle={-0.2}

@@ -7,6 +7,7 @@ __pycache__/
 # generated from content/ by scripts/build-assets.mjs
 public/img/
 public/files/
+public/audio/
 test-results/
 # Blender pipeline intermediates (scripts/blender); the finished models live in src/assets/models/
 scripts/blender/out/

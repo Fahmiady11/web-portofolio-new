@@ -29,7 +29,7 @@
     "headline": "Software Developer",
     "currentRole": null,
     "location": "Surabaya, Jawa Timur",
-    "about": "A Software Developer with experience in frontend development using ReactJS and Tailwind CSS, and an understanding of backend development with PHP, PostgreSQL and frameworks such as CodeIgniter and Laravel. Has contributed to education web projects such as academic information systems, admissions (PMB) and CBT, and to the SDMPKS palm-oil scholarship system of the Directorate General of Estate Crops, which digitises a national scholarship service.",
+    "about": "Software Developer with three years at SEVIMA (2023–2026), focused on full-stack development of higher-education information systems. Experienced in building backends with PHP (Laravel, CodeIgniter), Golang and PostgreSQL, and frontends with ReactJS and Tailwind CSS. Involved in national-scale platforms for government agencies, including the SDMPKS Scholarship (Directorate General of Estate Crops) with 20,000+ applicants and Patriot Connect (Ministry of Transmigration), as well as academic SaaS modules used by around 200 client universities. Comfortable using AI-assisted development and Docker to speed up delivery.",
     "photo": {
       "src": "image/fotoutama.jpeg",
       "thumb": "assets/avatar.jpg",
@@ -45,7 +45,8 @@
     },
     "copyrightLine": "Muhammad Fahmi ady susilo © 2022",
     "headlineOld": "Fullstack Developer (live site, replaced by user decision)",
-    "_source": "CV 2026 (content/assets/cv-2026.pdf), the source of truth since 2026-11-16."
+    "_source": "CV 2026 (content/assets/cv-2026.pdf), the source of truth since 2026-11-16.",
+    "_aboutSource": "Written by the user (2026-11-17); the site's single profile summary."
   },
   "contact": {
     "email": "asfahmi5@gmail.com",
@@ -359,13 +360,20 @@
     }
   ],
   "education": {
-    "_note": "CV 2026.",
+    "_note": "CV 2026, plus MAN 1 Lamongan from CV 2022 (user confirmed 2026-11-17).",
     "items": [
       {
         "degree": "Sarjana Ilmu Komputer (S.Kom)",
         "school": "Universitas Trunojoyo Madura",
         "period": "2019 – 2024",
         "detail": "GPA 3.71 / 4.00"
+      },
+      {
+        "degree": "Science (MIPA)",
+        "school": "Madrasah Aliyah Negeri 1 Lamongan",
+        "period": "2016 – 2019",
+        "detail": "Graduated from the science (IPA) track with the 4th-best graduate award (wisudawan terbaik IV); also completed PRODISTIK, a diploma-1-equivalent ICT programme run with ITS.",
+        "source": "CV 2022 (assets/cv-2022.pdf), page 1"
       }
     ],
     "nonFormal": [
@@ -858,5 +866,29 @@
   "pendingProjects": {
     "_note": "Empty since 2026-11-16: Webtix, Lapetshop and Restaurant were dropped with Pokemon (user decision). The site still supports pending cases if one is added here.",
     "items": []
+  },
+  "audio": {
+    "_note": "Background sound, off by default (src/audio). Files in assets/audio are copied to /audio/ by scripts/build-assets.mjs. The SOURCE.txt files next to them keep the download details.",
+    "music": {
+      "title": "Night on the Docks – Sax",
+      "author": "Kevin MacLeod",
+      "authorUrl": "https://incompetech.com",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100137",
+      "licence": "CC BY 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "ogg": "assets/audio/night-on-the-docks.ogg",
+      "mp3": "assets/audio/night-on-the-docks.mp3",
+      "gain": 0.8
+    },
+    "rain": {
+      "title": "Heavy rain outside window",
+      "author": "FrostCP",
+      "source": "https://freesound.org/people/FrostCP/sounds/587000/",
+      "licence": "CC0 1.0",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "ogg": "assets/audio/rain.ogg",
+      "mp3": "assets/audio/rain.mp3",
+      "gain": 0.35
+    }
   }
 }

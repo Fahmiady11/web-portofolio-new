@@ -2,6 +2,7 @@ import { site } from '../content/site';
 import { SECTIONS } from '../sections';
 import { useRoom } from '../store';
 import { EmailMenu } from './EmailMenu';
+import { SoundButton } from './SoundButton';
 
 export function Header() {
   const { open, openDossier, closeDossier } = useRoom();
@@ -19,6 +20,7 @@ export function Header() {
         <button className="btn" id="quickBtn" type="button" onClick={openDossier}>Full dossier</button>
         <a className="btn" id="cvBtn" href={site.cv} target="_blank" rel="noopener">CV <span aria-hidden="true">↓</span></a>
         <EmailMenu className="btn" id="mailBtn" align="right">Email</EmailMenu>
+        <SoundButton />
       </nav>
     </header>
   );

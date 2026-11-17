@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import { CanvasTexture, MeshBasicMaterial, SRGBColorSpace } from 'three';
-import { WIN } from '../layout';
+import { SILL, WIN } from '../layout';
 import { std } from '../materials';
 import { Box, Plane } from '../parts';
 import { reduceMotion } from '../quality';
@@ -74,6 +74,8 @@ export function Window() {
       <Plane size={[w, h]} material={rain.glass} position={[x + 0.12, y, z]} rotation={facing} />
       <Box size={[0.1, 0.1, w + 0.2]} material={m.frame} position={[x + 0.14, y + h / 2 + 0.05, z]} />
       <Box size={[0.18, 0.08, w + 0.3]} material={m.frame} position={[x + 0.18, y - h / 2 - 0.04, z]} />
+      {/* a deep sill board: the cat's spot */}
+      <Box size={[SILL.depth, 0.04, SILL.w]} material={m.frame} position={[SILL.x, SILL.y, SILL.z]} />
       <Box size={[0.1, h + 0.2, 0.1]} material={m.frame} position={[x + 0.14, y, z - w / 2 - 0.05]} />
       <Box size={[0.1, h + 0.2, 0.1]} material={m.frame} position={[x + 0.14, y, z + w / 2 + 0.05]} />
       <Box size={[0.06, h, 0.05]} material={m.frame} position={[x + 0.14, y, z]} />

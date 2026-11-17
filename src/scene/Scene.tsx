@@ -8,7 +8,7 @@ import { useRoom } from '../store';
 import { CameraRig } from './CameraRig';
 import Effects from './Effects';
 import { HotspotTracker, Hotspots, type MarkerRefs } from './Hotspots';
-import { glowing, loadedModels, tracked } from './registry';
+import { catState, glowing, loadedModels, tracked } from './registry';
 import { caseRect, caseWallPoint } from './layout';
 import { liveQuality, pinnedQuality, QualityContext, reduceMotion, type Quality } from './quality';
 import { Room } from './Room';
@@ -78,7 +78,7 @@ function Ready({ tweening }: { tweening: { current: boolean } }) {
     window.__room = {
       webgl: true,
       // centre of the object itself
-      screen: (id: SectionId) => toScreen(new Box3().setFromObject(tracked.get(id)!).getCenter(new Vector3())),
+      screen: (id: SectionId | 'music' | 'cat') => toScreen(new Box3().setFromObject(tracked.get(id)!).getCenter(new Vector3())),
       cam: () => get().camera.position.toArray().map((n) => +n.toFixed(3)),
       current: () => useRoom.getState().current,
       caseCard: (i: number) => { const r = caseRect(i); return toScreen(caseWallPoint(r.x + r.w / 2, r.y + r.h / 2)); },
@@ -87,6 +87,15 @@ function Ready({ tweening }: { tweening: { current: boolean } }) {
       models: () => [...loadedModels],
       quality: () => liveQuality.value,
       bloom: () => liveQuality.bloom,
+      cat: () => ({ ...catState }),
+      // close-ups for screenshots: put the camera somewhere and look at something
+      look: (pos: [number, number, number], target: [number, number, number]) => {
+        const { camera, controls } = get();
+        camera.position.set(...pos);
+        const c = controls as unknown as { target: Vector3; update: () => void } | null;
+        c?.target.set(...target);
+        c?.update();
+      },
     };
     useRoom.getState().setWebGL('ready');
   });

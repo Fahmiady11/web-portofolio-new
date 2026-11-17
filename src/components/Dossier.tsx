@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { cases, site } from '../content/site';
 import { useRoom } from '../store';
 import { CaseCard, Certificates, Contact, Mug, Record, Skills, Timeline } from './files';
+import { Credits } from './Credits';
 import { EmailMenu } from './EmailMenu';
 import { HeadingBase } from './heading';
 
@@ -68,6 +69,7 @@ export function Dossier() {
             <Certificates />
             <h3 className="sec">Contact</h3>
             <Contact />
+            <Credits className="in-dossier" />
           </HeadingBase>
         </div>
       </div>

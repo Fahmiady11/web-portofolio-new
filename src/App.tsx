@@ -1,4 +1,6 @@
 import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import { initSound } from './audio/sound';
+import { Credits } from './components/Credits';
 import { Dossier } from './components/Dossier';
 import { Dock, Header } from './components/Header';
 import { Panel } from './components/Panel';
@@ -87,6 +89,7 @@ export function App() {
 
   useEffect(() => {
     openDeepLink();
+    initSound();
     // probe after the hydrated page has painted, so the probe never delays first paint
     const probe = setTimeout(() => {
       if (!hasWebGL()) noRoom();
@@ -140,6 +143,7 @@ export function App() {
       {webgl !== 'none' && !fileOpen && <p className="hint">{webgl === 'ready' ? 'Drag to look around · click the evidence · ← → to browse' : 'Turning the lights on…'}</p>}
       {phoneHint && <p className="phint" role="status">Tap the evidence, or pick a file below</p>}
       <Dock />
+      <Credits className="on-page" />
       {/* separate boundaries let React hydrate the big, mostly hidden file contents in small slices */}
       <Suspense fallback={null}><Panel /></Suspense>
       <Suspense fallback={null}><Dossier /></Suspense>

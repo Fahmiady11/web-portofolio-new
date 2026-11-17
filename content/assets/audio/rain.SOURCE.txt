@@ -1,0 +1,5 @@
+Title: Heavy rain outside window
+Author: FrostCP
+Source: https://freesound.org/people/FrostCP/sounds/587000/
+Licence: CC0 1.0 - http://creativecommons.org/publicdomain/zero/1.0/ (no credit needed)
+Note: source-preview-hq.mp3 is Freesound's public HQ preview (original WAV is login-gated); loop.* = 56 s crossfaded mono loop

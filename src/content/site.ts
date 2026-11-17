@@ -2,6 +2,7 @@
 // site renders; named imports keep the audit-only keys (_meta, navigation, otherAssets…) out of the bundle.
 import {
   achievements,
+  audio,
   certificates,
   contact,
   education,
@@ -13,7 +14,7 @@ import {
   skills,
 } from '../../content/content.json';
 import sizes from './image-sizes.json';
-import type { Case, Picture, Site } from './types';
+import type { Case, Picture, Site, Track } from './types';
 
 // pendingProjects.items may be empty, which JSON typing reads as never[]: give it its shape
 type PendingItem = { slug: string; workingTitle: string; thumb: string };
@@ -36,6 +37,18 @@ export function picture(path: string): Picture {
 
 // icons are vendored in public/icons/skills (devicon v2.16.0, MIT; simple-icons 13, CC0); content.json keeps their sources
 const icons = new Map(skills.icons.map((s) => [s.name, '/icons/skills/' + s.icon.split('/').pop()]));
+
+const track = (t: typeof audio.music | typeof audio.rain): Track => ({
+  title: t.title,
+  author: t.author,
+  authorUrl: ('authorUrl' in t ? t.authorUrl : null) ?? null,
+  source: t.source,
+  licence: t.licence,
+  licenceUrl: t.licenceUrl,
+  ogg: '/audio/' + t.ogg.split('/').pop(),
+  mp3: '/audio/' + t.mp3.split('/').pop(),
+  gain: t.gain,
+});
 
 export const site: Site = {
   name: profile.name,
@@ -86,6 +99,7 @@ export const site: Site = {
     url: ('url' in c ? c.url : null) ?? null,
     image: c.thumb ? picture(c.thumb) : null,
   })),
+  audio: { music: track(audio.music), rain: track(audio.rain) },
 };
 
 export const caseNo = (i: number) => '#' + String(i + 1).padStart(3, '0');

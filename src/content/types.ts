@@ -102,6 +102,21 @@ export interface Certificate {
   image: Picture | null;
 }
 
+/** A background sound loop and its credit. */
+export interface Track {
+  title: string;
+  author: string;
+  authorUrl: string | null;
+  source: string;
+  licence: string;
+  licenceUrl: string;
+  /** Served copies: Ogg Opus first, MP3 for browsers that cannot decode Opus. */
+  ogg: string;
+  mp3: string;
+  /** Mix level, 0–1. */
+  gain: number;
+}
+
 export interface Site {
   name: string;
   shortName: string;
@@ -121,6 +136,7 @@ export interface Site {
   projects: Project[];
   pending: PendingProject[];
   certificates: Certificate[];
+  audio: { music: Track; rain: Track };
 }
 
 /** One case on the wall: a project or a pending file, numbered in wall order. */

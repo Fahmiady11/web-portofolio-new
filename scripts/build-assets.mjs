@@ -1,6 +1,7 @@
 // Builds the site's images and files from content/ (the single source of truth) into public/:
 //   every image referenced by content/content.json → public/img/<path>-<width>.{avif,webp}
 //   the CV PDF → public/files/<contact.cv.publicName> (the only file kept there)
+//   the background sound (content.audio) → public/audio/
 // Widths per folder come from src/content/image-sizes.json; src/content/site.ts builds the same URLs.
 // Outputs newer than their source are skipped, so this is cheap to run before every dev/build.
 import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
@@ -53,5 +54,16 @@ mkdirSync(filesDir, { recursive: true });
 // anything else in public/files is an older CV that must not ship
 for (const f of readdirSync(filesDir)) if (f !== publicName) rmSync(join(filesDir, f));
 if (!fresh(cvOut, join(root, 'content', cv))) { copyFileSync(join(root, 'content', cv), cvOut); made++; }
+
+// background sound: the music and rain loops, both formats
+const audioDir = join(root, 'public/audio');
+mkdirSync(audioDir, { recursive: true });
+const audio = Object.values(content.audio).filter((a) => a && a.ogg).flatMap((a) => [a.ogg, a.mp3]);
+const audioNames = new Set(audio.map((f) => f.split('/').pop()));
+for (const f of readdirSync(audioDir)) if (!audioNames.has(f)) rmSync(join(audioDir, f));
+for (const f of audio) {
+  const out = join(audioDir, f.split('/').pop());
+  if (!fresh(out, join(root, 'content', f))) { copyFileSync(join(root, 'content', f), out); made++; }
+}
 
 console.log(`assets: ${made} file(s) written, ${pruned} stale removed, ${images.length} images + CV checked`);

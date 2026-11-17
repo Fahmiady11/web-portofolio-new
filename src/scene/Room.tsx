@@ -6,7 +6,9 @@ import { CoatRack } from './objects/CoatRack';
 import { Desk } from './objects/Desk';
 import { Chair, DeskClutter, DeskFolders, DossierFolder } from './objects/DeskProps';
 import { EvidenceBoard } from './objects/EvidenceBoard';
+import { Cat } from './objects/Cat';
 import { Floor } from './objects/Floor';
+import { Gramophone } from './objects/Gramophone';
 import { Lamp } from './objects/Lamp';
 import { Dust, Lights } from './objects/Atmosphere';
 import { Telephone, Typewriter } from './objects/Typewriter';
@@ -29,6 +31,7 @@ export function Room() {
         <Walls />
       </Swappable>
       <Window />
+      <Cat />
       <CoatRack />
       {/* the desk and what is on it */}
       <Desk />
@@ -46,6 +49,7 @@ export function Room() {
       <Diploma />
       <Cabinet />
       <EvidenceBox />
+      <Gramophone />
       {quality !== 'low' && <Dust />}
     </>
   );
