@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { cases, site } from '../content/site';
 import { useRoom } from '../store';
-import { CaseCard, Certificates, Mug, Record, Skills, Timeline } from './files';
+import { CaseCard, Certificates, Contact, Mug, Record, Skills, Timeline } from './files';
+import { EmailMenu } from './EmailMenu';
 import { HeadingBase } from './heading';
 
 const ext = { target: '_blank', rel: 'noopener' } as const;
 
 /**
- * Everything on one plain, accessible page, projects first. It is always in the HTML (prerendered for
+ * Everything on one plain, accessible page, in marker order (summary, experience, projects, …). It is always in the HTML (prerendered for
  * search engines and no-JS visitors) and is what visitors without WebGL get instead of the room.
  */
 export function Dossier() {
@@ -42,25 +43,31 @@ export function Dossier() {
                 <p className="qname">{site.name}</p>
                 <p className="qrole">{site.headline} · {site.location}</p>
                 <div className="row">
-                  <a className="pbtn" href={`mailto:${site.email}`}>✉ {site.email}</a>
+                  <EmailMenu className="pbtn" id="dossierMail">✉ {site.email}</EmailMenu>
                   <a className="pbtn ghost" href={site.cv} {...ext}>CV (PDF)</a>
                   {github && <a className="pbtn ghost" href={github.url} {...ext}>GitHub</a>}
                   {linkedin && <a className="pbtn ghost" href={linkedin.url} {...ext}>LinkedIn</a>}
                 </div>
               </div>
             </Mug>
-            <h3 className="sec">Case files (projects)</h3>
-            <div className="cases">{cases.map((c) => <CaseCard key={c.slug} c={c} idPrefix="dossier-case-" />)}</div>
-            <h3 className="sec">About</h3>
+            {/* in marker order: what a recruiter reads first */}
+            <h3 className="sec">Summary</h3>
             <p className="lead">{site.about}</p>
             <h3 className="sec">Experience</h3>
             <Timeline />
-            <div className="cols">
-              <div><h3 className="sec">Skills</h3><Skills /></div>
-              <div><h3 className="sec">Education</h3><Record /></div>
-            </div>
+            <h3 className="sec">Case files (projects)</h3>
+            <div className="cases">{cases.map((c) => <CaseCard key={c.slug} c={c} idPrefix="dossier-case-" />)}</div>
+            <h3 className="sec">Skills</h3>
+            <div className="skills-grid"><Skills /></div>
+            <h3 className="sec">CV</h3>
+            <p>The full CV (2026, PDF, in Indonesian).</p>
+            <div className="row"><a className="pbtn" href={site.cv} {...ext}>Download CV (PDF)</a></div>
+            <h3 className="sec">Education</h3>
+            <Record />
             <h3 className="sec">Certificates</h3>
             <Certificates />
+            <h3 className="sec">Contact</h3>
+            <Contact />
           </HeadingBase>
         </div>
       </div>

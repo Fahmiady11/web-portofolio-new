@@ -5,6 +5,9 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Only read by Git-connected deploys. Manual (drag-and-drop) deploys use public/_headers, copied into
+# dist/ by the build: keep the two in step.
+
 # Hashed build output never changes under the same name
 [[headers]]
   for = "/assets/*"

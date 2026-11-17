@@ -1,0 +1,13 @@
+# Netlify response headers for drag-and-drop deploys (which do not read netlify.toml).
+# Keep in step with the [[headers]] in netlify.toml, which a future Git-connected deploy would use.
+
+# Hashed build output never changes under the same name
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/img/*
+  Cache-Control: public, max-age=604800
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

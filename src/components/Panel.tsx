@@ -43,10 +43,16 @@ export function Panel() {
       if (active && active !== document.body && !active.closest('#panel')) opener.current = active;
       title.current?.focus({ preventScroll: true });
     } else if (opener.current) {
-      // markers are hidden while a file is open: wait for the scene to show them again
+      // markers are hidden while a file is open, and can stay off screen for a moment while the camera
+      // flies home: keep trying for up to ~1.5 s until the marker can take focus again
       const el = opener.current;
       opener.current = null;
-      requestAnimationFrame(() => requestAnimationFrame(() => el.focus({ preventScroll: true })));
+      let tries = 90;
+      const retry = () => {
+        el.focus({ preventScroll: true });
+        if (document.activeElement !== el && --tries > 0 && !useRoom.getState().current) requestAnimationFrame(retry);
+      };
+      requestAnimationFrame(retry);
     }
   }, [current, openCount]);
 

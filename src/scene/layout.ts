@@ -117,7 +117,8 @@ export const EVIDENCE: Record<SectionId, Evidence> = {
     view: { pos: new Vector3(CW.x + 0.5, CW.y + 0.15, CW.z + 4.9), target: new Vector3(CW.x, CW.y, CW.z) },
   },
   board: {
-    anchor: new Vector3(BOARD_AT.x + 0.05, BOARD_AT.y + 0.72, BOARD_AT.z),
+    // pinned towards the board's near end, so its label clears the diploma's marker to its right
+    anchor: new Vector3(BOARD_AT.x + 0.05, BOARD_AT.y + 0.72, BOARD_AT.z + 0.8),
     view: { pos: new Vector3(0.4, 2.3, -2.1), target: new Vector3(BOARD_AT.x, BOARD_AT.y, BOARD_AT.z) },
   },
   evidence: {
@@ -133,7 +134,7 @@ export const EVIDENCE: Record<SectionId, Evidence> = {
     view: { pos: new Vector3(2.2, 2.45, -0.9), target: new Vector3(2.71, 2.5, -3.58) },
   },
   record: {
-    anchor: new Vector3(DIPLOMA.x, DIPLOMA.y + 0.42, DIPLOMA.z),
+    anchor: new Vector3(DIPLOMA.x + 0.15, DIPLOMA.y + 0.42, DIPLOMA.z),
     view: { pos: new Vector3(-2.4, 2.3, -0.9), target: new Vector3(DIPLOMA.x, DIPLOMA.y - 0.1, DIPLOMA.z) },
   },
   phone: {

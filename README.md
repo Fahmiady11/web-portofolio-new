@@ -29,4 +29,17 @@ Vite + React + TypeScript + Tailwind, with React Three Fiber for the room.
 Deep links: `?open=cases|board|evidence|about|wall|record|phone|dossier`, `?open=case-<n>`, `?open=quick`.
 `?quality=high|medium|low` pins the 3D quality (no automatic step-down).
 
-Canonical and Open Graph URLs use `https://portofolio.asfahmidev.com`; set `SITE_URL` at build time to override.
+Canonical and Open Graph URLs use `https://fahmiadyportofolio.netlify.app`; set `SITE_URL` at build time to override.
+
+## Deploy (manual upload)
+
+The site is deployed by uploading the built folder to the existing Netlify site
+(https://fahmiadyportofolio.netlify.app); there is no Git-connected build.
+
+1. `npm ci`
+2. `npm run build` (writes `dist/`; set `SITE_URL=…` first only if the address ever changes)
+3. Open app.netlify.com → **fahmiadyportofolio** → **Deploys**, and drag the `dist/` folder onto the drop zone.
+
+`dist/` is self-contained: page, scripts, fonts, images, posters, `og.jpg`, the CV PDF, `sitemap.xml`,
+`robots.txt` and `_headers` (Netlify's response headers; drag-and-drop deploys ignore `netlify.toml`,
+which is kept for a future Git-connected setup). `npm test` checks that every file the page refers to is in `dist/`.

@@ -63,6 +63,14 @@
   .hs.star::after { content: ''; position: absolute; inset: 0; border: 3px solid var(--color-gold); pointer-events: none; animation: marker-ping 2s ease-out infinite; }
   .hs.star b { width: 26px; height: 26px; font-size: 14px; background: var(--color-red); color: #fff; }
 
+  /* email menu (EmailMenu.tsx) */
+  .mailpop { position: relative; display: inline-flex; }
+  .mailmenu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; display: flex; flex-direction: column; min-width: 220px; padding: 6px; background: var(--color-paper); color: var(--color-ink); border: 2px solid var(--color-ink); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45); font: 14px var(--font-sans); text-align: left; }
+  .mailpop.right .mailmenu { left: auto; right: 0; }
+  .mailmenu .mailaddr { padding: 4px 8px 6px; font: 600 12px var(--font-mono); color: var(--color-muted); user-select: all; }
+  .mailmenu button, .mailmenu a { display: block; padding: 8px; border: 0; background: transparent; color: var(--color-ink) !important; font: 15px var(--font-type); text-align: left; text-decoration: none; cursor: pointer; }
+  .mailmenu button:hover, .mailmenu a:hover, .mailmenu button:focus-visible, .mailmenu a:focus-visible { background: var(--color-ink); color: var(--color-paper) !important; outline: none; }
+  .selectable { user-select: text; }
   .hint { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); color: #b9ad94; font: 13px var(--font-type); z-index: 2; background: rgba(7, 8, 12, 0.65); padding: 6px 14px; white-space: nowrap; }
   .dock, .phint { display: none; }
 
@@ -160,7 +168,7 @@
   .quick .wrap { max-width: 900px; margin: 0 auto; padding: 0 22px 80px; }
   .qhead { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 0; background: var(--color-paper); border-bottom: 2px dashed rgba(30, 26, 20, 0.3); }
   .qhead h2 { font: 400 18px var(--font-type); }
-  .quick .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+  .quick .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; align-items: start; }
   .quick .cases { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
   .qhero { margin-top: 24px; grid-template-columns: 120px 1fr; }
   .qhero img { width: 120px; height: 140px; }
@@ -174,7 +182,15 @@
     .actions { justify-content: flex-start; gap: 6px; flex-wrap: nowrap; }
     .actions .btn { padding: 7px 9px; font-size: 12.5px; }
     .btn.cases { font-size: 13.5px; padding: 7px 12px; }
-    .hint { display: none; }
+    /* email menu (EmailMenu.tsx) */
+  .mailpop { position: relative; display: inline-flex; }
+  .mailmenu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; display: flex; flex-direction: column; min-width: 220px; padding: 6px; background: var(--color-paper); color: var(--color-ink); border: 2px solid var(--color-ink); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45); font: 14px var(--font-sans); text-align: left; }
+  .mailpop.right .mailmenu { left: auto; right: 0; }
+  .mailmenu .mailaddr { padding: 4px 8px 6px; font: 600 12px var(--font-mono); color: var(--color-muted); user-select: all; }
+  .mailmenu button, .mailmenu a { display: block; padding: 8px; border: 0; background: transparent; color: var(--color-ink) !important; font: 15px var(--font-type); text-align: left; text-decoration: none; cursor: pointer; }
+  .mailmenu button:hover, .mailmenu a:hover, .mailmenu button:focus-visible, .mailmenu a:focus-visible { background: var(--color-ink); color: var(--color-paper) !important; outline: none; }
+  .selectable { user-select: text; }
+  .hint { display: none; }
     .hs { font-size: 11.5px; }
     .hs b { width: 17px; height: 17px; font-size: 11px; }
     .dock { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; position: fixed; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); z-index: 4; background: rgba(7, 8, 12, 0.88); border: 1px solid rgba(239, 228, 200, 0.25); padding: 6px; }
@@ -186,7 +202,7 @@
     .panel { top: auto; height: 74vh; width: 100%; transform: translateY(105%); box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.6); }
     .panel.wide { width: 100%; }
     .panel > header h2 { font-size: 22px; }
-    .quick .cols, .quick .cases { grid-template-columns: 1fr; }
+    .quick .skills-grid, .quick .cases { grid-template-columns: 1fr; }
     .qhero { grid-template-columns: 1fr; }
     .qname { font-size: 24px; }
     .qhead h2 { font-size: 15px; }

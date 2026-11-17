@@ -24,6 +24,10 @@ const OVERALL_S = Number(process.env.ROOM_CHECK_TIMEOUT ?? 480);
 const content = JSON.parse(readFileSync(join(root, 'content/content.json'), 'utf8'));
 const expectedCases = content.projects.length + content.pendingProjects.items.length;
 const expectedLinks = content.projects.reduce((n, p) => n + !!p.website + !!p.github + !!p.link, 0);
+// marker order, by what a recruiter wants first (src/sections.ts); dock, arrow keys and ‹ › follow it
+const ORDER = ['board', 'cases', 'evidence', 'about', 'dossier', 'record', 'wall', 'phone'];
+const DOSSIER_ORDER = ['Summary', 'Experience', 'Case files (projects)', 'Skills', 'CV', 'Education', 'Certificates', 'Contact'];
+const GMAIL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(content.contact.email)}`;
 
 const t0 = Date.now();
 const secs = () => ((Date.now() - t0) / 1000).toFixed(1).padStart(5);
@@ -108,9 +112,23 @@ const staticOk = {
   cv: html.includes(`href="/files/${content.contact.cv.publicName}"`) && !html.includes('cv-2022'),
   noPhone: !/857[- ]?4589|tel:/.test(html),
   noCurrent: !/currently at/i.test(html),
+  // without JavaScript every email action is still a plain mailto: link
+  mailto: (html.match(new RegExp(`href="mailto:${content.contact.email}"`, 'g')) ?? []).length >= 3,
   fontPreload: /<link rel="preload" href="\/assets\/special-elite-[^"]+\.woff2" as="font"/.test(html),
 };
 check('prerendered HTML has title, meta, Open Graph, name, every project and every link, font preload', Object.values(staticOk).every(Boolean), JSON.stringify(staticOk));
+// dist/ is uploaded as-is (Netlify drag-and-drop): every site path the page or its scripts use must be in it
+{
+  const { readdirSync } = await import('node:fs');
+  const files = readdirSync(join(root, 'dist/assets')).filter((f) => /\.(js|css)$/.test(f)).map((f) => readFileSync(join(root, 'dist/assets', f), 'utf8'));
+  const refs = new Set();
+  for (const text of [html, ...files]) for (const m of text.matchAll(/["'`(](\/(?:assets|img|icons|files)\/[^"'`)\s?#]+|\/(?:poster-[a-z]+\.webp|og\.jpg|grain\.webp|favicon[^"'`)\s]*|apple-touch-icon\.png))/g)) refs.add(m[1]);
+  // srcset lists: "/img/x-480.webp 480w, /img/x-800.webp 800w"
+  for (const m of html.matchAll(/(\/img\/[^\s",]+)\s\d+w/g)) refs.add(m[1]);
+  const missing = [...refs].filter((r) => !r.includes('${') && !existsSync(join(root, 'dist', r)));
+  const needed = ['index.html', '_headers', 'robots.txt', 'sitemap.xml', 'og.jpg', 'favicon.svg', `files/${content.contact.cv.publicName}`].filter((f) => !existsSync(join(root, 'dist', f)));
+  check('dist/ is self-contained: every referenced file is in it, plus _headers, sitemap, robots, CV', !missing.length && !needed.length, `${refs.size} paths checked; missing: ${[...missing, ...needed].join(', ') || 'none'}`);
+}
 for (const asset of ['og.jpg', 'favicon.svg', 'poster-wide.webp', 'poster-tall.webp', 'grain.webp', 'sitemap.xml', 'robots.txt']) {
   const r = await fetch(url(asset));
   check(`/${asset} is served`, r.ok, String(r.status));
@@ -134,6 +152,18 @@ await block('desktop', [], async (c) => {
   const shown = await c.evaluate('[...document.querySelectorAll("#hotspots .hs")].filter(b => getComputedStyle(b).display !== "none").length');
   const star = await c.evaluate(`(() => { const b = document.querySelector('#hotspots .hs.star'); const st = getComputedStyle(b); return { opacity: st.opacity, width: Math.round(b.getBoundingClientRect().width) }; })()`);
   check('the Case files marker is fully visible (no stray keyframes hiding it)', star.opacity === '1' && star.width < 300, JSON.stringify(star));
+  const markerOrder = await c.evaluate('[...document.querySelectorAll("#hotspots .hs")].map(b => b.querySelector("b").textContent + ":" + b.dataset.sec)');
+  check('markers are numbered by recruiter importance (1 Timeline … 8 Telephone)', markerOrder.join() === ORDER.map((id, i) => `${i + 1}:${id}`).join(), markerOrder.join(' '));
+  const overlaps = await c.evaluate(`(() => {
+    const r = [...document.querySelectorAll('#hotspots .hs')].filter((b) => getComputedStyle(b).display !== 'none').map((b) => [b.dataset.sec, b.getBoundingClientRect()]);
+    const hit = [];
+    for (let i = 0; i < r.length; i++) for (let j = i + 1; j < r.length; j++) {
+      const [a, A] = r[i], [b, B] = r[j];
+      if (A.left < B.right && B.left < A.right && A.top < B.bottom && B.top < A.bottom) hit.push(a + '×' + b);
+    }
+    return hit;
+  })()`);
+  check('no two evidence markers overlap in the default view', overlaps.length === 0, overlaps.join(', ') || 'none');
   check('evidence markers rendered and all on screen', ids.length >= 8 && shown === ids.length, `${shown}/${ids.length} visible: ${ids.join(', ')}`);
 
   step('desktop: hover test');
@@ -210,25 +240,49 @@ await block('desktop', [], async (c) => {
   await key(c, 'ArrowRight');
   await sleep(200);
   const k1 = await c.evaluate('({ focus: document.activeElement?.dataset?.sec, glowing: window.__room.glowing() })');
-  check('→ in the room focuses the first marker and lights its object', k1.focus === 'cases' && k1.glowing.join() === 'cases', JSON.stringify(k1));
+  check('→ in the room focuses marker 1 (Timeline) and lights its object', k1.focus === ORDER[0] && k1.glowing.join() === ORDER[0], JSON.stringify(k1));
   await key(c, 'ArrowRight');
   await sleep(200);
   const k2 = await c.evaluate('({ focus: document.activeElement?.dataset?.sec, glowing: window.__room.glowing() })');
-  check('→ again moves to the next marker, and the glow follows', k2.focus === 'board' && k2.glowing.join() === 'board', JSON.stringify(k2));
+  check('→ again moves to marker 2 (Case files), and the glow follows', k2.focus === ORDER[1] && k2.glowing.join() === ORDER[1], JSON.stringify(k2));
   await shot(c, 'desktop-keyboard');
   await key(c, 'Enter'); await settle(c);
-  check('Enter on a marker opens its file', (await c.evaluate('window.__room.current()')) === 'board');
+  check('Enter on a marker opens its file', (await c.evaluate('window.__room.current()')) === ORDER[1]);
   await key(c, 'ArrowRight'); await settle(c);
   const k3 = await c.evaluate('window.__room.current()');
   await key(c, 'ArrowLeft'); await settle(c);
   const k4 = await c.evaluate('window.__room.current()');
-  check('with a file open, → / ← walk to the next / previous file', k3 === 'evidence' && k4 === 'board', `→ ${k3}, ← ${k4}`);
+  check('with a file open, → / ← walk to the next / previous file in marker order', k3 === ORDER[2] && k4 === ORDER[1], `→ ${k3}, ← ${k4}`);
   const nb = await rectOf(c, '#pNext');
   await click(c, nb.x, nb.y); await settle(c);
-  check('the panel\'s › button opens the next file', (await c.evaluate('window.__room.current()')) === 'evidence');
+  check('the panel\'s › button opens the next file', (await c.evaluate('window.__room.current()')) === ORDER[2]);
   await key(c, 'Escape'); await settle(c);
   const k5 = await c.evaluate('({ open: document.getElementById("panel").classList.contains("open"), focus: document.activeElement?.dataset?.sec })');
-  check('Escape closes it and focus returns to the marker it was opened from', !k5.open && k5.focus === 'board', JSON.stringify(k5));
+  check('Escape closes it and focus returns to the marker it was opened from', !k5.open && k5.focus === ORDER[1], JSON.stringify(k5));
+  await c.evaluate('document.activeElement?.blur()');
+
+  step('desktop: email menu');
+  await c.send('Browser.grantPermissions', { permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'], origin: base });
+  await c.send('Emulation.setFocusEmulationEnabled', { enabled: true });
+  const mb = await rectOf(c, '#mailBtn');
+  await click(c, mb.x, mb.y); await sleep(200);
+  const m1 = await c.evaluate(`(() => { const m = document.querySelector('#mailBtn + .mailmenu'); return m && {
+    expanded: document.getElementById('mailBtn').getAttribute('aria-expanded'), focus: document.activeElement?.dataset?.mail,
+    gmail: m.querySelector('[data-mail="gmail"]').href, gmailTarget: m.querySelector('[data-mail="gmail"]').target, gmailRel: m.querySelector('[data-mail="gmail"]').rel,
+    app: m.querySelector('[data-mail="app"]').getAttribute('href') }; })()`);
+  check('Email opens a menu (focus on its first item) instead of a bare mailto:', m1?.expanded === 'true' && m1.focus === 'copy', JSON.stringify(m1));
+  check('"Open in Gmail" is a compose link in a new tab', m1?.gmail === GMAIL && m1.gmailTarget === '_blank' && m1.gmailRel === 'noopener' && m1.app === `mailto:${content.contact.email}`, JSON.stringify(m1));
+  const cp = await rectOf(c, '#mailBtn + .mailmenu [data-mail="copy"]');
+  await click(c, cp.x, cp.y); await sleep(300);
+  const copied = await c.evaluate(`navigator.clipboard.readText().then((t) => ({ clip: t, label: document.querySelector('[data-mail="copy"]').textContent }))`);
+  check('"Copy email" puts the address on the clipboard and says so', copied.clip === content.contact.email && /copied/i.test(copied.label), JSON.stringify(copied));
+  await key(c, 'Escape'); await sleep(200);
+  const m2 = await c.evaluate(`({ menu: !!document.querySelector('.mailmenu'), focus: document.activeElement?.id })`);
+  check('Escape closes the email menu and focus returns to the button', !m2.menu && m2.focus === 'mailBtn', JSON.stringify(m2));
+  await click(c, mb.x, mb.y); await sleep(200);
+  await click(c, 640, 600); await settle(c);
+  check('a click outside closes the email menu', !(await c.evaluate('!!document.querySelector(".mailmenu")')));
+  await key(c, 'Escape'); await settle(c);
   await c.evaluate('document.activeElement?.blur()');
 
   step('desktop: full dossier (quick view)');
@@ -236,8 +290,8 @@ await block('desktop', [], async (c) => {
   await click(c, qb.x, qb.y); await sleep(400);
   const q = await c.evaluate('({ open: document.getElementById("quick").classList.contains("open"), projects: document.querySelectorAll("#quickBody .case").length, jobs: document.querySelectorAll("#quickBody .tl .ev").length })');
   check('quick view (full dossier) opens with all content', q.open && q.projects === expectedCases && q.jobs === content.experience.length, JSON.stringify(q));
-  const firstSec = await c.evaluate('document.querySelector("#quickBody .sec")?.textContent');
-  check('projects come first in the full dossier', /case files/i.test(firstSec ?? ''), `first section: ${firstSec}`);
+  const dossierSecs = await c.evaluate('[...document.querySelectorAll("#quickBody h3.sec")].map((h) => h.textContent)');
+  check('full dossier follows the marker order: summary, experience, projects, skills, CV, education, certificates, contact', dossierSecs.join() === DOSSIER_ORDER.join(), dossierSecs.join(' | '));
   const a11y = await c.evaluate(`(() => {
     const q = document.getElementById('quick');
     const levels = [...q.querySelectorAll('h2, h3, h4, h5')].map((h) => +h.tagName[1]);
@@ -302,9 +356,9 @@ await block('phone', [], async (c) => {
   await settle(c);
   await sleep(600);
   await shot(c, 'phone-home');
-  step('phone: dock → cases (first slot)');
-  const first = await c.evaluate('(() => { const b = document.querySelector("#dock button"); return { sec: b.dataset.sec, star: b.classList.contains("star") }; })()');
-  check('phone dock: cases is the first, highlighted slot', first.sec === 'cases' && first.star, JSON.stringify(first));
+  step('phone: dock order, then → cases');
+  const first = await c.evaluate('(() => { const b = [...document.querySelectorAll("#dock button")]; return { order: b.map((x) => x.dataset.sec), star: b[0].classList.contains("star"), stars: b.filter((x) => x.classList.contains("star")).length }; })()');
+  check('phone dock follows the marker order, Experience in the highlighted first slot', first.order.join() === ORDER.join() && first.star && first.stars === 1, JSON.stringify(first));
   const cs = await rectOf(c, '#dock [data-sec="cases"]');
   await click(c, cs.x, cs.y); await settle(c);
   check('phone dock opens the projects panel', (await c.evaluate('window.__room.current()')) === 'cases');
@@ -317,7 +371,13 @@ await block('phone', [], async (c) => {
   await click(c, db.x, db.y); await settle(c);
   const r = await c.evaluate('(() => { const p = document.getElementById("panel").getBoundingClientRect(); return { current: window.__room.current(), top: Math.round(p.top), h: innerHeight }; })()');
   check('dock opens a bottom sheet', r.current === 'phone' && r.top > r.h * 0.2, JSON.stringify(r));
+  const cm = await rectOf(c, '#contactMail');
+  await click(c, cm.x, cm.y); await sleep(300);
+  const pm = await c.evaluate(`(() => { const m = document.querySelector('#contactMail + .mailmenu'); if (!m) return null; const r = m.getBoundingClientRect();
+    return { inView: r.left >= 0 && r.right <= innerWidth && r.bottom <= innerHeight, plain: [...document.querySelectorAll('#pBody dd')].some((d) => d.textContent === ${JSON.stringify(content.contact.email)}) }; })()`);
+  check('phone contact sheet: the email menu opens on screen, and the address is also plain text', !!pm?.inView && pm.plain, JSON.stringify(pm));
   await shot(c, 'phone-contact');
+  await key(c, 'Escape'); await sleep(200);
   await key(c, 'Escape'); await settle(c);
   const qb = await rectOf(c, '#quickBtn');
   await click(c, qb.x, qb.y); await sleep(400);

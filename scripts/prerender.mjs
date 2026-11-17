@@ -10,7 +10,7 @@ const ssrDir = join(root, '.ssr');
 const { render, headTags } = await import(pathToFileURL(join(ssrDir, 'entry-server.js')).href);
 
 // The site's public address for canonical and Open Graph URLs; SITE_URL overrides it (e.g. for a staging copy)
-const siteUrl = process.env.SITE_URL ?? 'https://portofolio.asfahmidev.com';
+const siteUrl = process.env.SITE_URL ?? 'https://fahmiadyportofolio.netlify.app';
 const file = join(root, 'dist/index.html');
 const html = readFileSync(file, 'utf8');
 for (const marker of ['<!--app-html-->', '<!--head-tags-->']) {

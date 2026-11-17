@@ -4,6 +4,7 @@ import { cases, latestJob, period, site } from '../content/site';
 import type { Case } from '../content/types';
 import { useRoom } from '../store';
 import { Heading } from './heading';
+import { EmailMenu } from './EmailMenu';
 import { Img } from './Img';
 
 const SHOT_SIZES = '(max-width: 760px) 92vw, 560px';
@@ -169,10 +170,12 @@ export function Contact() {
     <>
       <p className="lead">Got a case? The line is open.</p>
       <div className="row">
-        <a className="pbtn" href={`mailto:${site.email}`}>✉ {site.email}</a>
+        <EmailMenu className="pbtn" id="contactMail">✉ Email</EmailMenu>
         <a className="pbtn ghost" href={site.cv} {...ext}>CV (PDF)</a>
       </div>
       <dl className="facts spaced">
+        {/* plain text too, so the address can be selected and copied by hand */}
+        <dt>Email</dt><dd className="selectable">{site.email}</dd>
         <dt>Based in</dt><dd>{site.location}</dd>
         {site.socials.map((s) => (
           <div key={s.url} className="contents"><dt>{s.name}</dt><dd><a href={s.url} {...ext}>{s.handle}</a></dd></div>

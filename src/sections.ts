@@ -15,16 +15,20 @@ export interface Section {
   title: string;
 }
 
-/** Every piece of evidence in the room, in marker order. Projects come first. */
+/**
+ * Every piece of evidence in the room, in marker order: what a recruiter wants first for an experienced
+ * candidate. The same order drives the dock, the arrow keys, the panel's ‹ › and the full dossier.
+ * (The case wall keeps its own prominence in the room and the "View cases" header button.)
+ */
 export const SECTIONS: Section[] = [
-  { id: 'cases', no: 1, label: 'Case files · projects', short: 'Cases', icon: '🗂', kicker: 'The case wall · projects', title: 'Case files' },
-  { id: 'board', no: 2, label: 'Timeline', short: 'Timeline', icon: '📌', kicker: 'Evidence board · experience', title: 'The career timeline' },
-  { id: 'evidence', no: 3, label: 'Evidence', short: 'Evidence', icon: '🔎', kicker: 'Evidence bags · skills', title: 'Evidence log' },
-  { id: 'about', no: 4, label: 'Subject', short: 'Subject', icon: '⌨', kicker: 'Typewriter · statement', title: 'Subject profile' },
-  { id: 'wall', no: 5, label: 'Commendations', short: 'Certs', icon: '🏅', kicker: 'Framed on the wall · certificates', title: `Commendations (${site.certificates.length})` },
-  { id: 'record', no: 6, label: 'Record', short: 'Record', icon: '🎓', kicker: 'Diploma & medal · education', title: 'Record & awards' },
-  { id: 'phone', no: 7, label: 'Contact', short: 'Contact', icon: '☎', kicker: 'The telephone', title: 'Make the call' },
-  { id: 'dossier', no: 8, label: 'Dossier', short: 'Dossier', icon: '📁', kicker: 'Top secret · CV', title: 'The dossier' },
+  { id: 'board', no: 1, label: 'Timeline · experience', short: 'Experience', icon: '📌', kicker: 'Evidence board · experience', title: 'The career timeline' },
+  { id: 'cases', no: 2, label: 'Case files · projects', short: 'Cases', icon: '🗂', kicker: 'The case wall · projects', title: 'Case files' },
+  { id: 'evidence', no: 3, label: 'Evidence · skills', short: 'Skills', icon: '🔎', kicker: 'Evidence bags · skills', title: 'Evidence log' },
+  { id: 'about', no: 4, label: 'Subject · about', short: 'About', icon: '⌨', kicker: 'Typewriter · statement', title: 'Subject profile' },
+  { id: 'dossier', no: 5, label: 'Dossier · CV', short: 'CV', icon: '📁', kicker: 'Top secret · CV', title: 'The dossier' },
+  { id: 'record', no: 6, label: 'Record · education', short: 'Education', icon: '🎓', kicker: 'Diploma & medal · education', title: 'Record & awards' },
+  { id: 'wall', no: 7, label: 'Commendations · certificates', short: 'Certs', icon: '🏅', kicker: 'Framed on the wall · certificates', title: `Commendations (${site.certificates.length})` },
+  { id: 'phone', no: 8, label: 'Telephone · contact', short: 'Contact', icon: '☎', kicker: 'The telephone', title: 'Make the call' },
 ];
 
 export const sectionById = (id: string) => SECTIONS.find((s) => s.id === id);
